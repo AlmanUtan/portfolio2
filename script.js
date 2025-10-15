@@ -1034,7 +1034,6 @@
 //-----------------------------
 // Instruction message timer
 //-----------------------------
-//instruction message timer
 function showInstructionsAfterDelay(delayMs = 3000) {
   const instructions = document.getElementById("instructions");
   if (!instructions) return;
@@ -1045,5 +1044,22 @@ function showInstructionsAfterDelay(delayMs = 3000) {
   }, delayMs);
 }
 
-// Example usage: show after 5 seconds
-showInstructionsAfterDelay(5000);
+//-----------------------------
+// Hamburger button timer
+//-----------------------------
+function showHamburgerBtnAfterDelay(delayMs = 3000) {
+  const btn = document.getElementById("hamburgerBtn");
+  if (!btn) return;
+  btn.style.display = "none";
+  setTimeout(() => {
+    btn.style.display = "";
+    btn.classList.add("visible");
+  }, delayMs);
+}
+
+// Only run timers if not on about.html
+if (!/about\.html$/i.test(window.location.pathname)) {
+  // Example usage: show after 5 seconds
+  showInstructionsAfterDelay(5000);
+  showHamburgerBtnAfterDelay(5000);
+}
