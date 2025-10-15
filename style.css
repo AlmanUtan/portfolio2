@@ -1,0 +1,775 @@
+/* Global resets */
+button {
+  font: inherit;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* REST OF THE CODE*/
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* custom scroll via JS */
+  background: #FFFF;
+  height: 100%;
+}
+
+/* 3D canvas */
+#canvas-container {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+/* Subpages (opened by clicking orbiting tiles) */
+.subpage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: white;
+  z-index: 1000;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 48px;
+  font-weight: bold;
+  color: #333;
+}
+.close-btn {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  padding: 10px 20px;
+  background: #333;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.close-btn:hover {
+  background: #555;
+}
+
+#toggle-rotation-btn {
+  display: none !important;     /* removes it from layout/visuals */
+  pointer-events: none !important;
+}
+
+/* Start overlay (video) */
+#start-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #0A0A0A;
+  z-index: 2000;
+  opacity: 1;
+  transition: opacity 1.6s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+#start-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden; /* add this if not present */
+}
+#start-overlay video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+@media (max-width: 768px) and (orientation: portrait) {
+  #start-overlay video {
+    object-fit: contain;
+    background: #000; /* ensure bars are black */
+  }
+}
+
+#introPlayBtn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-family: "chivo-mono", sans-serif;
+  font-size: 16px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #111;
+  cursor: pointer;
+}
+
+/* Small mute/unmute toggle in top-right */
+#introMuteToggle {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.9);
+  color: #111;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Gallery overlay - progressive pull-up */
+#galleryOverlay {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%) translateY(100%);
+  width: min(1400px, calc(100vw - 64px));
+  height: calc(100vh - 64px);
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 999;
+
+  backdrop-filter: blur(6px); /* was 16px */
+  -webkit-backdrop-filter: blur(6px);
+  background: #171717c4;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), 0 4px 16px rgba(0, 0, 0, 0.25);
+
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity; /* reduce paint/jank during transitions */
+}
+/* Mobile portrait: gallery should cover the full screen */
+@media (max-width: 768px) and (orientation: portrait) {
+  #galleryOverlay {
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    transform: translateY(100%); /* JS will animate only Y on mobile */
+  }
+  .galleryScroll {
+    height: calc(100vh - 48px);
+    padding: 12px;
+  }
+  .galleryHeaderRow {
+    padding: 8px 12px;
+  }
+  .organicGrid {
+    grid-template-columns: 1fr; /* single column base grid before masonry-on */
+    gap: 12px;
+  }
+}
+
+/* Bottom CTA bar to open the gallery */
+/* Bottom CTA bar to open the gallery — with swoosh-up entrance */
+#galleryCTA {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+
+  /* Start hidden well below the viewport (relative to its own height) */
+  transform: translateX(-50%) translateY(140%) scale(0.98);
+  z-index: 998;
+
+  width: 50vw;               /* half screen width */
+  padding: 12px 22px;
+  text-align: center;
+  font-family: "chivo-mono", sans-serif;
+  font-size: 14px;
+  color: rgba(250, 250, 250, 0.95);
+
+  background: #171717c4;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35), 0 3px 12px rgba(0,0,0,0.2);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 9999px;
+
+  opacity: 0;
+  pointer-events: none;
+
+  /* Transition used for exit (hide). Entrance uses keyframes animation below. */
+  transition:
+    opacity 360ms ease,
+    transform 360ms ease;
+
+  user-select: none;
+  cursor: pointer;
+  will-change: transform, opacity, filter;
+}
+/* Mobile portrait: keep CTA visually balanced */
+@media (max-width: 768px) and (orientation: portrait) {
+  #galleryCTA {
+    width: auto;
+    max-width: 92vw;
+    bottom: 16px;
+    padding: 10px 16px;
+    font-size: 13px;
+    white-space: nowrap;        /* keep single-line */
+    overflow: hidden;           /* avoid wrapping causing excessive height */
+    text-overflow: ellipsis;    /* just in case */
+  }
+}
+
+#galleryCTA.is-visible {
+  /* Final state after animation; also enables interaction */
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0) scale(1);
+
+  /* Swoosh-up entrance with overshoot and settle */
+  animation: ctaSwooshUp 1100ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+#galleryCTA:hover {
+  background: #1b1b1bcc;
+}
+
+#galleryCTA:active {
+  transform: translateX(-50%) translateY(0) scale(0.99);
+}
+
+/* Optional: respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  #galleryCTA {
+    transition: opacity 20ms ease, transform 20ms ease;
+  }
+  #galleryCTA.is-visible {
+    animation: none;
+  }
+}
+
+
+/* Fullscreen modal for main projects */
+#projectModal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: none;
+  background: rgba(0,0,0,0.82);
+  backdrop-filter: blur(4px);
+  overflow-y: auto;    /* allow overlay to scroll */
+}
+#projectModal.is-open {
+  display: block;
+}
+#projectModal .modalBox {
+  width: min(1400px, 96vw);
+  margin: 32px auto;
+  background: #0f0f0f;
+  color: #eaeaea;
+  border-radius: 10px;
+  padding: 16px 16px 24px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+}
+#projectModal .modalHeader {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #0f0f0f;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: -16px -16px 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #1e1e1e;
+}
+#projectModal .modalVideoWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--video-ar, 16/9);
+  margin-bottom: 16px;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+}
+#projectModal .modalVideoWrap video,
+#projectModal .modalVideoWrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.galleryTitle {
+  font-family: "chivo-mono", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #e5e7eb;
+}
+.galleryClose {
+  background-color: transparent;
+  color: #e5e7eb;
+  cursor: pointer;
+  font-family: "chivo-mono", sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+}
+.galleryClose:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1.5px;
+}
+
+.galleryScroll {
+  position: relative;
+  height: calc(100% - 48px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 16px;
+}
+/* Mobile/coarse pointers: allow vertical scroll inside the gallery overlay */
+@media (pointer: coarse) {
+  #galleryOverlay,
+  .galleryScroll {
+    overscroll-behavior: contain;
+    touch-action: pan-y; /* allow vertical scrolling in the gallery */
+  }
+}
+
+/* === Clean gallery grid === */
+.galleryGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+}
+
+/* Header row */
+.galleryHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+}
+.galleryTitle {
+  font-family: "chivo-mono", sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  color: rgba(250, 250, 250, 0.9);
+  text-transform: uppercase;
+}
+.galleryClose {
+  font-family: "chivo-mono", sans-serif;
+  font-size: 13px;
+  color: rgba(250, 250, 250, 0.9);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.galleryClose:hover {
+  opacity: 0.8;
+}
+
+/* Organic, responsive grid (used before masonry-on kicks in) */
+.organicGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-auto-flow: dense;
+  gap: 18px;
+  align-items: start;
+}
+.projectCard.span-2 {
+  grid-column: span 2;
+}
+@media (max-width: 700px) {
+  .projectCard.span-2 { grid-column: span 1; }
+}
+
+/* Project Cards */
+.projectCard {
+  background: #2f2f2f;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.4s ease;
+
+  /* Big perf win: don’t render offscreen cards */
+  content-visibility: auto;
+  contain-intrinsic-size: 300px 400px;
+}
+
+/* Preview section in compact state */
+.projectCard:not(.expanded) .cardPreview {
+  width: 100%;
+  aspect-ratio: var(--card-ar, 1 / 1);
+  border-radius: 8px;
+}
+.cardPreview {
+  padding: 16px;
+  font-family: "chivo-mono", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+}
+/* Make the closed-card preview fill its aspect box */
+.projectCard:not(.expanded) .cardPreview {
+  position: relative;
+  padding: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.cardPreview .previewVideo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Optional: keep the label on top of the video */
+.cardPreview .projectName {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  padding: 4px 8px;
+  background: rgba(0,0,0,0.45);
+  color: #fff;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+/* Hidden details by default */
+.cardDetails {
+  display: none;
+  color: #ccc;
+}
+
+/* Expanded card: show details, hide preview */
+.projectCard.expanded {
+  grid-column: 1 / -1; /* for pre-masonry state */
+  background: #1a1a1a;
+  overflow: hidden;   /* clip to card to avoid overlay spill + reduce paint area */
+  z-index: 2;    /* sit above neighbors if overlapping */
+}
+.projectCard.expanded .cardPreview { display: none; }
+.projectCard.expanded .cardDetails {
+  display: block;
+  padding: 16px; /* ensure text has breathing room */
+}
+
+/* Base wrapper for detail media (used by expanded cards and modal) */
+.videoWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--video-ar, 16/9);
+  margin-bottom: 20px;
+  max-width: 100%;
+}
+.videoWrapper video,
+.videoWrapper iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  object-fit: contain;  /* preserve AR; no crop in detail view */
+}
+
+/* Expanded card media: full card width, clamped to visible gallery height */
+.projectCard.expanded .videoWrapper {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 16px;
+  aspect-ratio: var(--video-ar, var(--card-ar, 16/9));
+  max-height: var(--gallery-content-max-h, calc((100vh - 64px) - 140px));
+}
+
+/* If you want no cropping in the detail view (class on the <video>) */
+.detailVideo {
+  object-fit: contain;
+  background: #000;
+}
+
+/* Optional fallback for very old browsers (keeps things from collapsing) */
+@supports not (aspect-ratio: 1) {
+  .videoWrapper {
+    padding-top: calc(100% / var(--video-ar, 16/9));
+  }
+}
+
+/* Sections */
+.projectDescription, .projectProcess {
+  margin-bottom: 24px;
+}
+.projectDescription h3,
+.projectProcess h3 {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  color: #f1f1f1;
+}
+.projectDescription p,
+.projectProcess p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #d0d0d0;
+}
+
+/* Close button for expanded in-grid cards */
+.projectCard .cardCollapse {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 5;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  cursor: pointer;
+}
+.projectCard:not(.expanded) .cardCollapse {
+  display: none;
+}
+.projectCard.expanded .cardCollapse:hover {
+  background: rgba(255,255,255,0.18);
+}
+
+/* ---- Menu ---- */
+.navigation {
+  position: fixed;
+  right: -150vw;
+  width: 100vw;
+  height: 100%;
+  background-color: #d4d4d4;
+  transition: 0.5s;
+  z-index: 10000;
+}
+nav {
+  position: absolute;
+  top: 100px;
+  width: 100%;
+  height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.navigation ul li {
+  font-family: "chivo-mono", sans-serif;
+  font-weight: 400;
+  color: #fff;
+  text-align: center;
+  text-transform: none;
+  list-style-type: none;
+  font-size: 96px;
+  min-height: 114px;
+  padding: 0px 30px;
+  min-width: 403.2px;
+}
+.navigation ul li:not(:last-child) {
+  border-bottom: 1px solid #a1a1a1;
+}
+.navigation ul li a {
+  text-decoration: none;
+  color: #000;
+  position: relative;
+}
+.navigation ul li a:hover {
+  font-family: "jacquard-12", sans-serif;
+  font-size: 128px;
+}
+.navigation ul li a::before {
+  content: "";
+  position: absolute;
+  background-color: rgba(114, 204, 119, 0.3);
+  top: 5%;
+  left: -5%;
+  width: 110%;
+  height: 80%;
+  pointer-events: none;
+  border-radius: 8px;
+  transform: rotate(var(--rand-rotate, -5deg));
+  z-index: -1;
+  opacity: 0;
+  transition: all 0.15s ease-in-out;
+}
+.navigation ul li a:hover::before {
+  opacity: 1;
+}
+
+/* Social media links at the bottom */
+.navigation .socials {
+  position: absolute;
+  bottom: 25px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 66px;
+}
+.navigation .socials a {
+  font-family: "chivo-mono", sans-serif;
+  font-weight: 300;
+  color: #a1a1a1;
+  text-decoration: none;
+  font-size: 20px;
+  transition: color 0.3s;
+}
+.navigation .socials a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
+}
+
+/* Asterisk image */
+.navigation .asterisk-image {
+  display: block;
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  top: 2%;
+  right: 95%;
+}
+.navigation .asterisk-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Hamburger menu */
+.hamburger {
+  position: fixed; /* stick the button to the viewport */
+}
+.bar {
+  position: absolute; /* position bars inside the button */
+  left: 0;
+  right: 0;
+}
+.hamburger {
+  position: fixed;           /* keep it stuck to viewport */
+  top: 16px;                 /* consistent spacing */
+  right: 16px;               /* move to the right */
+  left: auto;                /* unset the old left */
+  width: 30px;
+  height: 30px;
+  z-index: 2001;             /* stays above overlay */
+  transform: none;           /* no vertical translate needed */
+  border: 0;
+  background: transparent;
+  display: block;
+}
+.bar {
+  top: 3px;
+  background-color: #000;
+  width: 100%;
+  height: 4px;
+  transition: all 0.3s ease-in;
+}
+#bar2 { top: 11px; }
+#bar3 { top: 19px; }
+.navigation.is-active { right: 0; }
+.hamburger.is-open #bar1 {
+  transform: rotate(45deg) translate(6px, 5px);
+}
+.hamburger.is-open #bar2 {
+  background-color: transparent;
+}
+.hamburger.is-open #bar3 {
+  transform: rotate(-45deg) translate(6px, -5px);
+}
+/* Mobile portrait: menu drops from top, keep same look/feel */
+@media (max-width: 768px) and (orientation: portrait) {
+  .navigation {
+    right: auto;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    transform: translateY(-100%);
+    transition: transform 0.45s ease;
+  }
+  .navigation.is-active {
+    transform: translateY(0);
+  }
+
+  .hamburger {
+    top: 16px;
+    right: 16px;  /* move to the right */
+    left: auto;
+    z-index: 10001;
+  }
+
+  nav {
+    top: 80px;
+    height: calc(100vh - 160px);
+  }
+  .navigation ul li {
+    font-size: 48px;
+    min-height: 60px;
+  }
+  .navigation ul li a:hover {
+    font-size: 64px;
+  }
+  .navigation .socials {
+    gap: 28px;
+  }
+  .navigation .asterisk-image {
+    top: 16px;
+    right: auto;
+    left: 16px;
+  }
+}
+
+/* Masonry override for organicGrid (JS positions cards absolutely) */
+.organicGrid.masonry-on {
+  display: block;
+  position: relative;
+  margin: 0 auto;
+  transition: height 0.2s ease;
+  will-change: height;
+}
+/* Absolutely position cards when masonry is enabled */
+.organicGrid.masonry-on .projectCard {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+html.lock-scroll, body.lock-scroll {
+  overflow: hidden !important;
+  height: 100%;
+  overscroll-behavior: contain;
+  touch-action: none;
+}
+@keyframes ctaSwooshUp {
+  0% {
+    transform: translateX(-50%) translateY(140%) scale(0.5);
+    opacity: 0;
+    filter: blur(8px);
+  }
+  90% {
+    /* slight overshoot above final position */
+    transform: translateX(-50%) translateY(-8px) scale(1.01);
+    opacity: 1;
+    filter: blur(0px);
+  }
+  100% {
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
+    filter: blur(0);
+  }
+  /* Mobile 3D gallery: lock page scroll */
+
+}

@@ -1,0 +1,2289 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Elia Römpler - Portfolio</title>
+    <link rel="icon" type="image/png" href="public/img/IMG_6999.PNG" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://use.typekit.net/yyn5dss.css" />
+  </head>
+
+  <body>
+    <!-- Move hamburger OUTSIDE the transformed .navigation -->
+    <button
+      class="hamburger"
+      type="button"
+      aria-label="Open menu"
+      onclick="openMenu()"
+    >
+      <div id="bar1" class="bar"></div>
+      <div id="bar2" class="bar"></div>
+      <div id="bar3" class="bar"></div>
+    </button>
+
+    <div class="navigation">
+      <nav>
+        <ul>
+          <li>
+            <a href="#" onclick="closeMenuAndGoHome(); return false;">Home</a>
+          </li>
+          <li>
+            <a href="#" onclick="closeMenuAndOpenGallery(); return false;"
+              >Gallery</a
+            >
+          </li>
+          <li><a href="#about">About</a></li>
+        </ul>
+      </nav>
+
+      <div class="socials">
+        <a
+          href="https://www.linkedin.com/in/elia-r%C3%B6mpler-5b4b9823b/"
+          target="_blank"
+          >LinkedIn</a
+        >
+        <a href="https://www.instagram.com/elia.roempler/" target="_blank"
+          >Instagram</a
+        >
+        <a href="elia.roempler@gmail.com" target="_blank">E-mail</a>
+      </div>
+
+      <div class="asterisk-image">
+        <img src="public/img/IMG_6999.PNG" alt="asterisk" />
+      </div>
+    </div>
+
+    <div id="canvas-container"></div>
+    <button id="toggle-rotation-btn">Pause Rotation</button>
+    <p>
+      //scroll to zoom in and out <br />
+      //press space to stop and resume the rotation
+    </p>
+
+    <!-- Intro overlay with video -->
+    <div id="start-overlay" aria-hidden="false">
+      <video
+        id="introVideo"
+        autoplay
+        muted
+        playsinline
+        webkit-playsinline
+        x5-playsinline
+        preload="auto"
+      >
+        <source src="public/vid/platz.mp4" type="video/mp4" />
+      </video>
+      <!-- Small mute/unmute toggle in top-right -->
+      <button
+        id="introMuteToggle"
+        aria-label="Toggle audio"
+        title="Toggle audio"
+      >
+        🔇
+      </button>
+      <!-- Fallback play button if autoplay is blocked -->
+      <button id="introPlayBtn" aria-label="Play intro" hidden>Play</button>
+    </div>
+
+    <!-- GALLERY OVERLAY -->
+    <section id="galleryOverlay" aria-hidden="true">
+      <div id="galleryScroll" class="galleryScroll" tabindex="-1">
+        <div class="galleryGrid">
+          <!-- Header row -->
+          <header class="galleryRow galleryHeaderRow">
+            <div class="galleryTitle">PROJECTS GALLERY</div>
+            <button id="closeGalleryBtn" class="galleryClose" type="button">
+              Close
+            </button>
+          </header>
+
+          <div id="galleryList" class="organicGrid">
+            <!-- Example cards -->
+            <article
+              class="projectCard"
+              data-page="1"
+              style="--card-ar: 16/9"
+              data-tier="main"
+            >
+              <div class="cardPreview" style="--card-ar: 16/9">
+                <span class="projectName">übertön</span>
+                <video
+                  class="previewVideo"
+                  src="public/vid/%C3%BCbert%C3%B6n%20main%20(1920x1080).mp4"
+                  muted
+                  playsinline
+                  preload="none"
+                ></video>
+              </div>
+
+              <div class="cardDetails" style="--video-ar: 16/9">
+                <div class="videoWrapper">
+                  <video
+                    class="detailVideo"
+                    controls
+                    playsinline
+                    preload="metadata"
+                  >
+                    <source
+                      src="public/vid/%C3%BCbert%C3%B6n%20main%20(1920x1080).mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+
+                <div class="projectDescription">
+                  <h3>Description</h3>
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Duis posuere condimentum tellus eget tristique.
+                  </p>
+                </div>
+                <div class="projectProcess">
+                  <h3>Process</h3>
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                    Repellendus deleniti, autem explicabo quisquam numquam
+                    accusamus.
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="projectCard"
+              data-page="2"
+              style="--card-ar: 16/9"
+              data-tier="main"
+            >
+              <div class="cardPreview" style="--card-ar: 16/9">
+                <span class="projectName">wdtw</span>
+                <video
+                  class="previewVideo"
+                  src="public/vid/wdtw%20v1%20%281920x1080%29.mp4"
+                  muted
+                  playsinline
+                  preload="none"
+                ></video>
+              </div>
+
+              <div class="cardDetails" style="--video-ar: 16/9">
+                <div class="videoWrapper">
+                  <video
+                    class="detailVideo"
+                    controls
+                    playsinline
+                    preload="metadata"
+                  >
+                    <source
+                      src="public/vid/wdtw%20v1%20%281920x1080%29.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+
+                <div class="projectDescription">
+                  <h3>Description</h3>
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Duis posuere condimentum tellus eget tristique.
+                  </p>
+                </div>
+                <div class="projectProcess">
+                  <h3>Process</h3>
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                    Repellendus deleniti, autem explicabo quisquam numquam
+                    accusamus.
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="projectCard"
+              data-page="3"
+              style="--card-ar: 16/9"
+              data-tier="main"
+            >
+              <div class="cardPreview" style="--card-ar: 16/9">
+                <span class="projectName">giftedness</span>
+                <video
+                  class="previewVideo"
+                  src="public/vid/giftedness%20%281920x1080%29.mp4"
+                  muted
+                  playsinline
+                  preload="none"
+                ></video>
+              </div>
+
+              <div class="cardDetails" style="--video-ar: 16/9">
+                <div class="videoWrapper">
+                  <video
+                    class="detailVideo"
+                    controls
+                    playsinline
+                    preload="metadata"
+                  >
+                    <source
+                      src="public/vid/giftedness%20%281920x1080%29.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+
+                <div class="projectDescription">
+                  <h3>Description</h3>
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Duis posuere condimentum tellus eget tristique.
+                  </p>
+                </div>
+                <div class="projectProcess">
+                  <h3>Process</h3>
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                    Repellendus deleniti, autem explicabo quisquam numquam
+                    accusamus.
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="projectCard"
+              data-page="4"
+              style="--card-ar: 16/9"
+              data-tier="main"
+            >
+              <div class="cardPreview" style="--card-ar: 16/9">
+                <span class="projectName">Nacht in Contrast</span>
+                <video
+                  class="previewVideo"
+                  src="public/vid/nachtInContrast%20%281920x1080%29.mp4"
+                  muted
+                  playsinline
+                  preload="none"
+                ></video>
+              </div>
+
+              <div class="cardDetails" style="--video-ar: 16/9">
+                <div class="videoWrapper">
+                  <video
+                    class="detailVideo"
+                    controls
+                    playsinline
+                    preload="metadata"
+                  >
+                    <source
+                      src="public/vid/nachtInContrast%20%281920x1080%29.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+
+                <div class="projectDescription">
+                  <h3>Description</h3>
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Duis posuere condimentum tellus eget tristique.
+                  </p>
+                </div>
+                <div class="projectProcess">
+                  <h3>Process</h3>
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                    Repellendus deleniti, autem explicabo quisquam numquam
+                    accusamus.
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article class="projectCard" data-page="5" style="--card-ar: 2/3">
+              <div class="cardPreview" style="--card-ar: 2/3">
+                <span class="projectName">3d audio spectrum</span>
+                <video
+                  class="previewVideo"
+                  src="public/vid/extra%201%20%281240x1536%29.mp4"
+                  muted
+                  playsinline
+                  preload="none"
+                ></video>
+              </div>
+
+              <div class="cardDetails" style="--video-ar: 2/3">
+                <div class="videoWrapper">
+                  <video
+                    class="detailVideo"
+                    controls
+                    playsinline
+                    preload="metadata"
+                  >
+                    <source
+                      src="public/vid/extra%201%20%281240x1536%29.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+              </div>
+            </article>
+
+            <article class="projectCard" data-page="6" style="--card-ar: 1/1">
+              <div class="cardPreview" style="--card-ar: 1/1">
+                <span class="projectName">cursor feedback</span>
+                <video
+                  class="previewVideo"
+                  src="public/vid/extra%202%20%281080x1080%29.mp4"
+                  muted
+                  playsinline
+                  preload="none"
+                ></video>
+              </div>
+
+              <div class="cardDetails" style="--video-ar: 1/1">
+                <div class="videoWrapper">
+                  <video
+                    class="detailVideo"
+                    controls
+                    playsinline
+                    preload="metadata"
+                  >
+                    <source
+                      src="public/vid/extra%202%20%281080x1080%29.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="projectCard"
+              data-page="7"
+              style="--card-ar: 1080/576"
+            >
+              <div class="cardPreview" style="--card-ar: 1080/576">
+                <span class="projectName">blob tracker</span>
+                <video
+                  class="previewVideo"
+                  src="public/vid/extra%203%20%281080x576%29.mp4"
+                  muted
+                  playsinline
+                  preload="none"
+                ></video>
+              </div>
+
+              <div class="cardDetails" style="--video-ar: 1080/576">
+                <div class="videoWrapper">
+                  <video
+                    class="detailVideo"
+                    controls
+                    playsinline
+                    preload="metadata"
+                  >
+                    <source
+                      src="public/vid/extra%203%20%281080x576%29.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+              </div>
+            </article>
+
+            <article class="projectCard" data-page="8" style="--card-ar: 1/1">
+              <div class="cardPreview" style="--card-ar: 1/1">
+                <span class="projectName">ASCII</span>
+                <video
+                  class="previewVideo"
+                  src="public/vid/extra%204%20%281080x1080%29.mp4"
+                  muted
+                  playsinline
+                  preload="none"
+                ></video>
+              </div>
+
+              <div class="cardDetails" style="--video-ar: 1/1">
+                <div class="videoWrapper">
+                  <video
+                    class="detailVideo"
+                    controls
+                    playsinline
+                    preload="metadata"
+                  >
+                    <source
+                      src="public/vid/extra%204%20%281080x1080%29.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+              </div>
+            </article>
+
+            <article class="projectCard" data-page="9" style="--card-ar: 16/9">
+              <div class="cardPreview" style="--card-ar: 16/9">
+                <span class="projectName">glitch switch</span>
+                <video
+                  class="previewVideo"
+                  src="public/vid/extra%205%20%281280x720%29.mp4"
+                  muted
+                  playsinline
+                  preload="none"
+                ></video>
+              </div>
+
+              <div class="cardDetails" style="--video-ar: 16/9">
+                <div class="videoWrapper">
+                  <video
+                    class="detailVideo"
+                    controls
+                    playsinline
+                    preload="metadata"
+                  >
+                    <source
+                      src="public/vid/extra%205%20%281280x720%29.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+              </div>
+            </article>
+
+            <article class="projectCard" data-page="10" style="--card-ar: 1/1">
+              <div class="cardPreview" style="--card-ar: 1/1">
+                <span class="projectName">asteriks</span>
+                <video
+                  class="previewVideo"
+                  src="public/vid/extra%207%20%281080x1080%29.mp4"
+                  muted
+                  playsinline
+                  preload="none"
+                ></video>
+              </div>
+
+              <div class="cardDetails" style="--video-ar: 1/1">
+                <div class="videoWrapper">
+                  <video
+                    class="detailVideo"
+                    controls
+                    playsinline
+                    preload="metadata"
+                  >
+                    <source
+                      src="public/vid/extra%207%20%281080x1080%29.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+              </div>
+            </article>
+
+            <article class="projectCard" data-page="11" style="--card-ar: 16/9">
+              <div class="cardPreview" style="--card-ar: 16/9">
+                <span class="projectName">circuit bend</span>
+                <video
+                  class="previewVideo"
+                  src="public/vid/extra%206%20%281280x720%29.mp4"
+                  muted
+                  playsinline
+                  preload="none"
+                ></video>
+              </div>
+
+              <div class="cardDetails" style="--video-ar: 16/9">
+                <div class="videoWrapper">
+                  <video
+                    class="detailVideo"
+                    controls
+                    playsinline
+                    preload="metadata"
+                  >
+                    <source
+                      src="public/vid/extra%206%20%281280x720%29.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+              </div>
+            </article>
+
+            <article class="projectCard" data-page="12" style="--card-ar: 1/1">
+              <div class="cardPreview" style="--card-ar: 1/1">
+                <span class="projectName">particle cloud 1</span>
+                <video
+                  class="previewVideo"
+                  src="public/vid/extra%208%20%281080x1080%29.mp4"
+                  muted
+                  playsinline
+                  preload="none"
+                ></video>
+              </div>
+
+              <div class="cardDetails" style="--video-ar: 1/1">
+                <div class="videoWrapper">
+                  <video
+                    class="detailVideo"
+                    controls
+                    playsinline
+                    preload="metadata"
+                  >
+                    <source
+                      src="public/vid/extra%208%20%281080x1080%29.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="projectCard"
+              data-page="13"
+              style="--card-ar: 640/720"
+            >
+              <div class="cardPreview" style="--card-ar: 640/720">
+                <span class="projectName">hand tracking</span>
+                <video
+                  class="previewVideo"
+                  src="public/vid/extra%209%20%28640x720%29.mp4"
+                  muted
+                  playsinline
+                  preload="none"
+                ></video>
+              </div>
+
+              <div class="cardDetails" style="--video-ar: 640/720">
+                <div class="videoWrapper">
+                  <video
+                    class="detailVideo"
+                    controls
+                    playsinline
+                    preload="metadata"
+                  >
+                    <source
+                      src="public/vid/extra%209%20%28640x720%29.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+              </div>
+            </article>
+
+            <article class="projectCard" data-page="14" style="--card-ar: 1/1">
+              <div class="cardPreview" style="--card-ar: 1/1">
+                <span class="projectName">ASCII 2</span>
+                <video
+                  class="previewVideo"
+                  src="public/vid/extra%2010%20%281080x1080%29.mp4"
+                  muted
+                  playsinline
+                  preload="none"
+                ></video>
+              </div>
+
+              <div class="cardDetails" style="--video-ar: 1/1">
+                <div class="videoWrapper">
+                  <video
+                    class="detailVideo"
+                    controls
+                    playsinline
+                    preload="metadata"
+                  >
+                    <source
+                      src="public/vid/extra%2010%20%281080x1080%29.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+              </div>
+            </article>
+
+            <article class="projectCard" data-page="15" style="--card-ar: 1/1">
+              <div class="cardPreview" style="--card-ar: 1/1">
+                <span class="projectName">tanzen</span>
+                <video
+                  class="previewVideo"
+                  src="public/vid/extra11%20%281080x1080%29.mp4"
+                  muted
+                  playsinline
+                  preload="none"
+                ></video>
+              </div>
+
+              <div class="cardDetails" style="--video-ar: 1/1">
+                <div class="videoWrapper">
+                  <video
+                    class="detailVideo"
+                    controls
+                    playsinline
+                    preload="metadata"
+                  >
+                    <source
+                      src="public/vid/extra11%20%281080x1080%29.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery CTA bar -->
+    <div
+      id="galleryCTA"
+      role="button"
+      aria-label="Open full gallery"
+      tabindex="0"
+    >
+      Click to see the full gallery
+    </div>
+
+    <!-- Your UI/gallery/masonry JS -->
+    <script src="script.js"></script>
+
+    <!-- 3D app -->
+    <script type="module">
+      import * as THREE from "https://esm.sh/three@0.160.0";
+      import { OrbitControls } from "https://esm.sh/three@0.160.0/examples/jsm/controls/OrbitControls.js";
+      import { EffectComposer } from "https://esm.sh/three@0.160.0/examples/jsm/postprocessing/EffectComposer.js";
+      import { RenderPass } from "https://esm.sh/three@0.160.0/examples/jsm/postprocessing/RenderPass.js";
+      import { OutlinePass } from "https://esm.sh/three@0.160.0/examples/jsm/postprocessing/OutlinePass.js";
+      import { OutputPass } from "https://esm.sh/three@0.160.0/examples/jsm/postprocessing/OutputPass.js";
+      // Easing
+      const easeInOutCubic = (t) =>
+        t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+      // --- Scene Setup ---
+      class SceneManager {
+        constructor(container) {
+          this.container = container;
+          this.scene = new THREE.Scene();
+          this.scene.background = null;
+
+          this.setupRenderer();
+          this.setupCamera();
+          this.setupLighting();
+          this.setupControls();
+          this.setupPostFX();
+
+          this.animationCallbacks = [];
+
+          this.raycaster = new THREE.Raycaster();
+          this.mouse = new THREE.Vector2();
+
+          this.isDragging = false;
+          this.mouseDownPos = { x: 0, y: 0 };
+          this.mouseUpPos = { x: 0, y: 0 };
+        }
+        setupPostFX() {
+          this.composer = new EffectComposer(this.renderer);
+          this.renderPass = new RenderPass(this.scene, this.camera);
+          this.composer.addPass(this.renderPass);
+
+          this.outlinePass = new OutlinePass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            this.scene,
+            this.camera
+          );
+          this.outlinePass.edgeStrength = 3.0;
+          this.outlinePass.edgeThickness = 1.5;
+          this.outlinePass.pulsePeriod = 0.0;
+          this.outlinePass.visibleEdgeColor.set(0xffffff); // white edges
+          this.outlinePass.hiddenEdgeColor.set(0x000000); // black hidden edges
+          this.composer.addPass(this.outlinePass);
+          this.outputPass = new OutputPass();
+          this.composer.addPass(this.outputPass);
+        }
+        enableOutlineFor(objs) {
+          if (!this.outlinePass) return;
+          this.outlinePass.selectedObjects = Array.isArray(objs)
+            ? objs
+            : [objs];
+        }
+
+        setupRenderer() {
+          this.renderer = new THREE.WebGLRenderer({
+            antialias: true,
+            alpha: true,
+          });
+          // Explicit color management to avoid unexpected shifts
+          this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+          this.renderer.toneMapping = THREE.NoToneMapping;
+          this.renderer.setSize(window.innerWidth, window.innerHeight);
+          this.renderer.setPixelRatio(window.devicePixelRatio);
+          this.container.appendChild(this.renderer.domElement);
+
+          window.addEventListener("resize", () => this.onWindowResize());
+
+          window.addEventListener("mousemove", (event) =>
+            this.onMouseMove(event)
+          );
+          this.renderer.domElement.addEventListener("mousedown", (event) =>
+            this.onMouseDown(event)
+          );
+          this.renderer.domElement.addEventListener("mouseup", (event) =>
+            this.onMouseUp(event)
+          );
+
+          this.renderer.setClearAlpha(0);
+        }
+
+        setupCamera() {
+          this.camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+          );
+          this.initialPosition = new THREE.Vector3(0, 0, 0.5);
+          this.initialLookAt = new THREE.Vector3(0, 0, 0);
+          this.camera.position.copy(this.initialPosition);
+          this.camera.lookAt(this.initialLookAt);
+        }
+
+        setupLighting() {
+          const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+          this.scene.add(ambientLight);
+
+          const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+          directionalLight.position.set(1, 1, 1);
+          this.scene.add(directionalLight);
+        }
+
+        setupControls() {
+          this.controls = new OrbitControls(
+            this.camera,
+            this.renderer.domElement
+          );
+          this.controls.enablePan = false;
+          this.controls.enableZoom = true;
+          this.controls.minDistance = 0.5;
+          this.controls.maxDistance = 8.0;
+          this.controls.enableDamping = true;
+          this.controls.dampingFactor = 0.18;
+          this.controls.rotateSpeed = 0.9;
+          this.controls.autoRotate = false;
+          this.controls.enableKeys = true;
+          this.controls.screenSpacePanning = false;
+          this.controls.minPolarAngle = 0;
+          this.controls.maxPolarAngle = Math.PI;
+        }
+
+        onMouseMove(event) {
+          this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+          this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        }
+
+        onMouseDown(event) {
+          this.isDragging = false;
+          this.mouseDownPos = { x: event.clientX, y: event.clientY };
+        }
+
+        onMouseUp(event) {
+          this.mouseUpPos = { x: event.clientX, y: event.clientY };
+          const dx = this.mouseUpPos.x - this.mouseDownPos.x;
+          const dy = this.mouseUpPos.y - this.mouseDownPos.y;
+          const dragDistance = Math.sqrt(dx * dx + dy * dy);
+          if (dragDistance < 5) this.handleClick(event);
+        }
+
+        handleClick() {
+          this.raycaster.setFromCamera(this.mouse, this.camera);
+          const intersects = this.raycaster.intersectObjects(
+            this.scene.children,
+            true
+          );
+          if (intersects.length > 0) {
+            const intersectedObject = intersects[0].object;
+            if (
+              intersectedObject.userData &&
+              intersectedObject.userData.pageNumber
+            ) {
+              openSubpage(intersectedObject.userData.pageNumber);
+            }
+          }
+        }
+
+        addObject(object) {
+          this.scene.add(object);
+        }
+        addAnimationCallback(callback) {
+          this.animationCallbacks.push(callback);
+        }
+
+        animate() {
+          requestAnimationFrame(() => this.animate());
+
+          const isGalleryOpen = !!(
+            window.App && window.App.galleryProgress >= 0.98
+          );
+          const introOverlayVisible = !!(
+            window.App && window.App.overlayActive
+          );
+
+          // You can skip even controls update if desired while gallery open:
+          this.controls.update();
+
+          this.animationCallbacks.forEach((cb) => cb());
+
+          // Render: skip entirely while gallery OR intro overlay is visible to save GPU/CPU
+          if (!isGalleryOpen && !introOverlayVisible) {
+            this.composer.render();
+          } else {
+            // no-op
+          }
+        }
+
+        onWindowResize() {
+          this.camera.aspect = window.innerWidth / window.innerHeight;
+          this.camera.updateProjectionMatrix();
+          this.renderer.setSize(window.innerWidth, window.innerHeight);
+          this.composer.setSize(window.innerWidth, window.innerHeight);
+        }
+      }
+
+      class AsteriskCreator {
+        static createAsterisk(size = 1.5, color = 0x000000) {
+          const group = new THREE.Group();
+
+          const armLength = size * 1.6;
+          const armWidth = size * 0.35;
+          const armDepth = size * 0.45;
+
+          const fillMat = new THREE.MeshLambertMaterial({
+            color, // keep passed-in color
+            emissive: 0x000000,
+            emissiveIntensity: 0.0,
+            toneMapped: false,
+          });
+
+          for (let i = 0; i < 6; i++) {
+            const geom = new THREE.BoxGeometry(armLength, armWidth, armDepth);
+            const arm = new THREE.Mesh(geom, fillMat);
+            arm.rotation.z = (Math.PI / 3) * i;
+            group.add(arm);
+          }
+
+          group.userData.rotationSpeed = 0.01;
+          return group;
+        }
+      }
+
+      // --- Orbiting Rectangles showing gallery preview videos ---
+      class OrbitingRectanglesManager {
+        constructor(radius = 2.2, baseSurfaceArea = 1.44) {
+          this.group = new THREE.Group();
+          this.rects = [];
+          this.videos = [];
+
+          // Collect gallery cards and their preview video src + page numbers
+          const cards = Array.from(
+            document.querySelectorAll("#galleryList .projectCard")
+          );
+          const videoEntries = cards
+            .map((card, idx) => {
+              const pv = card.querySelector(".previewVideo");
+              const src =
+                pv?.getAttribute("src") ||
+                card
+                  .querySelector(".cardDetails source")
+                  ?.getAttribute("src") ||
+                "";
+              const page = Number(card.dataset.page || idx + 1);
+              const cp = card.querySelector(".cardPreview");
+              let ar = "16/9";
+              if (cp) {
+                const v = getComputedStyle(cp)
+                  .getPropertyValue("--card-ar")
+                  .trim();
+                if (v) ar = v;
+              }
+              const parts = ar.split(/[/:]/).map(Number);
+              const aspect =
+                parts[0] && parts[1] ? parts[0] / parts[1] : 16 / 9;
+              return { src, page, aspect };
+            })
+            .filter((e) => !!e.src);
+
+          if (!videoEntries.length) return;
+
+          let formats = [
+            ...Array(2).fill(1.0),
+            ...Array(3).fill(16 / 9),
+            ...Array(3).fill(3 / 2),
+          ];
+          formats = formats
+            .map((value) => ({ value, sort: Math.random() }))
+            .sort((a, b) => a.sort - b.sort)
+            .map(({ value }) => value);
+
+          const totalRects = formats.length;
+          const minRadius = radius * 1.1;
+          const maxRadius = radius * 1.22;
+
+          for (let i = 0; i < totalRects; i++) {
+            const entry = videoEntries[i % videoEntries.length];
+            const pageNumber = entry.page;
+
+            const rectAspect = (formats[i] + entry.aspect) / 2;
+
+            const width = Math.sqrt(baseSurfaceArea * rectAspect);
+            const height = Math.sqrt(baseSurfaceArea / rectAspect);
+
+            const t = i / totalRects;
+            const inclination = Math.acos(1 - 2 * t);
+            const azimuth = Math.PI * (1 + Math.sqrt(5)) * i;
+            const jitter = (Math.random() - 0.5) * 0.22;
+            const r = minRadius + (maxRadius - minRadius) * t + jitter;
+            const px = r * Math.sin(inclination) * Math.cos(azimuth);
+            const py = r * Math.cos(inclination);
+            const pz = r * Math.sin(inclination) * Math.sin(azimuth);
+
+            // Create an off-DOM HTMLVideoElement for the texture
+            const vid = document.createElement("video");
+            // Do NOT set src yet — defer it to resume() to avoid network contention
+            vid.dataset.src = entry.src;
+            vid.muted = true;
+            vid.loop = true;
+            vid.playsInline = true;
+            vid.preload = "none"; // nothing fetched until we decide to play
+            this.videos.push(vid);
+
+            const vtex = new THREE.VideoTexture(vid);
+            vtex.colorSpace = THREE.SRGBColorSpace;
+            vtex.minFilter = THREE.LinearFilter;
+            vtex.magFilter = THREE.LinearFilter;
+
+            const geometry = new THREE.PlaneGeometry(width, height);
+            const material = new THREE.MeshBasicMaterial({
+              map: vtex,
+              side: THREE.FrontSide, // show front face only
+              toneMapped: false,
+            });
+
+            const rect = new THREE.Mesh(geometry, material);
+            rect.position.set(px, py, pz);
+            rect.lookAt(0, 0, 0);
+            rect.userData.pageNumber = pageNumber;
+
+            // Corner squares — parent to the rect so they follow its rotation/position
+            const squareSize = 0.13;
+            const squareGeo = new THREE.PlaneGeometry(squareSize, squareSize);
+            const squareMat = new THREE.MeshBasicMaterial({
+              color: 0xff2222,
+              side: THREE.FrontSide, // front face only
+            });
+
+            const corners = [
+              [-width / 2, height / 2],
+              [width / 2, height / 2],
+              [-width / 2, -height / 2],
+              [width / 2, -height / 2],
+            ];
+
+            for (const [cx, cy] of corners) {
+              const sq = new THREE.Mesh(squareGeo, squareMat);
+              rect.add(sq); // attach to the plane as a child
+              sq.position.set(cx, cy, 0.02); // slight lift forward along plane normal
+            }
+
+            this.group.add(rect);
+            this.rects.push(rect);
+          }
+
+          this.group.rotation.y = Math.PI / 8;
+        }
+
+        animate(opposite = false) {
+          const dir = opposite ? -1 : 1;
+          this.group.rotation.y += dir * 0.01;
+          this.group.rotation.x += dir * 0.005;
+        }
+
+        pause() {
+          this.videos.forEach((v) => {
+            try {
+              v.pause();
+            } catch (_) {}
+
+            // While the intro overlay is visible, fully release the stream to free bandwidth
+            if (window.App?.overlayActive) {
+              v.removeAttribute("src");
+              try {
+                v.load();
+              } catch (_) {}
+            }
+          });
+        }
+        resume() {
+          this.videos.forEach((v) => {
+            try {
+              if (!v.src && v.dataset.src) {
+                v.src = v.dataset.src; // attach source lazily
+                v.preload = "metadata";
+                v.load();
+              }
+              v.muted = true;
+              const p = v.play();
+              if (p && typeof p.then === "function") p.catch(() => {});
+            } catch (_) {}
+          });
+        }
+      }
+
+      // --- Main App ---
+      class App {
+        constructor() {
+          this.container = document.getElementById("canvas-container");
+          this.sceneManager = new SceneManager(this.container);
+          this.toggleBtn = document.getElementById("toggle-rotation-btn");
+
+          // Scroll state
+          this.rotationEnabled = true;
+          this.scrollAccumulator = 0;
+          this.maxOverlayScroll = 100; // welcome fade-out distance
+          this.maxZoomScroll = 400; // camera zoom range
+          this.targetScroll = 0;
+          this.scrollVelocity = 0;
+          this.lastFrameTime = performance.now();
+          this.overlayShowThreshold = 0.94; // show when below 94%
+          this.overlayHideThreshold = 0.98; // hide when above 98%
+
+          // Objects
+          this.asterisk = AsteriskCreator.createAsterisk(1.5, 0x000000);
+          this.sceneManager.addObject(this.asterisk);
+          this.sceneManager.enableOutlineFor(this.asterisk);
+          this.orbitingRects = new OrbitingRectanglesManager();
+          this.sceneManager.addObject(this.orbitingRects.group);
+
+          // Overlay/video refs
+          this.overlay = document.getElementById("start-overlay");
+          this.overlayActive = true;
+
+          this.introVideo = document.getElementById("introVideo");
+          this.introPlayBtn = document.getElementById("introPlayBtn");
+          this.introMuteBtn = document.getElementById("introMuteToggle");
+
+          // Video state
+          this.introPlaying = !!this.introVideo;
+          this.lastVideoTime = 0;
+          this.lastOverlayHideAt = null;
+          this.userApprovedAudio = false;
+
+          // Init video
+          if (this.introVideo) {
+            const v = this.introVideo;
+            v.loop = false;
+            v.setAttribute("playsinline", "");
+            v.setAttribute("webkit-playsinline", "");
+            v.setAttribute("x5-playsinline", "");
+            v.disableRemotePlayback = true; // avoid casting UI oddities
+            v.muted = true;
+            v.playsInline = true;
+
+            const tryAutoplay = () => {
+              v.play().catch(() => {
+                if (this.introPlayBtn) this.introPlayBtn.hidden = false;
+              });
+            };
+            if (v.readyState >= 2) {
+              tryAutoplay();
+            } else {
+              v.addEventListener("canplay", tryAutoplay, { once: true });
+            }
+
+            v.addEventListener("timeupdate", () => {
+              if (!this.overlayActive) return;
+              this.lastVideoTime = v.currentTime || 0;
+              const d = v.duration;
+              if (isFinite(d) && d > 0) {
+                const ratio = this.lastVideoTime / d;
+                if (ratio > 0.985) {
+                  this.onIntroVideoEnd(); // idempotent due to guard at top
+                }
+              }
+            });
+
+            v.addEventListener("ended", () => this.onIntroVideoEnd());
+            this.installIntroVideoWatchdog();
+          }
+
+          if (this.introPlayBtn) {
+            this.introPlayBtn.addEventListener("click", () => {
+              this.introPlayBtn.hidden = true;
+              const v = this.introVideo;
+              if (!v) return;
+              v.muted = false;
+              this.userApprovedAudio = true;
+              v.play().catch(() => {});
+              this.updateMuteButtonIcon();
+            });
+          }
+
+          if (this.introMuteBtn) {
+            this.introMuteBtn.addEventListener("click", () => {
+              const v = this.introVideo;
+              if (!v) return;
+              v.muted = !v.muted;
+              if (!v.muted) this.userApprovedAudio = true;
+              v.play().catch(() => {});
+              this.updateMuteButtonIcon();
+            });
+          }
+
+          // Gallery refs
+          this.galleryEl = document.getElementById("galleryOverlay");
+          this.galleryScroller = document.getElementById("galleryScroll");
+          this.closeGalleryBtn = document.getElementById("closeGalleryBtn");
+          if (this.closeGalleryBtn) {
+            this.closeGalleryBtn.addEventListener("click", () =>
+              this.closeGallery()
+            );
+          }
+          // Gallery CTA bar (click to open)
+          this.galleryCTA = document.getElementById("galleryCTA");
+          if (this.galleryCTA) {
+            this.galleryCTA.addEventListener("click", () => this.openGallery());
+            this.galleryCTA.addEventListener("keydown", (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                this.openGallery();
+              }
+            });
+          }
+          // UI and input
+          this.setupUI();
+          this.setupScroll();
+          this.addRotateListeners();
+
+          // Animations
+          this.sceneManager.addAnimationCallback(() => this.animateAsterisk());
+          this.sceneManager.addAnimationCallback(() => this.animateRects());
+          this.sceneManager.addAnimationCallback(() => this.smoothScrollStep());
+          this.sceneManager.addAnimationCallback(() =>
+            this.billboardVideosToCamera()
+          );
+
+          // Start loop
+          this.sceneManager.animate();
+
+          // Rotate zoom-out easing
+          this.isRotating = false;
+          this.preRotateZoom = null;
+          this.zoomOutFactor = 2.2;
+          this.zoomLerp = 0;
+          this.currentZoom = null;
+          this.targetZoom = null;
+
+          // Orientation
+          this.shouldOrientAsterisk = false;
+          this.controlsStartBufferMs = 180;
+          this.rotateStartTimer = null;
+          // this.addRotateListeners(); // already called earlier, remove this duplicate
+
+          // Gallery progressive state
+          this.galleryProgress = 0;
+          this.galleryProgressTarget = 0;
+          this.galleryPull = 0;
+          this.galleryDeadSpace = 800;
+          this.galleryLift = 1;
+
+          // Auto-scroll tween after video end
+          this.autoScrollTween = null;
+
+          // heavy state
+          this.heavyPaused = false;
+
+          // Delay playing preview videos until intro overlay is gone (prevents bandwidth contention)
+          if (this.orbitingRects) {
+            if (this.overlayActive) {
+              this.orbitingRects.pause();
+            } else {
+              this.orbitingRects.resume();
+            }
+          }
+
+          this.updateMuteButtonIcon();
+          // Double-tap on the intro overlay to skip (mobile)
+          this._lastTapTime = 0;
+          this._lastTapX = 0;
+          this._lastTapY = 0;
+
+          if (this.overlay) {
+            this.overlay.addEventListener(
+              "touchend",
+              (e) => {
+                // Ignore taps on built-in buttons
+                if (
+                  e.target &&
+                  e.target.closest &&
+                  e.target.closest("#introPlayBtn, #introMuteToggle")
+                )
+                  return;
+
+                const touch = (e.changedTouches && e.changedTouches[0]) || null;
+                const now = performance.now();
+
+                if (touch) {
+                  const x = touch.clientX,
+                    y = touch.clientY;
+                  const dt = now - this._lastTapTime;
+                  const dx = x - this._lastTapX;
+                  const dy = y - this._lastTapY;
+                  const dist2 = dx * dx + dy * dy;
+
+                  // Double-tap: within 300ms and small movement (< ~20px)
+                  if (dt < 300 && dist2 < 400) {
+                    e.preventDefault();
+                    // Act like video ended: hide overlay and jump/auto-zoom based on device
+                    this.onIntroVideoEnd();
+                    // Mark as locked if we are on mobile
+                    if (this.isMobilePortrait) this.mobileZoomLocked = true;
+                  }
+
+                  this._lastTapTime = now;
+                  this._lastTapX = x;
+                  this._lastTapY = y;
+                } else {
+                  // No coordinates, just time-based fallback
+                  const dt = now - this._lastTapTime;
+                  if (dt < 300) {
+                    e.preventDefault();
+                    this.onIntroVideoEnd();
+                    if (this.isMobilePortrait) this.mobileZoomLocked = true;
+                  }
+                  this._lastTapTime = now;
+                }
+              },
+              { passive: false }
+            );
+          }
+
+          // Mobile-portrait detection + controls
+          this.isMobilePortrait = this.computeMobilePortrait();
+          this.mobileZoomLocked = false; // lock 3D scroll/zoom after intro ends (mobile only)
+          window.addEventListener("resize", () => {
+            const wasMobile = this.isMobilePortrait;
+            this.isMobilePortrait = this.computeMobilePortrait();
+            if (this.isMobilePortrait !== wasMobile) {
+              this.applyMobileControls();
+              // If entering mobile portrait and intro already ended, force zoom-end
+              if (this.isMobilePortrait) {
+                // Instant jump to the most zoomed-out position and lock further 3D zoom/scroll
+                this.targetScroll = this.maxOverlayScroll + this.maxZoomScroll;
+                this.scrollAccumulator = this.targetScroll;
+                this.scrollVelocity = 0;
+                this.autoScrollTween = null;
+                this.mobileZoomLocked = true;
+                this.updateGalleryFrame(1);
+                this.updateCTAVisibility();
+              } else {
+                // Desktop/tablet: smooth auto-zoom-out remains
+                this.autoScrollToFraction(0.62, 3500);
+              }
+            }
+          });
+          window.addEventListener("orientationchange", () => {
+            this.isMobilePortrait = this.computeMobilePortrait();
+            this.applyMobileControls();
+          });
+
+          // Apply at startup
+          this.applyMobileControls();
+        }
+
+        pauseHeavy() {
+          if (this.heavyPaused) return;
+          if (this.orbitingRects) this.orbitingRects.pause();
+          if (this.introVideo) {
+            try {
+              this.introVideo.pause();
+            } catch (_) {}
+          }
+          this.heavyPaused = true;
+        }
+        resumeHeavy() {
+          if (!this.heavyPaused) return;
+          if (this.orbitingRects) this.orbitingRects.resume();
+          // Do not auto-resume intro video unless overlay is visible again
+          this.heavyPaused = false;
+        }
+
+        modalIsOpen() {
+          const m = document.getElementById("projectModal");
+          return !!(m && m.classList.contains("is-open"));
+        }
+
+        eventIsInsideModal(e) {
+          const t = e.target;
+          if (t && typeof t.closest === "function") {
+            if (t.closest("#projectModal")) return true;
+          }
+          const path = e.composedPath ? e.composedPath() : [];
+          return path.some(
+            (el) => el && el.nodeType === 1 && el.id === "projectModal"
+          );
+        }
+        updateMuteButtonIcon() {
+          if (!this.introMuteBtn || !this.introVideo) return;
+          this.introMuteBtn.textContent = this.introVideo.muted ? "🔇" : "🔊";
+        }
+
+        onOverlayShown() {
+          this.orbitingRects?.pause();
+          if (this.introPlayBtn) {
+            this.introPlayBtn.hidden = true;
+            this.introPlayBtn.style.display = "none";
+          }
+          if (!this.introVideo) return;
+
+          const now = performance.now();
+          const recentlyHidden =
+            this.lastOverlayHiddenAt && now - this.lastOverlayHiddenAt <= 10000;
+
+          const prevMuted = this.introVideo.muted;
+          this.introVideo.muted = true;
+
+          const resumeOrRestart = () => {
+            try {
+              if (
+                recentlyHidden &&
+                !this.introVideo.ended &&
+                this.introVideo.currentTime > 0
+              ) {
+                this.introVideo
+                  .play()
+                  ?.then(() => {
+                    this.introVideo.muted = prevMuted;
+                  })
+                  .catch(() => {});
+              } else {
+                this.introVideo.currentTime = 0;
+                this.introVideo
+                  .play()
+                  ?.then(() => {
+                    this.introVideo.muted = prevMuted;
+                  })
+                  .catch(() => {});
+              }
+            } catch (e) {}
+          };
+          this.updateCTAVisibility();
+          resumeOrRestart();
+        }
+
+        onOverlayHidden() {
+          this.orbitingRects?.resume();
+          this.lastOverlayHiddenAt = performance.now();
+          const v = this.introVideo;
+          if (!v) return;
+          this.lastVideoTime = v.currentTime || 0;
+          v.pause();
+          this.introPlaying = false;
+          this.updateCTAVisibility();
+        }
+
+        skipIntro(cause = "scroll") {
+          if (!this.overlay) return;
+          if (!this.overlayActive) return;
+
+          this.overlay.classList.add("hidden");
+          this.overlayActive = false;
+          this.onOverlayHidden();
+
+          if (cause !== "ended") {
+            const smallNudge = this.maxOverlayScroll * 0.25;
+            this.targetScroll = Math.min(
+              this.maxOverlayScroll + this.maxZoomScroll,
+              this.targetScroll + smallNudge
+            );
+          }
+        }
+
+        onIntroVideoEnd() {
+          // Prevent double-run
+          if (!this.overlay || !this.overlayActive) return;
+
+          const v = this.introVideo;
+          if (v) {
+            try {
+              v.loop = false;
+              v.pause(); // do not play() after this
+            } catch (_) {}
+          }
+
+          // Hide overlay and mark inactive
+          this.overlay.classList.add("hidden");
+          this.overlayActive = false;
+          this.onOverlayHidden();
+
+          // Prevent the overlay from reappearing on the next frame
+          const epsilon = 2; // a tiny nudge
+          const minPostEnd =
+            this.overlayShowThreshold * this.maxOverlayScroll + epsilon;
+          if (this.scrollAccumulator < minPostEnd) {
+            this.scrollAccumulator = minPostEnd;
+            this.targetScroll = Math.max(this.targetScroll, minPostEnd);
+            this.scrollVelocity = 0;
+          }
+
+          // Fast auto-zoom to FULL zoom-out
+          if (this.isMobilePortrait) {
+            // Mobile: quick zoom-out (~0.8s) then lock
+            this.autoScrollToFraction(1.0, 3000);
+            this.targetScroll = this.maxOverlayScroll + this.maxZoomScroll;
+            this.mobileZoomLocked = true;
+
+            // Finisher: force exact end state after the tween
+            setTimeout(() => {
+              this.scrollAccumulator =
+                this.maxOverlayScroll + this.maxZoomScroll;
+              this.targetScroll = this.scrollAccumulator;
+              this.scrollVelocity = 0;
+            }, 900);
+          } else {
+            // Desktop/tablet: quick but slightly slower
+            this.autoScrollToFraction(0.6, 3000);
+            this.targetScroll = this.maxOverlayScroll + this.maxZoomScroll;
+          }
+        }
+
+        autoScrollToFraction(fraction, durationMs = 3000) {
+          const clamped = Math.max(0, Math.min(1, fraction));
+          const target = this.maxOverlayScroll + this.maxZoomScroll * clamped;
+
+          this.autoScrollTween = {
+            start: this.targetScroll,
+            end: target,
+            startTime: performance.now(),
+            duration: durationMs,
+          };
+        }
+
+        // UI: toggle rotation button
+        setupUI() {
+          this.toggleBtn.addEventListener("click", () => {
+            this.rotationEnabled = !this.rotationEnabled;
+            this.toggleBtn.textContent = this.rotationEnabled
+              ? "Pause Rotation"
+              : "Resume Rotation";
+          });
+
+          window.addEventListener("keydown", (e) => {
+            if (e.code === "Space" || e.key === " ") {
+              e.preventDefault();
+              this.rotationEnabled = !this.rotationEnabled;
+              this.toggleBtn.textContent = this.rotationEnabled
+                ? "Pause Rotation"
+                : "Resume Rotation";
+            }
+          });
+        }
+
+        atZoomEnd() {
+          return (
+            this.scrollAccumulator >=
+            this.maxOverlayScroll + this.maxZoomScroll - 0.5
+          );
+        }
+
+        setupScroll() {
+          let lastTouchY = null;
+
+          const nudge3D = (delta) => {
+            this.targetScroll += delta;
+            this.targetScroll = Math.max(
+              0,
+              Math.min(
+                this.maxOverlayScroll + this.maxZoomScroll,
+                this.targetScroll
+              )
+            );
+          };
+
+          // Wheel
+          window.addEventListener(
+            "wheel",
+            (e) => {
+              // Check modal FIRST, before any other logic
+              const modal = document.getElementById("projectModal");
+              if (modal && modal.classList.contains("is-open")) {
+                return;
+              }
+
+              const dy = e.deltaY;
+              // On mobile portrait, after intro and with gallery closed, lock 3D scroll/zoom entirely
+              if (
+                this.isMobilePortrait &&
+                !this.overlayActive &&
+                this.galleryProgress === 0 &&
+                this.mobileZoomLocked
+              ) {
+                e.preventDefault();
+                this.updateCTAVisibility?.();
+                return;
+              }
+
+              if (this.overlayActive && this.introPlaying) {
+                // Do not skip intro; just eat the event on mobile-portrait
+                if (this.isMobilePortrait) {
+                  e.preventDefault();
+                  return;
+                }
+                // On non-mobile, keep existing behavior (optional)
+                e.preventDefault();
+                this.skipIntro("touch");
+                return;
+              }
+
+              // If fully open, scroll inside gallery
+              if (this.galleryProgress >= 0.999) {
+                e.preventDefault();
+                const prev = this.galleryScroller.scrollTop;
+                this.galleryScroller.scrollTop += dy;
+                if (
+                  dy < 0 &&
+                  this.galleryScroller.scrollTop <= 0 &&
+                  prev <= 0
+                ) {
+                  this.galleryPull =
+                    this.galleryDeadSpace + this.galleryLift - 1;
+                  this.galleryProgressTarget = Math.max(
+                    0,
+                    Math.min(
+                      1,
+                      (this.galleryPull - this.galleryDeadSpace) /
+                        this.galleryLift
+                    )
+                  );
+                }
+                return;
+              }
+
+              // At 3D zoom end: show CTA, do NOT open gallery automatically
+              if (this.atZoomEnd() && this.galleryProgress === 0) {
+                e.preventDefault();
+                // Allow scrolling upward to zoom back in
+                if (dy < 0) {
+                  nudge3D(-8);
+                }
+                // Keep CTA visibility updated
+                this.updateCTAVisibility?.();
+                return;
+              }
+
+              // Normal 3D scroll
+              e.preventDefault();
+              nudge3D(dy > 0 ? 8 : -8);
+            },
+            { passive: false }
+          );
+
+          // Keyboard
+          window.addEventListener("keydown", (e) => {
+            if (this.overlayActive && this.introPlaying) {
+              // Do not skip intro; just eat the event on mobile-portrait
+              if (this.isMobilePortrait) {
+                e.preventDefault();
+                return;
+              }
+              // On non-mobile, keep existing behavior (optional)
+              e.preventDefault();
+              this.skipIntro("touch");
+              return;
+            }
+
+            if (this.galleryProgress >= 0.999) {
+              if (e.key === "PageDown" || e.key === "ArrowDown") {
+                e.preventDefault();
+                this.galleryScroller.scrollTop += 120;
+                return;
+              }
+              if (e.key === "PageUp" || e.key === "ArrowUp") {
+                e.preventDefault();
+                const prev = this.galleryScroller.scrollTop;
+                this.galleryScroller.scrollTop -= 120;
+                if (this.galleryScroller.scrollTop <= 0 && prev <= 0) {
+                  this.galleryPull =
+                    this.galleryDeadSpace + this.galleryLift - 1;
+                  this.galleryProgressTarget =
+                    (this.galleryPull - this.galleryDeadSpace) /
+                    this.galleryLift;
+                }
+                return;
+              }
+              if (e.key === "Escape") {
+                e.preventDefault();
+                this.closeGallery();
+                return;
+              }
+            }
+
+            // If gallery is mid/open, keep existing close/scroll-inside behavior
+            if (this.galleryProgress > 0) {
+              if (e.key === "Escape") {
+                e.preventDefault();
+                this.closeGallery();
+                return;
+              }
+              // Let other key paths handle scrolling inside the gallery (handled above)
+            } else if (this.atZoomEnd()) {
+              // At zoom end with gallery closed: show CTA, do NOT auto-open
+              if (e.key === "PageUp" || e.key === "ArrowUp") {
+                e.preventDefault();
+                // Nudge back into 3D zoom-in
+                this.targetScroll = Math.max(0, this.targetScroll - 8);
+                this.updateCTAVisibility?.();
+                return;
+              }
+              if (
+                e.key === "PageDown" ||
+                e.key === "ArrowDown" ||
+                e.key === " "
+              ) {
+                e.preventDefault();
+                // Keep CTA visible; no further action
+                this.updateCTAVisibility?.();
+                return;
+              }
+            }
+
+            if (e.key === "ArrowDown" || e.key === "PageDown") {
+              e.preventDefault();
+              nudge3D(8);
+            }
+            if (e.key === "ArrowUp" || e.key === "PageUp") {
+              e.preventDefault();
+              nudge3D(-8);
+            }
+          });
+
+          // Touch
+          window.addEventListener("touchstart", (e) => {
+            if (e.touches.length === 1) lastTouchY = e.touches[0].clientY;
+          });
+          window.addEventListener(
+            "touchmove",
+            (e) => {
+              if (e.touches.length !== 1 || lastTouchY === null) return;
+
+              const dy = lastTouchY - e.touches[0].clientY; // positive = swipe up
+              lastTouchY = e.touches[0].clientY;
+              // On mobile portrait, after intro and with gallery closed, lock 3D scroll/zoom entirely
+              if (
+                this.isMobilePortrait &&
+                !this.overlayActive &&
+                this.galleryProgress === 0 &&
+                this.mobileZoomLocked
+              ) {
+                this.updateCTAVisibility?.();
+                e.preventDefault();
+                return;
+              }
+
+              if (this.overlayActive && this.introPlaying) {
+                // Do not skip intro; just eat the event on mobile-portrait
+                if (this.isMobilePortrait) {
+                  e.preventDefault();
+                  return;
+                }
+                // On non-mobile, keep existing behavior (optional)
+                e.preventDefault();
+                this.skipIntro("touch");
+                return;
+              }
+
+              if (this.galleryProgress >= 0.999) {
+                this.galleryScroller.scrollTop += dy;
+                const atTop = this.galleryScroller.scrollTop <= 0;
+                if (dy < 0 && atTop) {
+                  this.galleryPull =
+                    this.galleryDeadSpace + this.galleryLift - 1;
+                  this.galleryProgressTarget =
+                    (this.galleryPull - this.galleryDeadSpace) /
+                    this.galleryLift;
+                }
+                e.preventDefault();
+                return;
+              }
+
+              // At zoom end with gallery closed: show CTA, do NOT auto-open on touch
+              if (this.atZoomEnd() && this.galleryProgress === 0) {
+                // dy > 0 means swipe up (scroll down). Keep CTA visible and eat the event.
+                // dy < 0 (swipe down) — allow zooming back in slightly
+                if (dy < 0) {
+                  this.targetScroll = Math.max(0, this.targetScroll - 8);
+                }
+                this.updateCTAVisibility?.();
+                e.preventDefault();
+                return;
+              }
+
+              e.preventDefault();
+              this.targetScroll += dy > 0 ? 8 : -8;
+              this.targetScroll = Math.max(
+                0,
+                Math.min(
+                  this.maxOverlayScroll + this.maxZoomScroll,
+                  this.targetScroll
+                )
+              );
+            },
+            { passive: false }
+          );
+        }
+
+        openGallery() {
+          this.galleryPull = this.galleryDeadSpace + this.galleryLift;
+          this.galleryProgressTarget = 1;
+          this.updateCTAVisibility();
+        }
+
+        closeGallery() {
+          this.galleryPull = 0;
+          this.galleryProgressTarget = 0;
+          this.updateCTAVisibility();
+        }
+
+        addRotateListeners() {
+          const controls = this.sceneManager.controls;
+
+          const startHandler = () => {
+            if (this.rotateStartTimer) clearTimeout(this.rotateStartTimer);
+            this.rotateStartTimer = setTimeout(() => {
+              // MOBILE: do NOT auto-zoom while rotating
+              if (this.isMobilePortrait) {
+                this.isRotating = false;
+                this.targetZoom = null;
+                this.currentZoom = null;
+                return;
+              }
+              if (!this.isRotating) {
+                this.isRotating = true;
+                const cam = this.sceneManager.camera;
+                this.preRotateZoom = cam.position.distanceTo(controls.target);
+                this.targetZoom = this.preRotateZoom * this.zoomOutFactor;
+                this.zoomLerp = 0;
+              }
+            }, this.controlsStartBufferMs);
+          };
+
+          const endHandler = () => {
+            if (this.rotateStartTimer) {
+              clearTimeout(this.rotateStartTimer);
+              this.rotateStartTimer = null;
+            }
+            // MOBILE: keep zoom unchanged when rotation ends
+            if (this.isMobilePortrait) {
+              this.isRotating = false;
+              this.targetZoom = null;
+              this.currentZoom = null;
+              return;
+            }
+            if (this.isRotating) {
+              this.isRotating = false;
+              this.targetZoom = this.preRotateZoom;
+              this.zoomLerp = 0;
+              this.shouldOrientAsterisk = true;
+            }
+          };
+
+          // If this gets re-run (after resize/orientation), cleanly rebind listeners
+          if (this._onControlsStart)
+            controls.removeEventListener("start", this._onControlsStart);
+          if (this._onControlsEnd)
+            controls.removeEventListener("end", this._onControlsEnd);
+          controls.addEventListener("start", startHandler);
+          controls.addEventListener("end", endHandler);
+
+          this._onControlsStart = startHandler;
+          this._onControlsEnd = endHandler;
+        }
+
+        getMinCameraZ() {
+          return 0.35;
+        }
+        getMaxCameraZ() {
+          return 5.5;
+        }
+
+        smoothScrollStep() {
+          const now = performance.now();
+          const dt = Math.min(1, (now - this.lastFrameTime) / 16.67);
+          this.lastFrameTime = now;
+
+          if (this.autoScrollTween) {
+            const { start, end, startTime, duration } = this.autoScrollTween;
+            const t = Math.min(1, (now - startTime) / duration);
+            const k = easeInOutCubic(t);
+            this.targetScroll = start + (end - start) * k;
+            if (t >= 1) this.autoScrollTween = null;
+          }
+          // If mobile and the tween just finished at the zoom end, lock 3D scroll/zoom
+          if (
+            !this.autoScrollTween &&
+            this.isMobilePortrait &&
+            !this.mobileZoomLocked &&
+            !this.overlayActive &&
+            this.galleryProgress === 0 &&
+            this.atZoomEnd()
+          ) {
+            this.mobileZoomLocked = true;
+            this.updateCTAVisibility();
+          }
+
+          const diff = this.targetScroll - this.scrollAccumulator;
+          this.scrollVelocity += diff * 0.16 * dt;
+          this.scrollVelocity *= 0.68;
+          this.scrollAccumulator += this.scrollVelocity * dt;
+          this.scrollAccumulator = Math.max(
+            0,
+            Math.min(
+              this.maxOverlayScroll + this.maxZoomScroll,
+              this.scrollAccumulator
+            )
+          );
+
+          const overlayProgress = Math.min(
+            1,
+            this.scrollAccumulator / this.maxOverlayScroll
+          );
+          const p = Math.min(
+            1,
+            this.scrollAccumulator /
+              (this.maxOverlayScroll * this.overlayHideThreshold)
+          );
+
+          if (this.overlayActive) {
+            if (this.overlay) {
+              this.overlay.style.transition = "opacity 0s linear";
+              this.overlay.style.opacity = String(1 - p);
+            }
+            if (this.introVideo) {
+              this.introVideo.style.transition = "opacity 0s linear";
+              this.introVideo.style.opacity = String(1 - p);
+            }
+          }
+
+          if (this.overlay) {
+            const shouldShow =
+              !this.overlayActive &&
+              overlayProgress < this.overlayShowThreshold;
+            const shouldHide =
+              this.overlayActive && overlayProgress > this.overlayHideThreshold;
+
+            if (shouldShow) {
+              this.overlay.classList.remove("hidden");
+              this.overlayActive = true;
+              // show instantly (we already animate opacity continuously above)
+              this.overlay.style.transition = "opacity 0s linear";
+              this.overlay.style.opacity = "1";
+              if (this.introVideo) {
+                this.introVideo.style.transition = "opacity 0s linear";
+                this.introVideo.style.opacity = "1";
+              }
+              this.onOverlayShown();
+            } else if (shouldHide) {
+              this.overlay.classList.add("hidden");
+              this.overlayActive = false;
+              if (this.overlay) this.overlay.style.opacity = "0";
+              if (this.introVideo) this.introVideo.style.opacity = "0";
+              this.onOverlayHidden();
+            }
+          }
+
+          // Zoom progress
+          let zoomProgress = 0;
+          if (this.scrollAccumulator > this.maxOverlayScroll) {
+            const zoomScroll = this.scrollAccumulator - this.maxOverlayScroll;
+            zoomProgress = zoomScroll / this.maxZoomScroll;
+          }
+          zoomProgress = Math.max(0, Math.min(1, zoomProgress));
+
+          // Camera position
+          const minZ = this.getMinCameraZ();
+          const maxZ = this.getMaxCameraZ();
+          let z = minZ + (maxZ - minZ) * zoomProgress;
+
+          // Camera zoom while rotating
+          if (this.targetZoom !== null) {
+            if (this.currentZoom === null) this.currentZoom = z;
+            this.currentZoom +=
+              (this.targetZoom - this.currentZoom) * 0.08 * dt;
+            z = this.currentZoom;
+
+            if (Math.abs(this.currentZoom - this.targetZoom) < 0.01) {
+              this.currentZoom = this.targetZoom;
+              if (!this.isRotating) {
+                this.targetZoom = null;
+                this.currentZoom = null;
+              }
+            }
+          } else {
+            this.currentZoom = null;
+          }
+
+          // Interpolate camera position/orientation
+          if (zoomProgress < 0.05) {
+            this.sceneManager.camera.position.copy(
+              this.sceneManager.initialPosition
+            );
+            this.sceneManager.camera.lookAt(this.sceneManager.initialLookAt);
+            this.sceneManager.controls.target.copy(
+              this.sceneManager.initialLookAt
+            );
+          } else {
+            const dir = this.sceneManager.camera.position
+              .clone()
+              .sub(this.sceneManager.controls.target)
+              .normalize();
+            this.sceneManager.camera.position.copy(
+              dir.multiplyScalar(z).add(this.sceneManager.controls.target)
+            );
+          }
+
+          // Asterisk rotation/orientation
+          if (this.asterisk) {
+            let orient = false;
+            if (zoomProgress < 0.5) orient = true;
+            if (this.shouldOrientAsterisk) orient = true;
+
+            if (orient) {
+              const asteriskWorldPos = new THREE.Vector3();
+              this.asterisk.getWorldPosition(asteriskWorldPos);
+              const cameraPos = this.sceneManager.camera.position.clone();
+              const target = cameraPos.sub(asteriskWorldPos).normalize();
+
+              const targetY = Math.atan2(target.x, target.z);
+              const targetX = Math.asin(-target.y);
+
+              this.asterisk.rotation.x +=
+                (targetX - this.asterisk.rotation.x) * 0.18;
+              this.asterisk.rotation.y +=
+                (targetY - this.asterisk.rotation.y) * 0.18;
+
+              if (this.shouldOrientAsterisk) {
+                if (
+                  Math.abs(this.asterisk.rotation.x - targetX) < 0.03 &&
+                  Math.abs(this.asterisk.rotation.y - targetY) < 0.03
+                ) {
+                  this.asterisk.rotation.x = targetX;
+                  this.asterisk.rotation.y = targetY;
+                  this.shouldOrientAsterisk = false;
+                }
+              }
+            } else {
+              this.asterisk.rotation.y += 0.01;
+              this.asterisk.rotation.x += 0.007;
+            }
+          }
+
+          // Update gallery transform progressively
+          this.updateGalleryFrame(dt);
+          // Toggle the CTA bar visibility based on state
+          this.updateCTAVisibility();
+        }
+
+        updateGalleryFrame(dt) {
+          // Lerp to target for smoothness
+          this.galleryProgress +=
+            (this.galleryProgressTarget - this.galleryProgress) * 0.18;
+          if (
+            Math.abs(this.galleryProgress - this.galleryProgressTarget) < 0.001
+          ) {
+            this.galleryProgress = this.galleryProgressTarget;
+          }
+
+          // Apply transform and opacity
+          const y = 100 - this.galleryProgress * 100;
+          if (this.isMobilePortrait) {
+            this.galleryEl.style.transform = `translateY(${y}%)`;
+          } else {
+            this.galleryEl.style.transform = `translateX(-50%) translateY(${y}%)`;
+          }
+          const op = 0.2 + this.galleryProgress * 0.8;
+          this.galleryEl.style.opacity = op.toFixed(3);
+
+          // Enable interactions only when almost fully open; pause/resume heavy work on transitions
+          const wasOpen = !!this._wasGalleryOpen;
+          const isOpen = this.galleryProgress >= 0.98;
+
+          if (isOpen) {
+            this.galleryEl.style.pointerEvents = "auto";
+            if (!wasOpen) this.pauseHeavy();
+          } else {
+            this.galleryEl.style.pointerEvents = "none";
+            if (wasOpen) this.resumeHeavy();
+          }
+          // If open/close state toggled, sync expensive layout metrics once
+          if (isOpen !== wasOpen) {
+            window.syncGalleryVars?.();
+            // Recompute masonry after content height updated
+            window.galleryLayout?.();
+          }
+          this._wasGalleryOpen = isOpen;
+        }
+        updateCTAVisibility() {
+          // Show when: intro overlay is hidden, gallery is closed, and 3D zoom is at end
+          const shouldShow =
+            !this.overlayActive &&
+            this.galleryProgress <= 0.001 &&
+            this.atZoomEnd();
+
+          if (this.galleryCTA) {
+            this.galleryCTA.classList.toggle("is-visible", !!shouldShow);
+          }
+        }
+        installIntroVideoWatchdog() {
+          const v = this.introVideo;
+          if (!v) return;
+
+          let lastT = 0;
+          let lastAt = performance.now();
+          let finalized = false;
+
+          const ratio = () => {
+            const dur = v.duration;
+            const t = v.currentTime || 0;
+            return isFinite(dur) && dur > 0 ? t / dur : 0;
+          };
+
+          const finalize = () => {
+            if (finalized) return;
+            finalized = true;
+
+            // Stop interval
+            if (this._videoWatchdogTimer) {
+              clearInterval(this._videoWatchdogTimer);
+              this._videoWatchdogTimer = null;
+            }
+
+            // Ensure overlay hides and zoom-out happens exactly once
+            this.onIntroVideoEnd();
+          };
+
+          const safePlay = () => {
+            if (!this.overlayActive || finalized) return;
+            if (ratio() > 0.95) return finalize();
+            v.play().catch(() => {});
+          };
+
+          const check = () => {
+            if (!this.overlayActive || finalized) return;
+
+            const now = performance.now();
+            const t = v.currentTime || 0;
+
+            if (t > lastT + 0.01) {
+              lastT = t;
+              lastAt = now;
+            } else {
+              const stalled = now - lastAt > 1200 && !v.paused && !v.ended;
+              if (stalled) safePlay();
+            }
+
+            // Near the end: finalize even if "ended" never fires on some devices
+            if (ratio() > 0.95 && !v.ended) {
+              setTimeout(() => {
+                if (this.overlayActive && !finalized) finalize();
+              }, 150);
+            }
+          };
+
+          ["waiting", "stalled", "suspend"].forEach((ev) => {
+            v.addEventListener(ev, safePlay);
+          });
+
+          // If the browser pauses near end, finalize; otherwise gently resume
+          v.addEventListener("pause", () => {
+            if (!this.overlayActive || finalized) return;
+            if (ratio() >= 0.95) finalize();
+            else safePlay();
+          });
+
+          v.addEventListener("ended", finalize);
+
+          this._videoWatchdogTimer = setInterval(check, 250);
+        }
+
+        animateAsterisk() {}
+        animateRects() {
+          if (this.rotationEnabled && this.orbitingRects)
+            this.orbitingRects.animate(true);
+        }
+        billboardVideosToCamera() {
+          // Make every video plane exactly parallel to the screen on all devices,
+          // with the FRONT face towards the camera.
+          if (!this.orbitingRects || !this.orbitingRects.rects?.length) return;
+
+          const cam = this.sceneManager.camera;
+
+          // Camera forward (direction camera is looking)
+          const camForward = new THREE.Vector3();
+          cam.getWorldDirection(camForward); // normalized
+
+          // Screen axes (include camera roll to be truly screen-parallel)
+          const camUp = new THREE.Vector3(0, 1, 0)
+            .applyQuaternion(cam.quaternion)
+            .normalize();
+
+          // Build an orthonormal basis (x = right, y = up, z = towards camera)
+          const zAxis = camForward.clone().negate(); // plane +Z faces the camera
+          const xAxis = new THREE.Vector3()
+            .crossVectors(camUp, zAxis)
+            .normalize();
+          const yAxis = new THREE.Vector3()
+            .crossVectors(zAxis, xAxis)
+            .normalize();
+
+          // Reusable objects
+          this._billboardMat = this._billboardMat || new THREE.Matrix4();
+          this._billboardQuatWorld =
+            this._billboardQuatWorld || new THREE.Quaternion();
+          this._tmpParentQuat = this._tmpParentQuat || new THREE.Quaternion();
+          this._tmpLocalQuat = this._tmpLocalQuat || new THREE.Quaternion();
+
+          // Desired WORLD rotation that is screen-parallel and front-facing
+          this._billboardMat.makeBasis(xAxis, yAxis, zAxis);
+          this._billboardQuatWorld.setFromRotationMatrix(this._billboardMat);
+
+          for (const rect of this.orbitingRects.rects) {
+            // Convert desired WORLD rotation to LOCAL rotation (rects live under a rotating parent)
+            if (rect.parent)
+              rect.parent.getWorldQuaternion(this._tmpParentQuat);
+            else this._tmpParentQuat.identity();
+
+            this._tmpLocalQuat
+              .copy(this._tmpParentQuat)
+              .invert()
+              .multiply(this._billboardQuatWorld);
+
+            // Only write if it changed significantly (micro-optimization)
+            if ((rect.quaternion.angleTo(this._tmpLocalQuat) || 0) > 1e-4) {
+              rect.quaternion.copy(this._tmpLocalQuat);
+            }
+          }
+        }
+        computeMobilePortrait() {
+          // Coarse pointer + portrait OR narrow viewport
+          const coarsePortrait = window.matchMedia?.(
+            "(pointer: coarse) and (orientation: portrait)"
+          )?.matches;
+          const narrowPortrait =
+            window.innerWidth <= 768 && window.innerHeight > window.innerWidth;
+          return !!(coarsePortrait || narrowPortrait);
+        }
+
+        applyMobileControls() {
+          const controls = this.sceneManager?.controls;
+          if (!controls) return;
+          // Disable zoom on mobile-portrait (no pinch/wheel zoom)
+          controls.enableZoom = !this.isMobilePortrait;
+          // Pan stays disabled already
+
+          // ADD THIS BLOCK:
+          if (this.isMobilePortrait) {
+            // Ensure no residual rotate-zoom is active on mobile
+            this.isRotating = false;
+            this.targetZoom = null;
+            this.currentZoom = null;
+          }
+        }
+      }
+
+      const app = new App();
+      window.App = app;
+    </script>
+
+    <script>
+      // Safe fallback for the hamburger menu
+      window.openMenu =
+        window.openMenu ||
+        function () {
+          const nav = document.querySelector(".navigation");
+          const btn = document.querySelector(".hamburger");
+          if (nav) nav.classList.toggle("is-active");
+          if (btn) btn.classList.toggle("is-open");
+        };
+
+      // Safe fallback to open a project card from the 3D tiles
+      window.openSubpage =
+        window.openSubpage ||
+        function (pageNumber) {
+          if (window.App && typeof window.App.openGallery === "function") {
+            window.App.openGallery();
+          }
+          const scroller = document.getElementById("galleryScroll");
+          const card = document.querySelector(
+            `.projectCard[data-page="${pageNumber}"]`
+          );
+          if (card) {
+            card.classList.add("expanded");
+            setTimeout(() => {
+              card.scrollIntoView({ behavior: "auto", block: "start" });
+              if (scroller) scroller.focus({ preventScroll: true });
+            }, 0);
+          }
+        };
+    </script>
+    <script>
+      // Fallback listeners if App methods are not ready at event time
+      window.addEventListener("gallery:openRequested", () => {
+        if (window.App && typeof window.App.openGallery === "function") {
+          window.App.openGallery();
+        }
+      });
+
+      // Your 3D code should implement this to set camera/controls to max zoom-out state on mobile
+      window.addEventListener("gallery:mobileZoomOut", () => {
+        if (window.App && typeof window.App.setGalleryZoom === "function") {
+          try {
+            window.App.setGalleryZoom("out");
+          } catch (e) {}
+        }
+        // Optional: if you use camera/controls directly, do it here.
+        // Example pseudocode:
+        // if (window.App?.camera && window.App?.controls) {
+        //   window.App.controls.enableZoom = false;
+        //   window.App.controls.enablePan = false;
+        //   window.App.controls.minDistance = SOME_MAX_OUT;
+        //   window.App.controls.maxDistance = SOME_MAX_OUT;
+        //   window.App.controls.update();
+        // }
+      });
+    </script>
+    <script>
+      // Close menu and go to home (3D view)
+      function closeMenuAndGoHome() {
+        const nav = document.querySelector(".navigation");
+        const btn = document.querySelector(".hamburger");
+        if (nav) nav.classList.remove("is-active");
+        if (btn) btn.classList.remove("is-open");
+
+        // Close gallery if open and reset to home view
+        if (window.App) {
+          window.App.closeGallery();
+          // Reset scroll to show the 3D asterisk
+          window.App.targetScroll = 0;
+          window.App.scrollAccumulator = 0;
+        }
+      }
+
+      // Close menu and open gallery
+      function closeMenuAndOpenGallery() {
+        const nav = document.querySelector(".navigation");
+        const btn = document.querySelector(".hamburger");
+        if (nav) nav.classList.remove("is-active");
+        if (btn) btn.classList.remove("is-open");
+
+        // Open the gallery
+        if (window.App && typeof window.App.openGallery === "function") {
+          window.App.openGallery();
+        }
+      }
+    </script>
+  </body>
+</html>
