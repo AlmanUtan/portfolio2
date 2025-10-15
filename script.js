@@ -1030,3 +1030,20 @@
 
   // NOTE: Duplicate expand and ESC handlers removed here to avoid conflicts.
 })();
+
+//-----------------------------
+// Instruction message timer
+//-----------------------------
+//instruction message timer
+function showInstructionsAfterDelay(delayMs = 3000) {
+  const instructions = document.getElementById("instructions");
+  if (!instructions) return;
+  instructions.style.display = "none";
+  setTimeout(() => {
+    instructions.style.display = "";
+    instructions.classList.add("visible");
+  }, delayMs);
+}
+
+// Example usage: show after 5 seconds
+showInstructionsAfterDelay(5000);
