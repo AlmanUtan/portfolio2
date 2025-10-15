@@ -8,7 +8,6 @@
 */
 
 (function () {
-
   // -----------------------------
   // Hamburger menu
   // -----------------------------
@@ -17,7 +16,7 @@
     const burger = document.querySelector(".hamburger");
     if (!nav || !burger) return;
     const isActive = nav.classList.toggle("is-active");
-    burger.classList.toggle("is-open", isActive);
+    burger.classList.toggle("is-opened", isActive);
   };
 
   // Menu hover rotation picking
@@ -27,12 +26,14 @@
       link.style.setProperty("--rand-rotate", `${randomAngle}deg`);
     });
   });
-// ---- Init video -> auto transition to 3D and zoom out on mobile ----
+  // ---- Init video -> auto transition to 3D and zoom out on mobile ----
   (function initVideoAutoTransition() {
-    const isMobile = () => /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (window.matchMedia?.('(pointer: coarse)').matches);
+    const isMobile = () =>
+      /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+      window.matchMedia?.("(pointer: coarse)").matches;
 
     // Your init video should have an id or a class; adjust selector if needed
-    const initVideo = document.querySelector('#initVideo, .initVideo');
+    const initVideo = document.querySelector("#initVideo, .initVideo");
     if (!initVideo) return;
 
     let transitioned = false;
@@ -42,16 +43,16 @@
 
       // Some implementations hide/remove the video container here
       try {
-        const container = initVideo.closest('.initVideoContainer');
-        if (container) container.style.display = 'none';
-      } catch(e) {}
+        const container = initVideo.closest(".initVideoContainer");
+        if (container) container.style.display = "none";
+      } catch (e) {}
 
       // Open the gallery/3D overlay
-      if (window.App && typeof window.App.openGallery === 'function') {
+      if (window.App && typeof window.App.openGallery === "function") {
         window.App.openGallery();
       } else {
         // Fallback if App.openGallery not available yet: emit an event for your 3D bootstrapper
-        window.dispatchEvent(new CustomEvent('gallery:openRequested'));
+        window.dispatchEvent(new CustomEvent("gallery:openRequested"));
       }
 
       // On mobile, force zoom-out after overlay is present
@@ -61,12 +62,12 @@
         const ensureZoomOut = () => {
           tries++;
           try {
-            if (window.App && typeof window.App.setGalleryZoom === 'function') {
-              window.App.setGalleryZoom('out');
+            if (window.App && typeof window.App.setGalleryZoom === "function") {
+              window.App.setGalleryZoom("out");
               return;
             }
-            window.dispatchEvent(new CustomEvent('gallery:mobileZoomOut'));
-          } catch(e) {}
+            window.dispatchEvent(new CustomEvent("gallery:mobileZoomOut"));
+          } catch (e) {}
           if (tries < maxTries) requestAnimationFrame(ensureZoomOut);
         };
         requestAnimationFrame(ensureZoomOut);
@@ -74,16 +75,23 @@
     }
 
     // Prefer ended; add safety timeout in case 'ended' never fires
-    initVideo.addEventListener('ended', transitionTo3D);
+    initVideo.addEventListener("ended", transitionTo3D);
     // If autoplay fails and user interacts, also move on after a short delay
-    initVideo.addEventListener('play', () => {
+    initVideo.addEventListener("play", () => {
       // safety: transition if video ends or after long play for devices that block 'ended'
-      setTimeout(() => { if (!transitioned && initVideo.ended) transitionTo3D(); }, 200);
+      setTimeout(() => {
+        if (!transitioned && initVideo.ended) transitionTo3D();
+      }, 200);
     });
 
     // Absolute safety: if video stalls, proceed after a max duration guard
-    const hardFailSafeMs = Math.max(3000, (initVideo.duration || 3) * 1000 + 500);
-    setTimeout(() => { if (!transitioned) transitionTo3D(); }, hardFailSafeMs);
+    const hardFailSafeMs = Math.max(
+      3000,
+      (initVideo.duration || 3) * 1000 + 500
+    );
+    setTimeout(() => {
+      if (!transitioned) transitionTo3D();
+    }, hardFailSafeMs);
   })();
   // -----------------------------
   // Masonry + Expand for Gallery
@@ -222,7 +230,7 @@
     clone.style.top = "auto";
     // Ensure content-visibility doesn't block measurement on the clone
     clone.style.contentVisibility = "visible";
-    if ('containIntrinsicSize' in clone.style) {
+    if ("containIntrinsicSize" in clone.style) {
       clone.style.containIntrinsicSize = "auto";
     }
 
@@ -238,7 +246,9 @@
     if (cloneWrapper) {
       let ar = "";
       if (origWrapper) {
-        ar = getComputedStyle(origWrapper).getPropertyValue("--video-ar").trim();
+        ar = getComputedStyle(origWrapper)
+          .getPropertyValue("--video-ar")
+          .trim();
       }
       if (!ar) {
         const dr = (card.dataset.ratio || "16:9").replace(":", "/");
@@ -251,17 +261,23 @@
       const overlayStyles = overlayEl ? getComputedStyle(overlayEl) : null;
       let MAX_VID_H = 0;
       if (overlayStyles) {
-        const cmh = parseFloat(overlayStyles.getPropertyValue('--gallery-content-max-h')) || 0;
+        const cmh =
+          parseFloat(
+            overlayStyles.getPropertyValue("--gallery-content-max-h")
+          ) || 0;
         if (cmh > 0) MAX_VID_H = Math.max(240, Math.floor(cmh));
       }
       if (!MAX_VID_H) {
-        const viewportH = (scrollerEl && scrollerEl.clientHeight) ? scrollerEl.clientHeight : window.innerHeight;
+        const viewportH =
+          scrollerEl && scrollerEl.clientHeight
+            ? scrollerEl.clientHeight
+            : window.innerHeight;
         MAX_VID_H = Math.max(240, Math.floor(viewportH - 180)); // leave header/margins
       }
 
       // parse "W/H"
       const [aw, ah] = String(ar).split(/[/:]/).map(Number);
-      const ratio = (aw && ah) ? (ah / aw) : (9 / 16);
+      const ratio = aw && ah ? ah / aw : 9 / 16;
       const desiredVidH = Math.round(width * ratio);
 
       if (desiredVidH > MAX_VID_H) {
@@ -286,7 +302,10 @@
     const cs = getComputedStyle(scrollerEl);
     const padL = parseFloat(cs.paddingLeft) || 0;
     const padR = parseFloat(cs.paddingRight) || 0;
-    const avail = Math.max(0, (scrollerEl.clientWidth || window.innerWidth) - padL - padR);
+    const avail = Math.max(
+      0,
+      (scrollerEl.clientWidth || window.innerWidth) - padL - padR
+    );
 
     const cols = decideCols(avail);
     const colWidth = Math.floor((avail - (cols - 1) * GAP) / cols);
@@ -298,7 +317,7 @@
     // Track column heights
     const heights = Array(cols).fill(0);
 
-    const anyExpandedFlag = cards.some(c => c.classList.contains('expanded'));
+    const anyExpandedFlag = cards.some((c) => c.classList.contains("expanded"));
 
     // Place cards in seeded “organic” order
     layoutOrder.forEach((card, i) => {
@@ -332,10 +351,14 @@
       }
 
       // Greedy placement across columns
-      let bestCol = 0, bestY = Infinity;
+      let bestCol = 0,
+        bestY = Infinity;
       for (let c = 0; c <= cols - span; c++) {
         const y = Math.max(...heights.slice(c, c + span));
-        if (y < bestY) { bestY = y; bestCol = c; }
+        if (y < bestY) {
+          bestY = y;
+          bestCol = c;
+        }
       }
 
       const x = bestCol * (colWidth + GAP);
@@ -364,20 +387,25 @@
     cards.forEach((c) => {
       if (c !== except) {
         c.classList.remove("expanded");
-        const dv = c.querySelector('.cardDetails video');
-        if (dv) { try { dv.pause(); dv.currentTime = 0; } catch(e){} }
+        const dv = c.querySelector(".cardDetails video");
+        if (dv) {
+          try {
+            dv.pause();
+            dv.currentTime = 0;
+          } catch (e) {}
+        }
       }
     });
   }
 
   // ---- Fullscreen modal helpers for MAIN projects ----
   function ensureProjectModal() {
-    let modal = document.getElementById('projectModal');
+    let modal = document.getElementById("projectModal");
     if (modal) return modal;
 
-    modal = document.createElement('div');
-    modal.id = 'projectModal';
-    modal.style.display = 'none'; // initial, controlled by class
+    modal = document.createElement("div");
+    modal.id = "projectModal";
+    modal.style.display = "none"; // initial, controlled by class
     modal.innerHTML = `
       <div class="modalBox">
         <div class="modalHeader">
@@ -391,14 +419,16 @@
     document.body.appendChild(modal);
 
     // Backdrop and button close
-    modal.addEventListener('click', (e) => {
+    modal.addEventListener("click", (e) => {
       if (e.target === modal) closeProjectModal();
     });
-    modal.querySelector('.modalClose').addEventListener('click', closeProjectModal);
+    modal
+      .querySelector(".modalClose")
+      .addEventListener("click", closeProjectModal);
 
     // ESC to close
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeProjectModal();
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeProjectModal();
     });
 
     return modal;
@@ -408,36 +438,38 @@
     const modal = ensureProjectModal();
 
     // Show
-    modal.id = 'projectModal';
-    modal.classList.add('is-open');
-    modal.style.display = ''; // let CSS take over
+    modal.id = "projectModal";
+    modal.classList.add("is-open");
+    modal.style.display = ""; // let CSS take over
 
-    const titleEl = modal.querySelector('.modalTitle');
-    const videoWrap = modal.querySelector('.modalVideoWrap');
-    const content = modal.querySelector('.modalContent');
+    const titleEl = modal.querySelector(".modalTitle");
+    const videoWrap = modal.querySelector(".modalVideoWrap");
+    const content = modal.querySelector(".modalContent");
 
     // Title from card
-    const name = (card.querySelector('.projectName')?.textContent || '').trim();
-    titleEl.textContent = name || 'Project';
+    const name = (card.querySelector(".projectName")?.textContent || "").trim();
+    titleEl.textContent = name || "Project";
 
     // Aspect ratio for the big video
-    const details = card.querySelector('.cardDetails');
-    let ar = details ? getComputedStyle(details).getPropertyValue('--video-ar').trim() : '';
-    if (!ar) ar = (card.dataset.ratio || '16:9').replace(':', '/');
-    videoWrap.style.setProperty('--video-ar', ar || '16/9');
+    const details = card.querySelector(".cardDetails");
+    let ar = details
+      ? getComputedStyle(details).getPropertyValue("--video-ar").trim()
+      : "";
+    if (!ar) ar = (card.dataset.ratio || "16:9").replace(":", "/");
+    videoWrap.style.setProperty("--video-ar", ar || "16/9");
 
     // Build a playable video from the detail source
-    const srcEl = card.querySelector('.cardDetails source');
-    const vidSrc = srcEl?.getAttribute('src') || '';
-    const vidType = srcEl?.getAttribute('type') || '';
+    const srcEl = card.querySelector(".cardDetails source");
+    const vidSrc = srcEl?.getAttribute("src") || "";
+    const vidType = srcEl?.getAttribute("type") || "";
 
-    videoWrap.innerHTML = '';
-    const v = document.createElement('video');
-    v.setAttribute('controls', '');
-    v.setAttribute('playsinline', '');
-    v.setAttribute('preload', 'metadata');
+    videoWrap.innerHTML = "";
+    const v = document.createElement("video");
+    v.setAttribute("controls", "");
+    v.setAttribute("playsinline", "");
+    v.setAttribute("preload", "metadata");
     if (vidSrc) {
-      const s = document.createElement('source');
+      const s = document.createElement("source");
       s.src = vidSrc;
       if (vidType) s.type = vidType;
       v.appendChild(s);
@@ -448,88 +480,106 @@
     try {
       v.muted = true;
       const p = v.play();
-      if (p && typeof p.then === 'function') p.catch(() => {});
+      if (p && typeof p.then === "function") p.catch(() => {});
     } catch (e) {}
 
     // Clone description/process into modal
-    content.innerHTML = '';
-    const desc = card.querySelector('.projectDescription');
-    const proc = card.querySelector('.projectProcess');
+    content.innerHTML = "";
+    const desc = card.querySelector(".projectDescription");
+    const proc = card.querySelector(".projectProcess");
     if (desc) content.appendChild(desc.cloneNode(true));
     if (proc) content.appendChild(proc.cloneNode(true));
   }
 
   function closeProjectModal() {
-    const modal = document.getElementById('projectModal');
+    const modal = document.getElementById("projectModal");
     if (!modal) return;
     // Pause any playing video
-    modal.querySelectorAll('video').forEach(vid => { try { vid.pause(); } catch(e){} });
-    modal.classList.remove('is-open');
-    modal.style.display = 'none';
+    modal.querySelectorAll("video").forEach((vid) => {
+      try {
+        vid.pause();
+      } catch (e) {}
+    });
+    modal.classList.remove("is-open");
+    modal.style.display = "none";
   }
 
   function focusExpandedCard(card) {
-  if (!scroller) return;
+    if (!scroller) return;
 
-  const scrollerEl = scroller;
-  const scrollerRect = scrollerEl.getBoundingClientRect();
+    const scrollerEl = scroller;
+    const scrollerRect = scrollerEl.getBoundingClientRect();
 
-  const styles = overlayEl ? getComputedStyle(overlayEl) : null;
-  const contentMaxH = styles
-    ? parseFloat(styles.getPropertyValue('--gallery-content-max-h'))
-    : (overlayEl ? overlayEl.clientHeight - 140 : window.innerHeight - 140);
-  const viewportH = contentMaxH > 0 ? contentMaxH : (scrollerEl.clientHeight || window.innerHeight);
+    const styles = overlayEl ? getComputedStyle(overlayEl) : null;
+    const contentMaxH = styles
+      ? parseFloat(styles.getPropertyValue("--gallery-content-max-h"))
+      : overlayEl
+      ? overlayEl.clientHeight - 140
+      : window.innerHeight - 140;
+    const viewportH =
+      contentMaxH > 0
+        ? contentMaxH
+        : scrollerEl.clientHeight || window.innerHeight;
 
-  const centerOnce = () => {
-    const vw = card.querySelector('.videoWrapper');
+    const centerOnce = () => {
+      const vw = card.querySelector(".videoWrapper");
 
-    // Prefer centering the video area
-    if (vw) {
-      const vwRect = vw.getBoundingClientRect();
-      const vwH = vwRect.height || vw.offsetHeight || 0;
+      // Prefer centering the video area
+      if (vw) {
+        const vwRect = vw.getBoundingClientRect();
+        const vwH = vwRect.height || vw.offsetHeight || 0;
 
-      // If height hasn’t settled yet, retry shortly
-      if (vwH < 40) {
+        // If height hasn’t settled yet, retry shortly
+        if (vwH < 40) {
+          setTimeout(centerOnce, 60);
+          return;
+        }
+
+        // Compute top relative to scroller scrollTop
+        const vwTop =
+          (scrollerEl.scrollTop || 0) + (vwRect.top - scrollerRect.top);
+
+        // Center the videoWrapper within the visible gallery area
+        let target = vwTop - Math.max(0, (viewportH - vwH) / 2);
+
+        // Clamp to valid range
+        const maxScroll = Math.max(
+          0,
+          scrollerEl.scrollHeight - scrollerEl.clientHeight
+        );
+        target = Math.max(0, Math.min(maxScroll, target));
+
+        scrollerEl.scrollTo({ top: target, behavior: "auto" });
+        return;
+      }
+
+      // Fallback: center the whole card using the masonry position cache
+      const pos = posCache.get(card);
+      const cardRect = card.getBoundingClientRect();
+      const cardTop = pos
+        ? pos.y
+        : (scrollerEl.scrollTop || 0) + (cardRect.top - scrollerRect.top);
+      const ch = cardRect.height || card.offsetHeight || 0;
+
+      if (ch < 40) {
         setTimeout(centerOnce, 60);
         return;
       }
 
-      // Compute top relative to scroller scrollTop
-      const vwTop = (scrollerEl.scrollTop || 0) + (vwRect.top - scrollerRect.top);
-
-      // Center the videoWrapper within the visible gallery area
-      let target = vwTop - Math.max(0, (viewportH - vwH) / 2);
-
-      // Clamp to valid range
-      const maxScroll = Math.max(0, scrollerEl.scrollHeight - scrollerEl.clientHeight);
+      let target = cardTop - Math.max(0, (viewportH - ch) / 2);
+      const maxScroll = Math.max(
+        0,
+        scrollerEl.scrollHeight - scrollerEl.clientHeight
+      );
       target = Math.max(0, Math.min(maxScroll, target));
+      scrollerEl.scrollTo({ top: target, behavior: "auto" });
+    };
 
-      scrollerEl.scrollTo({ top: target, behavior: 'auto' });
-      return;
-    }
-
-    // Fallback: center the whole card using the masonry position cache
-    const pos = posCache.get(card);
-    const cardRect = card.getBoundingClientRect();
-    const cardTop = pos ? pos.y : ((scrollerEl.scrollTop || 0) + (cardRect.top - scrollerRect.top));
-    const ch = cardRect.height || card.offsetHeight || 0;
-
-    if (ch < 40) {
-      setTimeout(centerOnce, 60);
-      return;
-    }
-
-    let target = cardTop - Math.max(0, (viewportH - ch) / 2);
-    const maxScroll = Math.max(0, scrollerEl.scrollHeight - scrollerEl.clientHeight);
-    target = Math.max(0, Math.min(maxScroll, target));
-    scrollerEl.scrollTo({ top: target, behavior: 'auto' });
-  };
-
-  // Let layout/AR settle for 2 frames, then center
-  requestAnimationFrame(() => {
-    requestAnimationFrame(centerOnce);
-  });
-}
+    // Let layout/AR settle for 2 frames, then center
+    requestAnimationFrame(() => {
+      requestAnimationFrame(centerOnce);
+    });
+  }
 
   // ---- Click-to-expand on the preview area (cleaned, no duplicate hover) ----
   cards.forEach((card) => {
@@ -543,12 +593,14 @@
         collapseAll(card);
 
         // Ensure detail AR is set before expanding (matches preview)
-        const details = card.querySelector('.cardDetails');
-        if (details && !details.style.getPropertyValue('--video-ar')) {
-          const cp = card.querySelector('.cardPreview');
+        const details = card.querySelector(".cardDetails");
+        if (details && !details.style.getPropertyValue("--video-ar")) {
+          const cp = card.querySelector(".cardPreview");
           if (cp) {
-            const ar = getComputedStyle(cp).getPropertyValue('--card-ar').trim();
-            if (ar) details.style.setProperty('--video-ar', ar);
+            const ar = getComputedStyle(cp)
+              .getPropertyValue("--card-ar")
+              .trim();
+            if (ar) details.style.setProperty("--video-ar", ar);
           }
         }
 
@@ -572,35 +624,43 @@
                 if (p && typeof p.then === "function") p.catch(() => {});
               } catch (e) {}
             } else {
-              try { detailVid.pause(); } catch (e) {}
+              try {
+                detailVid.pause();
+              } catch (e) {}
             }
           }
 
           if (willExpand) {
-  focusExpandedCard(card);
-  setTimeout(() => { window.focusExpandedCard?.(card); }, 150);
-}
+            focusExpandedCard(card);
+            setTimeout(() => {
+              window.focusExpandedCard?.(card);
+            }, 150);
+          }
 
           // Ensure collapse button exists and binds once
-          let btn = card.querySelector('.cardCollapse');
+          let btn = card.querySelector(".cardCollapse");
           if (!btn) {
-            btn = document.createElement('button');
-            btn.className = 'cardCollapse';
-            btn.type = 'button';
-            btn.textContent = 'Close';
+            btn = document.createElement("button");
+            btn.className = "cardCollapse";
+            btn.type = "button";
+            btn.textContent = "Close";
             card.appendChild(btn);
           }
           if (!btn.dataset.bound) {
-            btn.addEventListener('click', (e) => {
+            btn.addEventListener("click", (e) => {
               e.stopPropagation();
-              if (card.classList.contains('expanded')) {
-                card.classList.remove('expanded');
-                const dv = card.querySelector('.cardDetails video');
-                if (dv) { try { dv.pause(); } catch(e){} }
+              if (card.classList.contains("expanded")) {
+                card.classList.remove("expanded");
+                const dv = card.querySelector(".cardDetails video");
+                if (dv) {
+                  try {
+                    dv.pause();
+                  } catch (e) {}
+                }
                 layout();
               }
             });
-            btn.dataset.bound = '1';
+            btn.dataset.bound = "1";
           }
         });
       });
@@ -608,12 +668,12 @@
   });
 
   // ESC closes expanded (in-grid) cards, unless the fullscreen modal is open
-  document.addEventListener('keydown', (e) => {
-    if (e.key !== 'Escape') return;
-    const modal = document.getElementById('projectModal');
-    if (modal && modal.classList.contains('is-open')) return; // modal has its own ESC
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    const modal = document.getElementById("projectModal");
+    if (modal && modal.classList.contains("is-open")) return; // modal has its own ESC
 
-    const anyExpanded = cards.some(c => c.classList.contains('expanded'));
+    const anyExpanded = cards.some((c) => c.classList.contains("expanded"));
     if (anyExpanded) {
       collapseAll();
       layout();
@@ -656,12 +716,12 @@
     collapseAll(target);
 
     // Ensure AR set before expand
-    const details = target.querySelector('.cardDetails');
-    if (details && !details.style.getPropertyValue('--video-ar')) {
-      const cp = target.querySelector('.cardPreview');
+    const details = target.querySelector(".cardDetails");
+    if (details && !details.style.getPropertyValue("--video-ar")) {
+      const cp = target.querySelector(".cardPreview");
       if (cp) {
-        const ar = getComputedStyle(cp).getPropertyValue('--card-ar').trim();
-        if (ar) details.style.setProperty('--video-ar', ar);
+        const ar = getComputedStyle(cp).getPropertyValue("--card-ar").trim();
+        if (ar) details.style.setProperty("--video-ar", ar);
       }
     }
 
@@ -693,47 +753,51 @@
 
   // Hover-to-play previews WITHOUT changing your HTML
   (() => {
-    const scroller = document.getElementById('galleryScroll');
+    const scroller = document.getElementById("galleryScroll");
 
     // Grab only the small preview videos (not the detail ones)
-    const previews = Array.from(document.querySelectorAll('.cardPreview .previewVideo'));
+    const previews = Array.from(
+      document.querySelectorAll(".cardPreview .previewVideo")
+    );
     if (!previews.length) return;
 
     // Helper to convert video URL to poster path (if you have thumbs)
     const toPoster = (u) =>
-      u.replace('/vid/', '/thumbs/').replace(/\.(mp4|mov|webm|m4v)$/i, '.png');
+      u.replace("/vid/", "/thumbs/").replace(/\.(mp4|mov|webm|m4v)$/i, ".png");
 
     // Set poster and lazy detach source
-    previews.forEach(v => {
-      const src = v.currentSrc || v.getAttribute('src');
+    previews.forEach((v) => {
+      const src = v.currentSrc || v.getAttribute("src");
       if (src) {
         // set poster first (thumbnail)
         const poster = v.dataset.poster || toPoster(src);
-        v.setAttribute('poster', poster);
+        v.setAttribute("poster", poster);
 
         // then detach src so it won’t load until hover
         v.dataset.src = src;
-        v.removeAttribute('src');
+        v.removeAttribute("src");
       }
-      v.removeAttribute('autoplay');
-      v.removeAttribute('loop');
-      v.preload = 'none';
-      try { v.load(); } catch (e) {}
+      v.removeAttribute("autoplay");
+      v.removeAttribute("loop");
+      v.preload = "none";
+      try {
+        v.load();
+      } catch (e) {}
     });
 
-    const activate = v => {
+    const activate = (v) => {
       if (!v.src && v.dataset.src) {
         v.src = v.dataset.src;
         v.load(); // start buffering
       }
-      v.preload = 'auto';
+      v.preload = "auto";
       v.muted = true;
       v.playsInline = true;
 
       // Always catch AbortErrors silently
       const p = v.play();
-      if (p && typeof p.catch === 'function') {
-        p.catch(err => {
+      if (p && typeof p.catch === "function") {
+        p.catch((err) => {
           if (err.name !== "AbortError") {
             console.warn("Video play error:", err);
           }
@@ -741,49 +805,55 @@
       }
     };
 
-    const deactivate = v => {
-      try { v.pause(); } catch {}
+    const deactivate = (v) => {
+      try {
+        v.pause();
+      } catch {}
       v.currentTime = 0;
       setTimeout(() => {
         if (v.paused) {
-          v.removeAttribute('src');
-          try { v.load(); } catch {}
+          v.removeAttribute("src");
+          try {
+            v.load();
+          } catch {}
         }
       }, 300);
     };
 
     // Hover/touch handlers on each card
-    previews.forEach(v => {
-      const card = v.closest('.projectCard');
+    previews.forEach((v) => {
+      const card = v.closest(".projectCard");
       if (!card) return;
 
       // Desktop hover
-      card.addEventListener('mouseenter', () => activate(v));
-      card.addEventListener('mouseleave', () => deactivate(v));
+      card.addEventListener("mouseenter", () => activate(v));
+      card.addEventListener("mouseleave", () => deactivate(v));
 
       // Touch
-      card.addEventListener('touchstart', () => activate(v), { passive: true });
-      card.addEventListener('touchend',   () => deactivate(v));
-      card.addEventListener('touchcancel',() => deactivate(v));
+      card.addEventListener("touchstart", () => activate(v), { passive: true });
+      card.addEventListener("touchend", () => deactivate(v));
+      card.addEventListener("touchcancel", () => deactivate(v));
     });
 
     // Pause/unload if the preview scrolls off-screen (within the gallery scroller)
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(({ isIntersecting, target }) => {
-        if (!isIntersecting) deactivate(target);
-      });
-    }, { root: scroller || null, threshold: 0.1 });
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(({ isIntersecting, target }) => {
+          if (!isIntersecting) deactivate(target);
+        });
+      },
+      { root: scroller || null, threshold: 0.1 }
+    );
 
-    previews.forEach(v => io.observe(v));
+    previews.forEach((v) => io.observe(v));
   })();
-
 })();
 
 // -----------------------------
 // Second IIFE: keep sizing/AR sync, remove duplicate expand + ESC
 // -----------------------------
-(function() {
-  const overlay = document.getElementById('galleryOverlay');
+(function () {
+  const overlay = document.getElementById("galleryOverlay");
 
   // Keep overlay dimensions in CSS vars for layout math (coalesced to one per frame)
   let syncScheduled = false;
@@ -795,86 +865,91 @@
       syncScheduled = false;
 
       const rect = overlay.getBoundingClientRect();
-      overlay.style.setProperty('--gallery-w', rect.width + 'px');
-      overlay.style.setProperty('--gallery-h', rect.height + 'px');
+      overlay.style.setProperty("--gallery-w", rect.width + "px");
+      overlay.style.setProperty("--gallery-h", rect.height + "px");
 
-      const header = document.querySelector('.galleryHeaderRow');
+      const header = document.querySelector(".galleryHeaderRow");
       const headerH = header ? header.offsetHeight : 0;
       const verticalPadding = 32; // .galleryScroll 16 top + 16 bottom
       const contentMaxH = Math.max(0, rect.height - headerH - verticalPadding);
-      overlay.style.setProperty('--gallery-content-max-h', contentMaxH + 'px');
+      overlay.style.setProperty("--gallery-content-max-h", contentMaxH + "px");
 
       // Recompute masonry positions to match new content height
       window.galleryLayout?.();
     });
   }
-  window.addEventListener('resize', syncGalleryVars);
-  window.addEventListener('orientationchange', syncGalleryVars);
+  window.addEventListener("resize", syncGalleryVars);
+  window.addEventListener("orientationchange", syncGalleryVars);
   // Avoid observing style/class changes to prevent layout thrash during overlay animations
-  window.addEventListener('load', syncGalleryVars);
+  window.addEventListener("load", syncGalleryVars);
   // Expose for App to call when overlay open/close state toggles
   window.syncGalleryVars = syncGalleryVars;
   // ---- Mobile handling: disable scroll in 3D overlay and force max zoom ----
   (function mobile3DGuards() {
-    const isMobile = () => /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (window.matchMedia?.('(pointer: coarse)').matches);
+    const isMobile = () =>
+      /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+      window.matchMedia?.("(pointer: coarse)").matches;
 
     function lockBodyScroll() {
       // Avoid double-lock
-      if (document.documentElement.classList.contains('lock-scroll')) return;
-      document.documentElement.classList.add('lock-scroll');
-      document.body.classList.add('lock-scroll');
+      if (document.documentElement.classList.contains("lock-scroll")) return;
+      document.documentElement.classList.add("lock-scroll");
+      document.body.classList.add("lock-scroll");
       // iOS guard
-      document.body.style.touchAction = 'none';
+      document.body.style.touchAction = "none";
     }
     function unlockBodyScroll() {
-      document.documentElement.classList.remove('lock-scroll');
-      document.body.classList.remove('lock-scroll');
-      document.body.style.touchAction = '';
+      document.documentElement.classList.remove("lock-scroll");
+      document.body.classList.remove("lock-scroll");
+      document.body.style.touchAction = "";
     }
 
     // Hook into App overlay lifecycle if exposed
     const originalOpenGallery = window.App?.openGallery;
-  if (originalOpenGallery && !originalOpenGallery.__wrappedForMobile) {
-    window.App.openGallery = function wrappedOpenGallery() {
-      const r = originalOpenGallery.apply(this, arguments);
-      if (isMobile()) {
-        // In the gallery overlay, we WANT to allow vertical scrolling
-        unlockBodyScroll();
+    if (originalOpenGallery && !originalOpenGallery.__wrappedForMobile) {
+      window.App.openGallery = function wrappedOpenGallery() {
+        const r = originalOpenGallery.apply(this, arguments);
+        if (isMobile()) {
+          // In the gallery overlay, we WANT to allow vertical scrolling
+          unlockBodyScroll();
 
-        // Ensure zoomed out on mobile (keep your existing ensureZoomOut logic)
-        let tries = 0;
-        const maxTries = 12;
-        const ensureZoomOut = () => {
-          tries++;
-          try {
-            if (window.App && typeof window.App.setGalleryZoom === 'function') {
-              window.App.setGalleryZoom('out');
-              return;
-            }
-            window.dispatchEvent(new CustomEvent('gallery:mobileZoomOut'));
-          } catch (e) {}
-          if (tries < maxTries) requestAnimationFrame(ensureZoomOut);
-        };
-        requestAnimationFrame(ensureZoomOut);
-      }
-      return r;
-    };
-    window.App.openGallery.__wrappedForMobile = true;
-  }
+          // Ensure zoomed out on mobile (keep your existing ensureZoomOut logic)
+          let tries = 0;
+          const maxTries = 12;
+          const ensureZoomOut = () => {
+            tries++;
+            try {
+              if (
+                window.App &&
+                typeof window.App.setGalleryZoom === "function"
+              ) {
+                window.App.setGalleryZoom("out");
+                return;
+              }
+              window.dispatchEvent(new CustomEvent("gallery:mobileZoomOut"));
+            } catch (e) {}
+            if (tries < maxTries) requestAnimationFrame(ensureZoomOut);
+          };
+          requestAnimationFrame(ensureZoomOut);
+        }
+        return r;
+      };
+      window.App.openGallery.__wrappedForMobile = true;
+    }
 
-  // Also wrap closeGallery so when we leave the overlay back to 3D, we lock scroll again on mobile
-  const originalCloseGallery = window.App?.closeGallery;
-  if (originalCloseGallery && !originalCloseGallery.__wrappedForMobile) {
-    window.App.closeGallery = function wrappedCloseGallery() {
-      const r = originalCloseGallery.apply(this, arguments);
-      if (isMobile()) {
-        // Back in the 3D environment: disable page scroll
-        lockBodyScroll();
-      }
-      return r;
-    };
-    window.App.closeGallery.__wrappedForMobile = true;
-  }
+    // Also wrap closeGallery so when we leave the overlay back to 3D, we lock scroll again on mobile
+    const originalCloseGallery = window.App?.closeGallery;
+    if (originalCloseGallery && !originalCloseGallery.__wrappedForMobile) {
+      window.App.closeGallery = function wrappedCloseGallery() {
+        const r = originalCloseGallery.apply(this, arguments);
+        if (isMobile()) {
+          // Back in the 3D environment: disable page scroll
+          lockBodyScroll();
+        }
+        return r;
+      };
+      window.App.closeGallery.__wrappedForMobile = true;
+    }
 
     // Expose helpers for closing code paths
     window._unlockBodyScrollForGallery = unlockBodyScroll;
@@ -883,65 +958,73 @@
 
   // Cancel scroll inputs on mobile within overlay
   (function blockOverlayScrollOnMobile() {
-    const overlay = document.getElementById('galleryOverlay');
+    const overlay = document.getElementById("galleryOverlay");
     if (!overlay) return;
-    const isMobile = () => /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (window.matchMedia?.('(pointer: coarse)').matches);
+    const isMobile = () =>
+      /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+      window.matchMedia?.("(pointer: coarse)").matches;
     if (!isMobile()) return;
 
-    const cancel = (e) => { e.preventDefault(); e.stopPropagation(); };
+    const cancel = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
     const maybeCancel = (e) => {
-  // Allow scrolling when the gallery is fully open
-  if (window.App && window.App.galleryProgress >= 0.98) return;
-  // Otherwise (gallery not open yet), block vertical gestures
-  e.preventDefault();
-  e.stopPropagation();
-};
-overlay.addEventListener('wheel', maybeCancel, { passive: false });
-overlay.addEventListener('touchmove', maybeCancel, { passive: false });
+      // Allow scrolling when the gallery is fully open
+      if (window.App && window.App.galleryProgress >= 0.98) return;
+      // Otherwise (gallery not open yet), block vertical gestures
+      e.preventDefault();
+      e.stopPropagation();
+    };
+    overlay.addEventListener("wheel", maybeCancel, { passive: false });
+    overlay.addEventListener("touchmove", maybeCancel, { passive: false });
   })();
 
   // Helpers for AR
   function getCardAspectString(card) {
-    const preview = card.querySelector('.cardPreview');
+    const preview = card.querySelector(".cardPreview");
     if (!preview) return null;
-    const raw = getComputedStyle(preview).getPropertyValue('--card-ar').trim();
+    const raw = getComputedStyle(preview).getPropertyValue("--card-ar").trim();
     return raw || null;
   }
   function setDetailAspectFromString(card, arStr) {
-    const details = card.querySelector('.cardDetails');
+    const details = card.querySelector(".cardDetails");
     if (!details || !arStr) return;
-    details.style.setProperty('--video-ar', arStr);
+    details.style.setProperty("--video-ar", arStr);
   }
   function setDetailAspectFromVideo(card, videoEl) {
     if (!videoEl || !videoEl.videoWidth || !videoEl.videoHeight) return;
-    setDetailAspectFromString(card, `${videoEl.videoWidth}/${videoEl.videoHeight}`);
+    setDetailAspectFromString(
+      card,
+      `${videoEl.videoWidth}/${videoEl.videoHeight}`
+    );
   }
 
   // Initial AR alignment (preview -> detail)
-  document.querySelectorAll('.projectCard').forEach(card => {
-    const details = card.querySelector('.cardDetails');
+  document.querySelectorAll(".projectCard").forEach((card) => {
+    const details = card.querySelector(".cardDetails");
     if (!details) return;
-    if (!details.style.getPropertyValue('--video-ar')) {
+    if (!details.style.getPropertyValue("--video-ar")) {
       const ar = getCardAspectString(card);
       if (ar) setDetailAspectFromString(card, ar);
     }
   });
 
   // Refine AR with exact video metadata when ready
-  document.querySelectorAll('.projectCard .detailVideo').forEach(video => {
-    const card = video.closest('.projectCard');
+  document.querySelectorAll(".projectCard .detailVideo").forEach((video) => {
+    const card = video.closest(".projectCard");
     if (!card) return;
-    video.addEventListener('loadedmetadata', () => {
+    video.addEventListener("loadedmetadata", () => {
       setDetailAspectFromVideo(card, video);
       syncGalleryVars();
       window.galleryLayout?.();
       requestAnimationFrame(() => {
-  requestAnimationFrame(() => {
-    if (card.classList.contains('expanded')) {
-      window.focusExpandedCard?.(card);
-    }
-  });
-});
+        requestAnimationFrame(() => {
+          if (card.classList.contains("expanded")) {
+            window.focusExpandedCard?.(card);
+          }
+        });
+      });
     });
   });
 

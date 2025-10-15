@@ -13,7 +13,7 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden; /* custom scroll via JS */
-  background: #FFFF;
+  background: #ffff;
   height: 100%;
 }
 
@@ -61,7 +61,7 @@ body {
 }
 
 #toggle-rotation-btn {
-  display: none !important;     /* removes it from layout/visuals */
+  display: none !important; /* removes it from layout/visuals */
   pointer-events: none !important;
 }
 
@@ -72,7 +72,7 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #0A0A0A;
+  background: #0a0a0a;
   z-index: 2000;
   opacity: 1;
   transition: opacity 1.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -122,7 +122,7 @@ body {
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   color: #111;
   display: grid;
   place-items: center;
@@ -189,7 +189,7 @@ body {
   transform: translateX(-50%) translateY(140%) scale(0.98);
   z-index: 998;
 
-  width: 50vw;               /* half screen width */
+  width: 50vw; /* half screen width */
   padding: 12px 22px;
   text-align: center;
   font-family: "chivo-mono", sans-serif;
@@ -198,7 +198,7 @@ body {
 
   background: #171717c4;
   border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.35), 0 3px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35), 0 3px 12px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   border-radius: 9999px;
@@ -207,9 +207,7 @@ body {
   pointer-events: none;
 
   /* Transition used for exit (hide). Entrance uses keyframes animation below. */
-  transition:
-    opacity 360ms ease,
-    transform 360ms ease;
+  transition: opacity 360ms ease, transform 360ms ease;
 
   user-select: none;
   cursor: pointer;
@@ -223,9 +221,9 @@ body {
     bottom: 16px;
     padding: 10px 16px;
     font-size: 13px;
-    white-space: nowrap;        /* keep single-line */
-    overflow: hidden;           /* avoid wrapping causing excessive height */
-    text-overflow: ellipsis;    /* just in case */
+    white-space: nowrap; /* keep single-line */
+    overflow: hidden; /* avoid wrapping causing excessive height */
+    text-overflow: ellipsis; /* just in case */
   }
 }
 
@@ -257,16 +255,15 @@ body {
   }
 }
 
-
 /* Fullscreen modal for main projects */
 #projectModal {
   position: fixed;
   inset: 0;
   z-index: 10000;
   display: none;
-  background: rgba(0,0,0,0.82);
+  background: rgba(0, 0, 0, 0.82);
   backdrop-filter: blur(4px);
-  overflow-y: auto;    /* allow overlay to scroll */
+  overflow-y: auto; /* allow overlay to scroll */
 }
 #projectModal.is-open {
   display: block;
@@ -278,7 +275,7 @@ body {
   color: #eaeaea;
   border-radius: 10px;
   padding: 16px 16px 24px;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
 }
 #projectModal .modalHeader {
   position: sticky;
@@ -395,7 +392,9 @@ body {
   grid-column: span 2;
 }
 @media (max-width: 700px) {
-  .projectCard.span-2 { grid-column: span 1; }
+  .projectCard.span-2 {
+    grid-column: span 1;
+  }
 }
 
 /* Project Cards */
@@ -443,7 +442,7 @@ body {
   left: 8px;
   bottom: 8px;
   padding: 4px 8px;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0, 0, 0, 0.45);
   color: #fff;
   border-radius: 4px;
   font-size: 13px;
@@ -459,10 +458,12 @@ body {
 .projectCard.expanded {
   grid-column: 1 / -1; /* for pre-masonry state */
   background: #1a1a1a;
-  overflow: hidden;   /* clip to card to avoid overlay spill + reduce paint area */
-  z-index: 2;    /* sit above neighbors if overlapping */
+  overflow: hidden; /* clip to card to avoid overlay spill + reduce paint area */
+  z-index: 2; /* sit above neighbors if overlapping */
 }
-.projectCard.expanded .cardPreview { display: none; }
+.projectCard.expanded .cardPreview {
+  display: none;
+}
 .projectCard.expanded .cardDetails {
   display: block;
   padding: 16px; /* ensure text has breathing room */
@@ -483,7 +484,7 @@ body {
   width: 100%;
   height: 100%;
   border-radius: 6px;
-  object-fit: contain;  /* preserve AR; no crop in detail view */
+  object-fit: contain; /* preserve AR; no crop in detail view */
 }
 
 /* Expanded card media: full card width, clamped to visible gallery height */
@@ -509,7 +510,8 @@ body {
 }
 
 /* Sections */
-.projectDescription, .projectProcess {
+.projectDescription,
+.projectProcess {
   margin-bottom: 24px;
 }
 .projectDescription h3,
@@ -536,8 +538,8 @@ body {
   z-index: 5;
   padding: 6px 10px;
   border-radius: 6px;
-  border: 1px solid rgba(255,255,255,0.2);
-  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.5);
   color: #fff;
   cursor: pointer;
 }
@@ -545,7 +547,7 @@ body {
   display: none;
 }
 .projectCard.expanded .cardCollapse:hover {
-  background: rgba(255,255,255,0.18);
+  background: rgba(255, 255, 255, 0.18);
 }
 
 /* ---- Menu ---- */
@@ -659,14 +661,14 @@ nav {
   right: 0;
 }
 .hamburger {
-  position: fixed;           /* keep it stuck to viewport */
-  top: 16px;                 /* consistent spacing */
-  right: 16px;               /* move to the right */
-  left: auto;                /* unset the old left */
+  position: fixed; /* keep it stuck to viewport */
+  top: 16px; /* consistent spacing */
+  right: 16px; /* move to the right */
+  left: auto; /* unset the old left */
   width: 30px;
   height: 30px;
-  z-index: 2001;             /* stays above overlay */
-  transform: none;           /* no vertical translate needed */
+  z-index: 10001; /* stays above overlay */
+  transform: none; /* no vertical translate needed */
   border: 0;
   background: transparent;
   display: block;
@@ -678,16 +680,22 @@ nav {
   height: 4px;
   transition: all 0.3s ease-in;
 }
-#bar2 { top: 11px; }
-#bar3 { top: 19px; }
-.navigation.is-active { right: 0; }
-.hamburger.is-open #bar1 {
+#bar2 {
+  top: 11px;
+}
+#bar3 {
+  top: 19px;
+}
+.navigation.is-active {
+  right: 0;
+}
+.hamburger.is-opened #bar1 {
   transform: rotate(45deg) translate(6px, 5px);
 }
-.hamburger.is-open #bar2 {
+.hamburger.is-opened #bar2 {
   background-color: transparent;
 }
-.hamburger.is-open #bar3 {
+.hamburger.is-opened #bar3 {
   transform: rotate(-45deg) translate(6px, -5px);
 }
 /* Mobile portrait: menu drops from top, keep same look/feel */
@@ -707,7 +715,7 @@ nav {
 
   .hamburger {
     top: 16px;
-    right: 16px;  /* move to the right */
+    right: 16px; /* move to the right */
     left: auto;
     z-index: 10001;
   }
@@ -747,7 +755,8 @@ nav {
   left: 0;
   top: 0;
 }
-html.lock-scroll, body.lock-scroll {
+html.lock-scroll,
+body.lock-scroll {
   overflow: hidden !important;
   height: 100%;
   overscroll-behavior: contain;
@@ -771,5 +780,13 @@ html.lock-scroll, body.lock-scroll {
     filter: blur(0);
   }
   /* Mobile 3D gallery: lock page scroll */
-
+}
+#instructions {
+  position: fixed;
+  bottom: 70px;
+  left: 37px;
+  font-family: "chivo-mono", sans-serif;
+  font-size: 13px;
+  color: #a1a1a1;
+  z-index: 10000;
 }
