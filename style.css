@@ -788,5 +788,5 @@ body.lock-scroll {
   font-family: "chivo-mono", sans-serif;
   font-size: 13px;
   color: #a1a1a1;
-  z-index: 10000;
+  z-index: 9999;
 }
