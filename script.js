@@ -6,11 +6,21 @@
    - Click-to-expand cards
    - openSubpage(pageNumber) for 3D tile clicks
 */
+ document.querySelectorAll('a[href="index.html"]').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.body.classList.add('fade-out');
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 300);
+  });
+  
 
 (function () {
   // -----------------------------
   // Hamburger menu
   // -----------------------------
+  
   window.openMenu = function openMenu() {
     const nav = document.querySelector(".navigation");
     const burger = document.querySelector(".hamburger");
@@ -27,72 +37,10 @@
     });
   });
   // ---- Init video -> auto transition to 3D and zoom out on mobile ----
-  (function initVideoAutoTransition() {
-    const isMobile = () =>
-      /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
-      window.matchMedia?.("(pointer: coarse)").matches;
 
-    // Your init video should have an id or a class; adjust selector if needed
-    const initVideo = document.querySelector("#initVideo, .initVideo");
-    if (!initVideo) return;
 
-    let transitioned = false;
-    function transitionTo3D() {
-      if (transitioned) return;
-      transitioned = true;
-
-      // Some implementations hide/remove the video container here
-      try {
-        const container = initVideo.closest(".initVideoContainer");
-        if (container) container.style.display = "none";
-      } catch (e) {}
-
-      // Open the gallery/3D overlay
-      if (window.App && typeof window.App.openGallery === "function") {
-        window.App.openGallery();
-      } else {
-        // Fallback if App.openGallery not available yet: emit an event for your 3D bootstrapper
-        window.dispatchEvent(new CustomEvent("gallery:openRequested"));
-      }
-
-      // On mobile, force zoom-out after overlay is present
-      if (isMobile()) {
-        let tries = 0;
-        const maxTries = 20; // ~300ms
-        const ensureZoomOut = () => {
-          tries++;
-          try {
-            if (window.App && typeof window.App.setGalleryZoom === "function") {
-              window.App.setGalleryZoom("out");
-              return;
-            }
-            window.dispatchEvent(new CustomEvent("gallery:mobileZoomOut"));
-          } catch (e) {}
-          if (tries < maxTries) requestAnimationFrame(ensureZoomOut);
-        };
-        requestAnimationFrame(ensureZoomOut);
-      }
-    }
-
-    // Prefer ended; add safety timeout in case 'ended' never fires
-    initVideo.addEventListener("ended", transitionTo3D);
-    // If autoplay fails and user interacts, also move on after a short delay
-    initVideo.addEventListener("play", () => {
-      // safety: transition if video ends or after long play for devices that block 'ended'
-      setTimeout(() => {
-        if (!transitioned && initVideo.ended) transitionTo3D();
-      }, 200);
-    });
-
-    // Absolute safety: if video stalls, proceed after a max duration guard
-    const hardFailSafeMs = Math.max(
-      3000,
-      (initVideo.duration || 3) * 1000 + 500
-    );
-    setTimeout(() => {
-      if (!transitioned) transitionTo3D();
-    }, hardFailSafeMs);
-  })();
+ 
+});
   // -----------------------------
   // Masonry + Expand for Gallery
   // -----------------------------

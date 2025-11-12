@@ -1,3 +1,4 @@
+
 /* Global resets */
 button {
   font: inherit;
@@ -15,6 +16,11 @@ body {
   overflow: hidden; /* custom scroll via JS */
   background: #ffff;
   height: 100%;
+}
+
+body.fade-out {
+  opacity: 0;
+  transition: opacity 0.4s ease;
 }
 
 /* 3D canvas */
