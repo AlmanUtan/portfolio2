@@ -57,10 +57,7 @@
 
     <div id="canvas-container"></div>
     <button id="toggle-rotation-btn">Pause Rotation</button>
-    <p id="instructions" class="instructions">
-      //scroll to zoom in and out <br />
-      //press space to stop and resume the rotation
-    </p>
+    <p id="instructions" class="instructions"></p>
 
     <!-- Intro overlay with video -->
     <div id="start-overlay" aria-hidden="false">
@@ -73,16 +70,10 @@
         x5-playsinline
         preload="auto"
       >
-        <source src="public/vid/platz.mp4" type="video/mp4" />
+        <source src="public/vid/Main3.mp4" type="video/mp4" />
       </video>
       <!-- Small mute/unmute toggle in top-right -->
-      <button
-        id="introMuteToggle"
-        aria-label="Toggle audio"
-        title="Toggle audio"
-      >
-        🔇
-      </button>
+      <button></button>
       <!-- Fallback play button if autoplay is blocked -->
       <button id="introPlayBtn" aria-label="Play intro" hidden>Play</button>
     </div>
