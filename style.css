@@ -520,20 +520,19 @@ body.fade-out {
 
 /* Base wrapper for detail media (used by expanded cards and modal) */
 .videoWrapper {
-  position: relative;
   width: 100%;
-  aspect-ratio: var(--video-ar, 16/9);
   margin-bottom: 20px;
   max-width: 100%;
+  /* Remove fixed aspect ratio so height can adjust */
 }
+
 .videoWrapper video,
 .videoWrapper iframe {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 6px;
-  object-fit: contain; /* preserve AR; no crop in detail view */
+  position: static;         /* no absolute positioning */
+  width: 100%;              /* full card width */
+  height: auto;             /* let height adjust with aspect ratio */
+  border-radius: px;
+  object-fit: contain;      /* or 'cover' if you want cropping */
 }
 
 /* Expanded card media: full card width, clamped to visible gallery height */
@@ -1092,12 +1091,27 @@ body.lock-scroll {
   max-width: 100%;
 }
 
+/* DESCRIPTION – right bound */
 .projectDescription--wide h3 {
-  text-align: left;
+  font-family: "chivo-mono", sans-serif;
+  font-weight: 500;          /* Medium */
+  font-size: 36px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  color: #f1f1f1;
+  text-align: right;         /* right-aligned heading */
 }
 
 .projectDescription--wide p {
-  text-align: left;
+  font-family: "chivo-mono", sans-serif;
+  font-weight: 200;          /* Thin */
+  font-size: 18px;
+  line-height: 1.4;          /* ~7 words/line with this size */
+  color: #d0d0d0;
+  text-align: right;         /* right-aligned text */
+  max-width: 50ch;           /* ~7–8 words per line */
+  margin-left: auto;         /* right-bind the block */
 }
 
 /*  ======================== */
@@ -1171,24 +1185,26 @@ body.lock-scroll {
 }
 
 /* heading styled like Description heading but left aligned */
+/* IN DETAIL – left bound */
 .caseDetail-heading {
   font-family: "chivo-mono", sans-serif;
-  font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;          /* Medium */
+  font-size: 36px;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  margin: 0 0 4px 0;
+  margin: 0 0 8px 0;
   color: #f1f1f1;
   text-align: left;
 }
 
-/* paragraphs same as description, left bound */
 .caseDetail-text p {
-  font-size: 13px;
-  line-height: 1.5;
+  font-family: "chivo-mono", sans-serif;
+  font-weight: 200;          /* Thin */
+  font-size: 18px;
+  line-height: 1.4;
   color: #d0d0d0;
-  margin: 0 0 12px 0;
-  text-align: left;
+  text-align: left;          /* left-aligned text */
+  max-width: 50ch;           /* ~7–8 words per line */
 }
 
 /* right image column */
@@ -1248,5 +1264,18 @@ body.lock-scroll {
 @media (max-width: 600px) {
   .caseDetailVideos {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .projectDescription--wide h3,
+  .caseDetail-heading {
+    font-size: 28px;
+  }
+
+  .projectDescription--wide p,
+  .caseDetail-text p {
+    font-size: 18px;
+    max-width: 32ch;
   }
 }
