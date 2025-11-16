@@ -517,11 +517,20 @@ body.fade-out {
   display: block;
   padding: 16px; /* ensure text has breathing room */
 }
+/* Main cards: remove padding so video can span entire card */
+.projectCard.expanded[data-tier="main"] .cardDetails {
+  padding: 0;
+}
+
+/* Other cards keep padding */
+.projectCard.expanded:not([data-tier="main"]) .cardDetails {
+  padding: 16px;
+}
 
 /* Base wrapper for detail media (used by expanded cards and modal) */
 .videoWrapper {
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 0;
   max-width: 100%;
   /* Remove fixed aspect ratio so height can adjust */
 }
@@ -531,7 +540,7 @@ body.fade-out {
   position: static;         /* no absolute positioning */
   width: 100%;              /* full card width */
   height: auto;             /* let height adjust with aspect ratio */
-  border-radius: px;
+  border-radius: 0;         /* no border radius for full span */
   object-fit: contain;      /* or 'cover' if you want cropping */
 }
 
@@ -542,6 +551,20 @@ body.fade-out {
   margin-bottom: 16px;
   aspect-ratio: var(--video-ar, var(--card-ar, 16/9));
   max-height: var(--gallery-content-max-h, calc((100vh - 64px) - 140px));
+}
+
+/* Main cards: let the video claim almost the full content height */
+.projectCard.expanded[data-tier="main"] .videoWrapper {
+  margin-bottom: 0;
+  max-height: var(--gallery-content-max-h, calc((100vh - 64px) - 80px));
+}
+
+/* Other cards: keep video shorter so text + hashtags fit on screen */
+.projectCard.expanded:not([data-tier="main"]) .videoWrapper {
+  margin-bottom: 12px;
+  max-height: calc(
+    var(--gallery-content-max-h, (100vh - 64px)) - 220px
+  );
 }
 
 /* If you want no cropping in the detail view (class on the <video>) */
@@ -596,6 +619,51 @@ body.fade-out {
 }
 .projectCard.expanded .cardCollapse:hover {
   background: rgba(255, 255, 255, 0.18);
+}
+
+/* Other cards (non-main) keep padding */
+.projectCard.expanded[data-tier="standard"] .cardDetails,
+.projectCard.expanded:not([data-tier="main"]) .cardDetails {
+  padding: 16px;
+}
+
+/* Main cards have no padding */
+.projectCard.expanded[data-tier="main"] .cardDetails {
+  padding: 0;
+}
+
+/* Main cards video wrapper has no margin */
+.projectCard.expanded[data-tier="main"] .videoWrapper {
+  margin-bottom: 0;
+}
+
+/* Other cards video wrapper keeps margin */
+.projectCard.expanded[data-tier="standard"] .videoWrapper,
+.projectCard.expanded:not([data-tier="main"]) .videoWrapper {
+  margin-bottom: 16px;
+}
+
+/* Hashtag blobs for other cards */
+.projectCard.expanded:not([data-tier="main"]) .cardHashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.projectCard.expanded:not([data-tier="main"]) .hashtagBlob {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-family: "chivo-mono", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  color: #f5f5f5;
+  background: rgba(255, 255, 255, 0.03);
 }
 
 /* === Expanded ÜBERTÖN case header === */
@@ -703,6 +771,29 @@ body.fade-out {
 
 .caseVideoWrap .caseCloseBtn:hover {
   background: rgba(0, 0, 0, 0.55);
+}
+
+/* Hashtag blobs under non-main cards (expanded) */
+.projectCard.expanded:not([data-tier="main"]) .cardHashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.projectCard.expanded:not([data-tier="main"]) .hashtagBlob {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-family: "chivo-mono", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  color: #f5f5f5;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 /* Fullscreen icon: bottom-right 30x30 */

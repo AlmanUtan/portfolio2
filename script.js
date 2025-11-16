@@ -237,20 +237,36 @@ document
       // Cap the video height according to overlay content height if available
       const scrollerEl = scroller || grid.parentElement || document.body;
       const overlayStyles = overlayEl ? getComputedStyle(overlayEl) : null;
+
+      const isMainCard = card.dataset.tier === "main";
+
+      // rough extra space for text + hashtags for non-main cards
+      const extraContentSpace = isMainCard ? 80 : 220;
+
       let MAX_VID_H = 0;
       if (overlayStyles) {
         const cmh =
           parseFloat(
             overlayStyles.getPropertyValue("--gallery-content-max-h")
           ) || 0;
-        if (cmh > 0) MAX_VID_H = Math.max(240, Math.floor(cmh));
+
+        if (cmh > 0) {
+          // make sure video + text + hashtags fit into cmh
+          MAX_VID_H = Math.max(
+            200,
+            Math.floor(cmh - extraContentSpace)
+          );
+        }
       }
       if (!MAX_VID_H) {
         const viewportH =
           scrollerEl && scrollerEl.clientHeight
             ? scrollerEl.clientHeight
             : window.innerHeight;
-        MAX_VID_H = Math.max(240, Math.floor(viewportH - 180)); // leave header/margins
+        MAX_VID_H = Math.max(
+          200,
+          Math.floor(viewportH - extraContentSpace)
+        );
       }
 
       // parse "W/H"
