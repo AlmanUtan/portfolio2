@@ -27,8 +27,9 @@ html,
 body {
   margin: 0;
   padding: 0;
-  overflow: hidden;
-  transition: opacity 0.3s ease;
+  overflow: hidden; /* custom scroll via JS */
+  background: #000;   /* was #ffff */
+  height: 100%;
 }
 
 
@@ -46,8 +47,8 @@ body.fade-out {
   top: 0;
   left: 0;
   z-index: 1;
+  background: #ffffff;   /* new: force the 3D area to look white */
 }
-
 /* Subpages (opened by clicking orbiting tiles) */
 .subpage {
   position: fixed;

@@ -82,17 +82,16 @@
       (function () {
         const overlay = document.getElementById("start-overlay");
         const video = document.getElementById("introVideo");
-        const skipBtn = document.getElementById("skipVideoBtn");
 
         if (!overlay || !video) return;
 
         let scrollAccumulator = 0;
-        const maxScroll = 100; // Distance to fade out video
+        const maxScroll = 100; // Total scroll distance
+        const fadeStartThreshold = 70; // Start fading at 70% of scroll distance
         let targetScroll = 0;
         let scrollVelocity = 0;
         let lastFrameTime = performance.now();
         let hasRedirected = false;
-        let videoEnded = false;
 
         // Smooth scroll physics
         function updateScroll() {
@@ -109,40 +108,29 @@
             Math.min(maxScroll, scrollAccumulator)
           );
 
-          // Calculate fade progress
-          const fadeProgress = Math.min(1, scrollAccumulator / maxScroll);
-          const opacity = 1 - fadeProgress;
+          // Calculate fade progress - only fade after threshold
+          let opacity = 1;
+          if (scrollAccumulator >= fadeStartThreshold) {
+            const fadeProgress =
+              (scrollAccumulator - fadeStartThreshold) /
+              (maxScroll - fadeStartThreshold);
+            opacity = 1 - Math.min(1, fadeProgress);
+          }
 
           // Apply fade
           overlay.style.opacity = opacity.toFixed(3);
           video.style.opacity = opacity.toFixed(3);
 
-          // Redirect when fully faded
-          if (fadeProgress >= 0.98 && !hasRedirected) {
+          // Redirect when scroll reaches end
+          if (scrollAccumulator >= maxScroll - 2 && !hasRedirected) {
             hasRedirected = true;
-            // Add smooth page transition
             document.body.classList.add("fade-out");
             setTimeout(() => {
-              window.location.href = "asterisk.html?from=video";
-            }, 400);
+              window.location.href = "asterisk.html";
+            }, 300);
           }
 
           requestAnimationFrame(updateScroll);
-        }
-
-        // Auto-transition when video ends
-        video.addEventListener("ended", () => {
-          if (!videoEnded && !hasRedirected) {
-            videoEnded = true;
-            targetScroll = maxScroll;
-          }
-        });
-
-        // Skip button functionality
-        if (skipBtn) {
-          skipBtn.addEventListener("click", () => {
-            targetScroll = maxScroll;
-          });
         }
 
         // Start animation loop
