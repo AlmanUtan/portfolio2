@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -9,42 +8,16 @@
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="https://use.typekit.net/yyn5dss.css" />
     <style>
-      /* Additional styles specific to about.html can go here */
-      h1 {
-        font-family: "jacquard-12", sans-serif;
-        font-size: 32px;
-        margin: 20px;
-      }
-
-      h2 {
-        font-family: "jacquard-12", sans-serif;
-        font-size: 24px;
-        margin: 20px;
-      }
-
-      p {
-        font-family: "chivo-mono", sans-serif;
-        font-size: 16px;
-        margin: 20px;
-        line-height: 1.5;
-      }
-
-      .expertise-softwares {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        margin: 20px;
-      }
-
-      .expertise-softwares-image img {
-        width: 100px; /* Adjust size as needed */
-        height: auto;
+      body.about-page {
+        min-height: 100vh;
+        background: url("public/img/aboutme.png") center center / cover
+          no-repeat;
       }
     </style>
   </head>
 
-  <body>
-     <button
+  <body class="about-page">
+    <button
       class="hamburger"
       type="button"
       aria-label="Open menu"
@@ -60,13 +33,22 @@
       <nav>
         <ul>
           <li>
-            <li><a href="asterisk.html">About</a></li>Home</a>
-          </li>
-          <li>
-            <li><a href="asterisk.html">Gallery</a></li>
+            <a
+              href="asterisk.html"
+              onclick="return closeMenuAndNavigate('asterisk.html');"
+              >Home</a
             >
           </li>
-          <li><a href="about.html">About</a></li>
+          <li>
+            <a
+              href="asterisk.html#gallery"
+              onclick="return closeMenuAndNavigate('asterisk.html#gallery');"
+              >Gallery</a
+            >
+          </li>
+          <li>
+            <a href="about.html" aria-current="page">About</a>
+          </li>
         </ul>
       </nav>
 
@@ -79,7 +61,7 @@
         <a href="https://www.instagram.com/elia.roempler/" target="_blank"
           >Instagram</a
         >
-        <a href="elia.roempler@gmail.com" target="_blank">E-mail</a>
+        <a href="mailto:elia.roempler@gmail.com" target="_blank">E-mail</a>
       </div>
 
       <div class="asterisk-image">
@@ -87,15 +69,19 @@
       </div>
     </div>
 
-    <h1>About me</h1>
-    <p>about me text goes here</p>
-    <h2>Expertise</h2>
-    <div class="expertise-softwares">
-      <div class="expertise-softwares-image">
-        <img src="" alt="" />
-      </div>
-    </div>
-
     <script src="script.js"></script>
+    <script>
+      function closeMenuAndNavigate(target) {
+        const nav = document.querySelector(".navigation");
+        const burger = document.querySelector(".hamburger");
+        if (nav) nav.classList.remove("is-active");
+        if (burger) burger.classList.remove("is-opened");
+        document.body.classList.add("fade-out");
+        setTimeout(() => {
+          window.location.href = target;
+        }, 300);
+        return false;
+      }
+    </script>
   </body>
 </html>

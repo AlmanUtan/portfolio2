@@ -852,34 +852,50 @@
           this.rects = [];
           this.videos = [];
 
-          // Collect gallery cards and their preview video src + page numbers
-          const cards = Array.from(
-            document.querySelectorAll("#galleryList .projectCard")
-          );
-          const videoEntries = cards
-            .map((card, idx) => {
-              const pv = card.querySelector(".previewVideo");
-              const src =
-                pv?.getAttribute("src") ||
-                card
-                  .querySelector(".cardDetails source")
-                  ?.getAttribute("src") ||
-                "";
-              const page = Number(card.dataset.page || idx + 1);
-              const cp = card.querySelector(".cardPreview");
-              let ar = "16/9";
-              if (cp) {
-                const v = getComputedStyle(cp)
-                  .getPropertyValue("--card-ar")
-                  .trim();
-                if (v) ar = v;
-              }
-              const parts = ar.split(/[/:]/).map(Number);
-              const aspect =
-                parts[0] && parts[1] ? parts[0] / parts[1] : 16 / 9;
-              return { src, page, aspect };
-            })
-            .filter((e) => !!e.src);
+          // MANUAL CONFIGURATION: Define each rectangle's video source and aspect ratio
+          // Format: { src: "path/to/video.mp4", page: pageNumber, aspect: width/height }
+          const videoEntries = [
+            {
+              src: "public/vid/videoSmallLoad/%C3%BCbert%C3%B6n%20main%20(1920x1080).mp4",
+              page: 1,
+              aspect: 16 / 9,
+            },
+            {
+              src: "public/vid/videoSmallLoad/wdtw%20v1%20%281920x1080%29.mp4",
+              page: 2,
+              aspect: 16 / 9,
+            },
+            {
+              src: "public/vid/videoSmallLoad/giftedness%20%281920x1080%29.mp4",
+              page: 3,
+              aspect: 16 / 9,
+            },
+            {
+              src: "public/vid/videoSmallLoad/nachtInContrast%20%281920x1080%29.mp4",
+              page: 4,
+              aspect: 16 / 9,
+            },
+            {
+              src: "public/vid/videoSmallLoad/extra%201%20%281240x1536%29.mp4",
+              page: 5,
+              aspect: 2 / 3,
+            },
+            {
+              src: "public/vid/videoSmallLoad/extra%202%20%281080x1080%29.mp4",
+              page: 6,
+              aspect: 1 / 1,
+            },
+            {
+              src: "public/vid/videoSmallLoad/extra%203%20%281080x576%29.mp4",
+              page: 7,
+              aspect: 1080 / 576,
+            },
+            {
+              src: "public/vid/videoSmallLoad/extra%204%20%281080x1080%29.mp4",
+              page: 8,
+              aspect: 1 / 1,
+            },
+          ];
 
           if (!videoEntries.length) return;
 
@@ -893,15 +909,15 @@
             .sort((a, b) => a.sort - b.sort)
             .map(({ value }) => value);
 
-          const totalRects = formats.length;
+          const totalRects = videoEntries.length; // Use actual number of defined entries
           const minRadius = radius * 1.1;
           const maxRadius = radius * 1.22;
 
           for (let i = 0; i < totalRects; i++) {
-            const entry = videoEntries[i % videoEntries.length];
+            const entry = videoEntries[i]; // Use exact entry, no wrapping
             const pageNumber = entry.page;
 
-            const rectAspect = (formats[i] + entry.aspect) / 2;
+            const rectAspect = entry.aspect; // Use exact aspect from config
 
             const width = Math.sqrt(baseSurfaceArea * rectAspect);
             const height = Math.sqrt(baseSurfaceArea / rectAspect);

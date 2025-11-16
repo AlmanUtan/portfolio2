@@ -6,21 +6,22 @@
    - Click-to-expand cards
    - openSubpage(pageNumber) for 3D tile clicks
 */
- document.querySelectorAll('a[href="index.html"]').forEach(link => {
-  link.addEventListener('click', (e) => {
-    e.preventDefault();
-    document.body.classList.add('fade-out');
-    setTimeout(() => {
-      window.location.href = 'index.html';
-    }, 300);
+document
+  .querySelectorAll('a[href="index.html"]')
+  .forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      document.body.classList.add("fade-out");
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 300);
+    });
   });
-  
 
 (function () {
   // -----------------------------
   // Hamburger menu
   // -----------------------------
-  
   window.openMenu = function openMenu() {
     const nav = document.querySelector(".navigation");
     const burger = document.querySelector(".hamburger");
@@ -40,7 +41,6 @@
 
 
  
-});
   // -----------------------------
   // Masonry + Expand for Gallery
   // -----------------------------
