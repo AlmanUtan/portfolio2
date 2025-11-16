@@ -91,18 +91,47 @@
               </div>
 
               <div class="cardDetails" style="--video-ar: 16/9">
+                <header class="caseHeader"></header>
                 <div class="videoWrapper">
-                  <video
-                    class="detailVideo"
-                    controls
-                    playsinline
-                    preload="metadata"
+                  <!-- Title top-left -->
+                  <div class="caseTitle">ÜBERTÖN</div>
+
+                  <!-- Close arrow top-right -->
+                  <button
+                    class="caseCloseBtn"
+                    type="button"
+                    aria-label="Close project"
                   >
-                    <source
-                      src="public/vid/%C3%BCbert%C3%B6n%20main%20(1920x1080).mp4"
-                      type="video/mp4"
-                    />
-                  </video>
+                    <span class="arrowParts">
+                      <span class="arrow-bar arrow-bar-main"></span>
+                      <span class="arrow-bar arrow-bar-diag"></span>
+                      <span class="arrow-bar arrow-bar-tail"></span>
+                    </span>
+                  </button>
+
+                  <!-- Fullscreen icon bottom-right -->
+                  <button
+                    class="caseFullscreenBtn"
+                    type="button"
+                    aria-label="Fullscreen video"
+                  >
+                    <span class="fs-box">
+                      <span class="fs-corner fs-tl"></span>
+                      <span class="fs-corner fs-tr"></span>
+                      <span class="fs-corner fs-bl"></span>
+                      <span class="fs-corner fs-br"></span>
+                    </span>
+                  </button>
+
+                  <!-- 16:9 video -->
+                  <video
+                    class="caseVideo"
+                    src=" public/vid/%C3%BCbert%C3%B6n%20main%20(1920x1080).mp4"
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                  ></video>
                 </div>
 
                 <div class="projectDescription">

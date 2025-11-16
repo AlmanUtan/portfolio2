@@ -602,6 +602,187 @@ body.fade-out {
   background: rgba(255, 255, 255, 0.18);
 }
 
+
+
+
+/* === Expanded ÜBERTÖN case header === */
+
+.projectCard.expanded .caseHeader {
+  margin-bottom: 24px;
+}
+
+/* 16:9 video container spanning the full card width */
+.caseVideoWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+}
+
+/* Actual video: covers container */
+.caseVideoWrap .caseVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* “stretched” in the sense of filling the frame */
+}
+
+/* Title: top-left overlay */
+.caseVideoWrap .caseTitle {
+  position: absolute;
+  left: 24px;
+  top: 24px;
+  min-width: 152px;
+  min-height: 43px;
+  display: flex;
+  align-items: center;
+  font-family: "chivo-mono", sans-serif;
+  font-weight: 500;              /* medium */
+  font-size: 36px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffff;
+  z-index: 2;
+}
+
+/* Close arrow: top-right, 26x26 hit area */
+.caseVideoWrap .caseCloseBtn {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* Group containing the 3 rectangles */
+.caseCloseBtn .arrowParts {
+  position: relative;
+  width: 18px;
+  height: 18px;
+}
+
+/* Base rect style */
+.caseCloseBtn .arrow-bar {
+  position: absolute;
+  background-color: #ffffff;
+  border-radius: 999px;
+}
+
+/* Main shaft (horizontal-ish) */
+.caseCloseBtn .arrow-bar-main {
+  left: 2px;
+  right: 2px;
+  top: 8px;
+  height: 2px;
+}
+
+/* Diagonal part going down-left */
+.caseCloseBtn .arrow-bar-diag {
+  width: 10px;
+  height: 2px;
+  right: 3px;
+  top: 6px;
+  transform-origin: right center;
+  transform: rotate(225deg); /* arrow pointing to bottom-left */
+}
+
+/* Tail / extra bar to get the 3-rect look */
+.caseCloseBtn .arrow-bar-tail {
+  width: 8px;
+  height: 2px;
+  right: 3px;
+  top: 10px;
+  transform-origin: right center;
+  transform: rotate(135deg);
+}
+
+.caseVideoWrap .caseCloseBtn:hover {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+/* Fullscreen icon: bottom-right 30x30 */
+.caseVideoWrap .caseFullscreenBtn {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* Box + 4 corners to mimic a generic fullscreen icon */
+.caseFullscreenBtn .fs-box {
+  position: relative;
+  width: 18px;
+  height: 18px;
+}
+
+.caseFullscreenBtn .fs-corner {
+  position: absolute;
+  border: 2px solid #ffffff;
+  width: 8px;
+  height: 8px;
+}
+
+/* Top-left */
+.caseFullscreenBtn .fs-tl {
+  left: 0;
+  top: 0;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+/* Top-right */
+.caseFullscreenBtn .fs-tr {
+  right: 0;
+  top: 0;
+  border-left: 0;
+  border-bottom: 0;
+}
+
+/* Bottom-left */
+.caseFullscreenBtn .fs-bl {
+  left: 0;
+  bottom: 0;
+  border-right: 0;
+  border-top: 0;
+}
+
+/* Bottom-right */
+.caseFullscreenBtn .fs-br {
+  right: 0;
+  bottom: 0;
+  border-left: 0;
+  border-top: 0;
+}
+
+.caseFullscreenBtn:hover {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+
+
+
 /* ---- Menu ---- */
 .navigation {
   position: fixed;
