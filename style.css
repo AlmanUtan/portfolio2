@@ -590,9 +590,9 @@ body.fade-out {
   width: 100%;
   margin: 0;
   height: clamp(
-    240px,
-    calc(var(--gallery-content-max-h, (100vh - 64px)) - 160px),
-    480px
+    332px,
+    calc(1.2 * (var(--gallery-content-max-h, (100vh - 64px)) - 120px)),
+    662px
   );
   aspect-ratio: auto;
   max-height: none;
