@@ -17,7 +17,37 @@ document
       }, 300);
     });
   });
+// Smoothly go back to index.html when the user scrolls up at the very top
+  (function () {
+    let lastScrollY = window.scrollY;
+    let upwardTicks = 0;
+    const UP_TICKS_THRESHOLD = 3;   // how many "up" events in a row
+    const TOP_TOLERANCE = 10;       // px from top
 
+    window.addEventListener("scroll", () => {
+      const currentY = window.scrollY;
+
+      const atTop = currentY <= TOP_TOLERANCE;
+      const scrollingUp = currentY < lastScrollY;
+
+      if (atTop && scrollingUp) {
+        upwardTicks++;
+      } else {
+        upwardTicks = 0;
+      }
+
+      if (atTop && upwardTicks >= UP_TICKS_THRESHOLD) {
+        // small fade-out, then go back
+        document.body.classList.add("fade-out");
+        setTimeout(() => {
+          window.location.href = "index.html?from=nav";
+        }, 300);
+      }
+
+      lastScrollY = currentY;
+    });
+  })();
+  
 (function () {
   // -----------------------------
   // Hamburger menu

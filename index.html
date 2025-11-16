@@ -54,7 +54,7 @@
         <img src="public/img/IMG_6999.PNG" alt="asterisk" />
       </div>
     </div>
-
+    <div id="page-transition-overlay"></div>
     <!-- Intro overlay with video -->
     <div id="start-overlay" aria-hidden="false">
       <video
@@ -68,8 +68,8 @@
       >
         <source src="public/vid/Main3.mp4" type="video/mp4" />
       </video>
-      <!-- Small mute/unmute toggle in top-right -->
-      <button></button>
+      <!-- Skip video button in bottom right -->
+      <button id="skipVideoBtn" aria-label="Skip video">Skip</button>
       <!-- Fallback play button if autoplay is blocked -->
       <button id="introPlayBtn" aria-label="Play intro" hidden>Play</button>
     </div>
@@ -82,6 +82,7 @@
       (function () {
         const overlay = document.getElementById("start-overlay");
         const video = document.getElementById("introVideo");
+        const skipBtn = document.getElementById("skipVideoBtn");
 
         if (!overlay || !video) return;
 
@@ -91,6 +92,7 @@
         let scrollVelocity = 0;
         let lastFrameTime = performance.now();
         let hasRedirected = false;
+        let videoEnded = false;
 
         // Smooth scroll physics
         function updateScroll() {
@@ -118,12 +120,29 @@
           // Redirect when fully faded
           if (fadeProgress >= 0.98 && !hasRedirected) {
             hasRedirected = true;
+            // Add smooth page transition
+            document.body.classList.add("fade-out");
             setTimeout(() => {
-              window.location.href = "asterisk.html";
-            }, 200);
+              window.location.href = "asterisk.html?from=video";
+            }, 400);
           }
 
           requestAnimationFrame(updateScroll);
+        }
+
+        // Auto-transition when video ends
+        video.addEventListener("ended", () => {
+          if (!videoEnded && !hasRedirected) {
+            videoEnded = true;
+            targetScroll = maxScroll;
+          }
+        });
+
+        // Skip button functionality
+        if (skipBtn) {
+          skipBtn.addEventListener("click", () => {
+            targetScroll = maxScroll;
+          });
         }
 
         // Start animation loop
