@@ -510,13 +510,7 @@ body.fade-out {
   overflow: hidden; /* clip to card to avoid overlay spill + reduce paint area */
   z-index: 2; /* sit above neighbors if overlapping */
 }
-.projectCard.expanded .cardPreview {
-  display: none;
-}
-.projectCard.expanded .cardDetails {
-  display: block;
-  padding: 16px; /* ensure text has breathing room */
-}
+
 /* Main cards: remove padding so video can span entire card */
 .projectCard.expanded[data-tier="main"] .cardDetails {
   padding: 0;
