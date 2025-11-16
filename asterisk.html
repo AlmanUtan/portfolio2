@@ -83,7 +83,7 @@
                 <span class="projectName">übertön</span>
                 <video
                   class="previewVideo"
-                  src="public/vid/%C3%BCbert%C3%B6n%20main%20(1920x1080).mp4"
+                  src="public/videoSmallLoad/uberton.mp4"
                   muted
                   playsinline
                   preload="none"
@@ -324,7 +324,7 @@
                 <span class="projectName">wdtw</span>
                 <video
                   class="previewVideo"
-                  src="public/vid/wdtw%20v1%20%281920x1080%29.mp4"
+                  src="public/videoSmallLoad/wdtwcover.mp4"
                   muted
                   playsinline
                   preload="none"
@@ -332,35 +332,185 @@
               </div>
 
               <div class="cardDetails" style="--video-ar: 16/9">
-                <div class="videoWrapper">
-                  <video
-                    class="detailVideo"
-                    controls
-                    playsinline
-                    preload="metadata"
+                <div class="videoWrapper caseVideoWrap">
+                  <div class="caseTitle">wdtw</div>
+                  <button
+                    class="caseCloseBtn"
+                    type="button"
+                    aria-label="Close project"
                   >
-                    <source
-                      src="public/vid/wdtw%20v1%20%281920x1080%29.mp4"
-                      type="video/mp4"
-                    />
-                  </video>
+                    <span class="arrowParts">
+                      <span class="arrow-bar arrow-bar-main"></span>
+                      <span class="arrow-bar arrow-bar-diag"></span>
+                      <span class="arrow-bar arrow-bar-tail"></span>
+                    </span>
+                  </button>
+                  <button
+                    class="caseFullscreenBtn"
+                    type="button"
+                    aria-label="Fullscreen video"
+                  >
+                    <span class="fs-box">
+                      <span class="fs-corner fs-tl"></span>
+                      <span class="fs-corner fs-tr"></span>
+                      <span class="fs-corner fs-bl"></span>
+                      <span class="fs-corner fs-br"></span>
+                    </span>
+                  </button>
+                  <video
+                    class="caseVideo"
+                    src="public/vid/wdtwcover.mp4"
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                  ></video>
                 </div>
 
-                <div class="projectDescription">
-                  <h3>Description</h3>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Duis posuere condimentum tellus eget tristique.
-                  </p>
+                <!-- BODY: BLOBS + DESCRIPTION -->
+                <div class="caseBody">
+                  <div class="caseBody-left">
+                    <!-- 3 BLOBS -->
+                    <div class="caseBlobs">
+                      <!-- Logo blob -->
+                      <div class="caseBlob">
+                        <div class="caseBlob-square">
+                          <!-- replace with real logo image if you like -->
+                          <img
+                            src="public/img/placeholder-logo.png"
+                            alt="Übertön logo"
+                          />
+                        </div>
+                      </div>
+
+                      <!-- Installation blob -->
+                      <div class="caseBlob">
+                        <div class="caseBlob-pill"># installation</div>
+                      </div>
+
+                      <!-- Audio reactive blob -->
+                      <div class="caseBlob">
+                        <div class="caseBlob-pill"># audio reactive</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="caseBody-right">
+                    <!-- Description -->
+                    <div class="projectDescription projectDescription--wide">
+                      <h3>Description</h3>
+                      <p>
+                        For the WDTW25 Afterparty, I got commissioned to be a VJ to support the DJ lineup visually. Working together with peers from my university, we created multiple distinct audio-reactive visuals for each DJ. The work that you can see here was my contribution to the project.
+
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div class="projectProcess">
-                  <h3>Process</h3>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                    Repellendus deleniti, autem explicabo quisquam numquam
-                    accusamus.
-                  </p>
+
+                <!-- 4 DETAIL VIDEOS ROW -->
+                <div class="caseDetailVideos">
+                  <!-- VIDEO 1 -->
+                  <div class="detailVideoCard">
+                    <div class="detailVideoInner">
+                      <img
+                        class="detailVideoThumb"
+                        src="public/img/ubertoen-detail1-thumb.jpg"
+                        alt="Übertön detail 1"
+                      />
+                      <video
+                        class="detailVideoHover"
+                        src="public/vid/ubertoen-detail1.mp4"
+                        muted
+                        playsinline
+                        preload="metadata"
+                      ></video>
+                    </div>
+                  </div>
+
+                  <!-- VIDEO 2 -->
+                  <div class="detailVideoCard">
+                    <div class="detailVideoInner">
+                      <img
+                        class="detailVideoThumb"
+                        src="public/img/ubertoen-detail2-thumb.jpg"
+                        alt="Übertön detail 2"
+                      />
+                      <video
+                        class="detailVideoHover"
+                        src="public/vid/ubertoen-detail2.mp4"
+                        muted
+                        playsinline
+                        preload="metadata"
+                      ></video>
+                    </div>
+                  </div>
+
+                  <!-- VIDEO 3 -->
+                  <div class="detailVideoCard">
+                    <div class="detailVideoInner">
+                      <img
+                        class="detailVideoThumb"
+                        src="public/img/ubertoen-detail3-thumb.jpg"
+                        alt="Übertön detail 3"
+                      />
+                      <video
+                        class="detailVideoHover"
+                        src="public/vid/ubertoen-detail3.mp4"
+                        muted
+                        playsinline
+                        preload="metadata"
+                      ></video>
+                    </div>
+                  </div>
+
+                  <!-- VIDEO 4 -->
+                  <div class="detailVideoCard">
+                    <div class="detailVideoInner">
+                      <img
+                        class="detailVideoThumb"
+                        src="public/img/ubertoen-detail4-thumb.jpg"
+                        alt="Übertön detail 4"
+                      />
+                      <video
+                        class="detailVideoHover"
+                        src="public/vid/ubertoen-detail4.mp4"
+                        muted
+                        playsinline
+                        preload="metadata"
+                      ></video>
+                    </div>
+                  </div>
                 </div>
+
+                <!-- IN DETAIL SECTION -->
+                <div class="caseDetailSection">
+                  <div class="caseDetail-left">
+                    <h3 class="caseDetail-heading">In Detail</h3>
+                    <div class="caseDetail-text">
+                      <p>
+                        WDTW (We Design The World) is an annual event of NHL Stenden, celebrating its creative studies with a week full of interesting lectures, workshops, expos, and a big afterparty to connect different creative fields within the university
+                      </p>
+                      <p>
+                        Our team of 3 students, including me, was responsible for VJing for this event. None of us had prior experience in this, but we were all familiar with the basics of TouchDesigner, so we settled on using that program over something like Resolume, which is usually the more common choice.
+                      </p>
+                      <p>
+                        Even though TouchDesigner is not specifically made for VJing, it has the advantage of its real-time rendering, meaning we can make actual live audio-reactive visuals, instead of adjusting prerendered video clips during the live performance. For our project, that means most of the work takes place ahead of the event, creating node setups that match the music that will be played, and only doing small adjustments during the sets themselves.
+                      </p>
+                      <p>
+                        Giving the music a visual character felt especially
+                        crucial for this project, since nowadays music often
+                        slips into the background, while we´re busy following
+                        our daily lives. Übertön claims back a spot just for
+                        music.
+                      </p>
+                      <p>
+                        So to be able to create these fitting networks for the visuals, we got in contact with each DJ, asking for concrete setlists to base our moodboards on. Each DJ was playing a different type of genre, starting with light house beats and moving all the way to hard techno over the course of the night.
+                      </p>
+                      <p>
+                        My part in the project was not only to create two of the main visuals for the last two DJs, but more importantly, to create a project setup, allowing us to even VJ inside TouchDesigner, since, as already mentioned, the program is not specifically made for that. That meant I built an in-depth audio-analysis tool that could be used to instance each individual visual, but furthermore drove the whole project by acting as a main controller over each DJ's multiple visuals, switching between them, and inserting (also audio-reactive) title cards with the name of the event.
+                      </p>
+                    </div>
+                  </div>
               </div>
             </article>
 
@@ -374,7 +524,7 @@
                 <span class="projectName">giftedness</span>
                 <video
                   class="previewVideo"
-                  src="public/vid/giftedness%20%281920x1080%29.mp4"
+                  src="public/videoSmallLoad/gift.mp4"
                   muted
                   playsinline
                   preload="none"
@@ -424,7 +574,7 @@
                 <span class="projectName">Nacht in Contrast</span>
                 <video
                   class="previewVideo"
-                  src="public/vid/nachtInContrast%20%281920x1080%29.mp4"
+                  src="public/videoSmallLoad/nachtInContrast.mp4"
                   muted
                   playsinline
                   preload="none"
@@ -469,7 +619,7 @@
                 <span class="projectName">3d audio spectrum</span>
                 <video
                   class="previewVideo"
-                  src="public/vid/extra%201%20%281240x1536%29.mp4"
+                  src="public/videoSmallLoad/extra%201%20%281240x1536%29.mp4"
                   muted
                   playsinline
                   preload="none"
@@ -503,7 +653,7 @@
                 <span class="projectName">cursor feedback</span>
                 <video
                   class="previewVideo"
-                  src="public/vid/extra%202%20%281080x1080%29.mp4"
+                  src="public/videoSmallLoad/extra%202%20%281080x1080%29.mp4"
                   muted
                   playsinline
                   preload="none"
@@ -541,7 +691,7 @@
                 <span class="projectName">blob tracker</span>
                 <video
                   class="previewVideo"
-                  src="public/vid/extra%203%20%281080x576%29.mp4"
+                  src="public/videoSmallLoad/extra%203%20%281080x576%29.mp4"
                   muted
                   playsinline
                   preload="none"
@@ -575,7 +725,7 @@
                 <span class="projectName">ASCII</span>
                 <video
                   class="previewVideo"
-                  src="public/vid/extra%204%20%281080x1080%29.mp4"
+                  src="public/videoSmallLoad/extra%204%20%281080x1080%29.mp4"
                   muted
                   playsinline
                   preload="none"
@@ -609,7 +759,7 @@
                 <span class="projectName">glitch switch</span>
                 <video
                   class="previewVideo"
-                  src="public/vid/extra%205%20%281280x720%29.mp4"
+                  src="public/videoSmallLoad/glitch.mp4"
                   muted
                   playsinline
                   preload="none"
@@ -643,7 +793,7 @@
                 <span class="projectName">asteriks</span>
                 <video
                   class="previewVideo"
-                  src="public/vid/extra%207%20%281080x1080%29.mp4"
+                  src="public/videoSmallLoadextra%207%20%281080x1080%29.mp4"
                   muted
                   playsinline
                   preload="none"
@@ -677,7 +827,7 @@
                 <span class="projectName">circuit bend</span>
                 <video
                   class="previewVideo"
-                  src="public/vid/extra%206%20%281280x720%29.mp4"
+                  src="public/videoSmallLoad/extra%206%20%281280x720%29.mp4"
                   muted
                   playsinline
                   preload="none"
@@ -711,7 +861,7 @@
                 <span class="projectName">particle cloud 1</span>
                 <video
                   class="previewVideo"
-                  src="public/vid/extra%208%20%281080x1080%29.mp4"
+                  src="public/videoSmallLoad/extra%208%20%281080x1080%29.mp4"
                   muted
                   playsinline
                   preload="none"
@@ -749,7 +899,7 @@
                 <span class="projectName">hand tracking</span>
                 <video
                   class="previewVideo"
-                  src="public/vid/extra%209%20%28640x720%29.mp4"
+                  src="public/videoSmallLoad/extra%209%20%28640x720%29.mp4"
                   muted
                   playsinline
                   preload="none"
@@ -783,7 +933,7 @@
                 <span class="projectName">ASCII 2</span>
                 <video
                   class="previewVideo"
-                  src="public/vid/extra%2010%20%281080x1080%29.mp4"
+                  src="public/videoSmallLoad/ascii2.mp4"
                   muted
                   playsinline
                   preload="none"
@@ -817,7 +967,7 @@
                 <span class="projectName">tanzen</span>
                 <video
                   class="previewVideo"
-                  src="public/vid/extra11%20%281080x1080%29.mp4"
+                  src="public/videoSmallLoad/extra11%20%281080x1080%29.mp4"
                   muted
                   playsinline
                   preload="none"
