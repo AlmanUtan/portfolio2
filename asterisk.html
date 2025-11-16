@@ -91,8 +91,8 @@
               </div>
 
               <div class="cardDetails" style="--video-ar: 16/9">
-                <header class="caseHeader"></header>
-                <div class="videoWrapper">
+                <!-- FULL-WIDTH HEADER VIDEO -->
+                <div class="videoWrapper caseVideoWrap">
                   <!-- Title top-left -->
                   <div class="caseTitle">ÜBERTÖN</div>
 
@@ -126,7 +126,7 @@
                   <!-- 16:9 video -->
                   <video
                     class="caseVideo"
-                    src=" public/vid/%C3%BCbert%C3%B6n%20main%20(1920x1080).mp4"
+                    src="public/vid/%C3%BCbert%C3%B6n%20main%20(1920x1080).mp4"
                     autoplay
                     muted
                     loop
@@ -134,20 +134,182 @@
                   ></video>
                 </div>
 
-                <div class="projectDescription">
-                  <h3>Description</h3>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Duis posuere condimentum tellus eget tristique.
-                  </p>
+                <!-- BODY: BLOBS + DESCRIPTION -->
+                <div class="caseBody">
+                  <div class="caseBody-left">
+                    <!-- 3 BLOBS -->
+                    <div class="caseBlobs">
+                      <!-- Logo blob -->
+                      <div class="caseBlob">
+                        <div class="caseBlob-square">
+                          <!-- replace with real logo image if you like -->
+                          <img
+                            src="public/img/placeholder-logo.png"
+                            alt="Übertön logo"
+                          />
+                        </div>
+                      </div>
+
+                      <!-- Installation blob -->
+                      <div class="caseBlob">
+                        <div class="caseBlob-pill"># installation</div>
+                      </div>
+
+                      <!-- Audio reactive blob -->
+                      <div class="caseBlob">
+                        <div class="caseBlob-pill"># audio reactive</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="caseBody-right">
+                    <!-- Description -->
+                    <div class="projectDescription projectDescription--wide">
+                      <h3>Description</h3>
+                      <p>
+                        Übertön is an audio-visual installation that merges
+                        sound and light into a single physical object. It is
+                        made up of two giant custom-made foam panel speakers
+                        that span a combined area of over 1.3 m², on which
+                        real-time audio visualisations are projected. The
+                        diffuse sound profile paired with live visuals makes for
+                        a unique experience that makes the music feel more
+                        tangible.
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div class="projectProcess">
-                  <h3>Process</h3>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                    Repellendus deleniti, autem explicabo quisquam numquam
-                    accusamus.
-                  </p>
+
+                <!-- 4 DETAIL VIDEOS ROW -->
+                <div class="caseDetailVideos">
+                  <!-- VIDEO 1 -->
+                  <div class="detailVideoCard">
+                    <div class="detailVideoInner">
+                      <img
+                        class="detailVideoThumb"
+                        src="public/img/ubertoen-detail1-thumb.jpg"
+                        alt="Übertön detail 1"
+                      />
+                      <video
+                        class="detailVideoHover"
+                        src="public/vid/ubertoen-detail1.mp4"
+                        muted
+                        playsinline
+                        preload="metadata"
+                      ></video>
+                    </div>
+                  </div>
+
+                  <!-- VIDEO 2 -->
+                  <div class="detailVideoCard">
+                    <div class="detailVideoInner">
+                      <img
+                        class="detailVideoThumb"
+                        src="public/img/ubertoen-detail2-thumb.jpg"
+                        alt="Übertön detail 2"
+                      />
+                      <video
+                        class="detailVideoHover"
+                        src="public/vid/ubertoen-detail2.mp4"
+                        muted
+                        playsinline
+                        preload="metadata"
+                      ></video>
+                    </div>
+                  </div>
+
+                  <!-- VIDEO 3 -->
+                  <div class="detailVideoCard">
+                    <div class="detailVideoInner">
+                      <img
+                        class="detailVideoThumb"
+                        src="public/img/ubertoen-detail3-thumb.jpg"
+                        alt="Übertön detail 3"
+                      />
+                      <video
+                        class="detailVideoHover"
+                        src="public/vid/ubertoen-detail3.mp4"
+                        muted
+                        playsinline
+                        preload="metadata"
+                      ></video>
+                    </div>
+                  </div>
+
+                  <!-- VIDEO 4 -->
+                  <div class="detailVideoCard">
+                    <div class="detailVideoInner">
+                      <img
+                        class="detailVideoThumb"
+                        src="public/img/ubertoen-detail4-thumb.jpg"
+                        alt="Übertön detail 4"
+                      />
+                      <video
+                        class="detailVideoHover"
+                        src="public/vid/ubertoen-detail4.mp4"
+                        muted
+                        playsinline
+                        preload="metadata"
+                      ></video>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- IN DETAIL SECTION -->
+                <div class="caseDetailSection">
+                  <div class="caseDetail-left">
+                    <h3 class="caseDetail-heading">In Detail</h3>
+                    <div class="caseDetail-text">
+                      <p>
+                        The concept for this project was to create an audio safe
+                        space that allows people to shut off from their routine
+                        day and offer a listening experience that really pulls
+                        you in, drowning out the noisiness and stress of your
+                        day (/[ger]:über·tön &gt; to outsound smth/).
+                      </p>
+                      <p>
+                        This idea was developed while delving into research on
+                        the psychology of music listening. I was intrigued by
+                        its influence on our minds and feelings, and aimed to
+                        create an environment that takes the music centre stage,
+                        giving it the most potential for its power.
+                      </p>
+                      <p>
+                        A key factor in this was to enhance the listening
+                        through expanding the sensory experience by creating
+                        different real-time audio-reactive visuals that match
+                        the tone of the played music. This draws the attention
+                        of the viewer directly to the source of sound, while
+                        also keeping them intrigued with the audiovisual
+                        synchronisation they can directly observe on the
+                        speaker's surface.
+                      </p>
+                      <p>
+                        Giving the music a visual character felt especially
+                        crucial for this project, since nowadays music often
+                        slips into the background, while we´re busy following
+                        our daily lives. Übertön claims back a spot just for
+                        music.
+                      </p>
+                      <p>
+                        This back-claiming is also happening quite literally
+                        through the sonic profile of the flat panel speaker.
+                        They don´t only excel in their super clear mid-range
+                        frequencies, but furthermore have a unique diffuse,
+                        room-filling sound profile that takes up the full room
+                        with its soundwaves.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="caseDetail-right">
+                    <div class="caseDetail-imageWrap">
+                      <img
+                        src="public/img/ubertoen-detail-main.jpg"
+                        alt="Übertön installation photo"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </article>

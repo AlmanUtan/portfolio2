@@ -47,7 +47,7 @@ document
       lastScrollY = currentY;
     });
   })();
-  
+
 (function () {
   // -----------------------------
   // Hamburger menu
@@ -1021,6 +1021,27 @@ function showInstructionsAfterDelay(delayMs = 3000) {
     instructions.classList.add("visible");
   }, delayMs);
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  document
+    .querySelectorAll(".detailVideoInner .detailVideoHover")
+    .forEach((vid) => {
+      const parent = vid.closest(".detailVideoInner");
+      if (!parent) return;
+
+      parent.addEventListener("mouseenter", () => {
+        vid.currentTime = 0;
+        const p = vid.play();
+        if (p && typeof p.then === "function") {
+          p.catch(() => {});
+        }
+      });
+
+      parent.addEventListener("mouseleave", () => {
+        vid.pause();
+      });
+    });
+});
 
 //-----------------------------
 // Hamburger button timer

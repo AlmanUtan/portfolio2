@@ -28,12 +28,9 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden; /* custom scroll via JS */
-  background: #000;   /* was #ffff */
+  background: #000; /* was #ffff */
   height: 100%;
 }
-
-
-
 
 body.fade-out {
   opacity: 0;
@@ -47,7 +44,7 @@ body.fade-out {
   top: 0;
   left: 0;
   z-index: 1;
-  background: #ffffff;   /* new: force the 3D area to look white */
+  background: #ffffff; /* new: force the 3D area to look white */
 }
 /* Subpages (opened by clicking orbiting tiles) */
 .subpage {
@@ -602,9 +599,6 @@ body.fade-out {
   background: rgba(255, 255, 255, 0.18);
 }
 
-
-
-
 /* === Expanded ÜBERTÖN case header === */
 
 .projectCard.expanded .caseHeader {
@@ -640,7 +634,7 @@ body.fade-out {
   display: flex;
   align-items: center;
   font-family: "chivo-mono", sans-serif;
-  font-weight: 500;              /* medium */
+  font-weight: 500; /* medium */
   font-size: 36px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -779,9 +773,6 @@ body.fade-out {
 .caseFullscreenBtn:hover {
   background: rgba(0, 0, 0, 0.55);
 }
-
-
-
 
 /* ---- Menu ---- */
 .navigation {
@@ -1022,4 +1013,240 @@ body.lock-scroll {
   font-size: 13px;
   color: #a1a1a1;
   z-index: 9999;
+}
+
+/* ========================= */
+/* ÜBERTÖN CASE – BODY LAYOUT */
+/* ========================= */
+
+/* layout under the header video: left blobs + right text */
+.caseBody {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
+  gap: 32px;
+  margin-top: 24px;
+  margin-bottom: 40px;
+}
+
+/* left column with 3 blobs */
+.caseBody-left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* blobs container */
+.caseBlobs {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* single blob wrapper */
+.caseBlob {
+  display: flex;
+}
+
+/* squared logo blob */
+.caseBlob-square {
+  width: 120px;
+  height: 120px;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #111111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.caseBlob-square img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* pill-style blobs */
+.caseBlob-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-family: "chivo-mono", sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  color: #f5f5f5;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* right column with description */
+.caseBody-right {
+  display: flex;
+  flex-direction: column;
+}
+
+/* reuse projectDescription styling but ensure left-aligned */
+.projectDescription--wide {
+  max-width: 100%;
+}
+
+.projectDescription--wide h3 {
+  text-align: left;
+}
+
+.projectDescription--wide p {
+  text-align: left;
+}
+
+/*  ======================== */
+/*  FOUR VERTICAL DETAIL VIDEOS */
+/*  ======================== */
+
+.caseDetailVideos {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+/* each video card keeps 330x586 ratio but scales responsively */
+.detailVideoCard {
+  width: 100%;
+}
+
+.detailVideoInner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 330 / 586;
+  border-radius: 50px;
+  overflow: hidden;
+  background: #000;
+}
+
+/* thumbnail visible by default */
+.detailVideoThumb {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* hover video on top */
+.detailVideoHover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50px;
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+}
+
+/* on hover: fade video in, start playing via JS */
+.detailVideoInner:hover .detailVideoHover {
+  opacity: 1;
+}
+
+/*  ======================== */
+/*  “IN DETAIL” SECTION */
+/*  ======================== */
+
+.caseDetailSection {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 40px;
+  align-items: flex-start;
+}
+
+/* left text column */
+.caseDetail-left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* heading styled like Description heading but left aligned */
+.caseDetail-heading {
+  font-family: "chivo-mono", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin: 0 0 4px 0;
+  color: #f1f1f1;
+  text-align: left;
+}
+
+/* paragraphs same as description, left bound */
+.caseDetail-text p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #d0d0d0;
+  margin: 0 0 12px 0;
+  text-align: left;
+}
+
+/* right image column */
+.caseDetail-right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* image wrapper – exact 622x864 ratio but responsive */
+.caseDetail-imageWrap {
+  width: 100%;
+  max-width: 622px;
+  aspect-ratio: 622 / 864;
+  border-radius: 50px;
+  overflow: hidden;
+  background: #000;
+}
+
+.caseDetail-imageWrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/*  ============ */
+/*  RESPONSIVE  */
+/*  ============ */
+
+@media (max-width: 1100px) {
+  .caseBody {
+    grid-template-columns: 1fr;
+  }
+
+  .caseBody-left {
+    order: 1;
+  }
+  .caseBody-right {
+    order: 2;
+  }
+
+  .caseDetailSection {
+    grid-template-columns: 1fr;
+  }
+  .caseDetail-right {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 900px) {
+  .caseDetailVideos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .caseDetailVideos {
+    grid-template-columns: 1fr;
+  }
 }
