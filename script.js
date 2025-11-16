@@ -705,6 +705,13 @@ document
   // Initial layout
   layout();
 
+  // Re-run layout once webfonts finish loading (prevents clipped text)
+  if (document.fonts?.ready) {
+    document.fonts.ready.then(() => {
+      requestAnimationFrame(layout);
+    });
+  }
+
   // Expose layout globally so other modules can call it
   window.galleryLayout = layout;
   window.focusExpandedCard = focusExpandedCard;

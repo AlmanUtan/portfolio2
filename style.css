@@ -520,9 +520,23 @@ body.fade-out {
   z-index: 2;
 }
 
-/* Main cards retain block layout */
-.projectCard.expanded[data-tier="main"] .cardDetails {
-  padding: 0;
+.projectCard.expanded[data-tier="main"] .cardDetails > .videoWrapper {
+  margin: 0;
+}
+
+.projectCard.expanded[data-tier="main"]
+  .cardDetails > :not(.videoWrapper):not(.cardCollapse) {
+  padding: 16px 20px;
+}
+
+.projectCard.expanded[data-tier="main"]
+  .cardDetails > :not(.videoWrapper):not(.cardCollapse):last-child {
+  padding-bottom: 28px;
+}
+
+.projectCard.expanded[data-tier="standard"] .cardDetails > .videoWrapper,
+.projectCard.expanded:not([data-tier="main"]) .cardDetails > .videoWrapper {
+  margin-bottom: 0;
 }
 
 /* Non-main cards: flex stack keeps media + meta in view */
@@ -531,7 +545,11 @@ body.fade-out {
   flex-direction: column;
   align-items: stretch;
   gap: 16px;
-  padding: 16px;
+  padding: 16px 16px 28px;
+}
+
+.projectCard.expanded[data-tier="main"] .caseDetail-text p:last-of-type {
+  margin-bottom: 64px;
 }
 
 /* Base wrapper for detail media (used by expanded cards and modal) */
@@ -585,7 +603,11 @@ body.fade-out {
 
 .projectCard.expanded:not([data-tier="main"]) .videoWrapper video,
 .projectCard.expanded:not([data-tier="main"]) .videoWrapper iframe {
-  height: 100%;
+  height: clamp(
+    332px,
+    calc(1.2 * (var(--gallery-content-max-h, (100vh - 64px)) - 120px)),
+    662px
+  );
   object-fit: contain;
   background: #000;
 }
@@ -650,13 +672,13 @@ body.fade-out {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: auto;
+  margin: 16px 0 20px;
 }
 
 .projectCard.expanded:not([data-tier="main"]) .hashtagBlob {
   display: inline-flex;
   align-items: center;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   font-family: "chivo-mono", sans-serif;
@@ -665,9 +687,8 @@ body.fade-out {
   letter-spacing: 0.04em;
   text-transform: lowercase;
   color: #f5f5f5;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.06);
 }
-
 /* === Expanded ÜBERTÖN case header === */
 
 .projectCard.expanded .caseHeader {
