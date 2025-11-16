@@ -89,7 +89,7 @@ document
   // Column sizing
   const MIN_COL_WIDTH = 200;
   const MAX_COL_WIDTH = 300;
-  const MIN_COLS = 2;
+  const MIN_COLS = 1;
   const MAX_COLS = 8;
 
   // --- PATCH: sync dataset.ratio from CSS --card-ar ---
@@ -296,13 +296,34 @@ document
     const cs = getComputedStyle(scrollerEl);
     const padL = parseFloat(cs.paddingLeft) || 0;
     const padR = parseFloat(cs.paddingRight) || 0;
-    const avail = Math.max(
-      0,
-      (scrollerEl.clientWidth || window.innerWidth) - padL - padR
-    );
+    let avail = (scrollerEl.clientWidth || 0) - padL - padR;
+
+    if (!Number.isFinite(avail) || avail <= 0) {
+      const overlayRect = overlayEl ? overlayEl.getBoundingClientRect() : null;
+      if (overlayRect && overlayRect.width) {
+        avail = overlayRect.width - padL - padR;
+      }
+    }
+    if (!Number.isFinite(avail) || avail <= 0) {
+      const parentRect = grid.parentElement
+        ? grid.parentElement.getBoundingClientRect()
+        : null;
+      if (parentRect && parentRect.width) {
+        avail = parentRect.width - padL - padR;
+      }
+    }
+    if (!Number.isFinite(avail) || avail <= 0) {
+      avail = window.innerWidth - padL - padR;
+    }
+    avail = Math.max(avail, MIN_COL_WIDTH);
 
     const cols = decideCols(avail);
-    const colWidth = Math.floor((avail - (cols - 1) * GAP) / cols);
+    let colWidth = Math.floor((avail - (cols - 1) * GAP) / cols);
+    if (!Number.isFinite(colWidth) || colWidth <= 0) {
+      const minRequired = cols * MIN_COL_WIDTH + (cols - 1) * GAP;
+      const safeAvail = Math.max(avail, minRequired);
+      colWidth = Math.floor((safeAvail - (cols - 1) * GAP) / cols);
+    }
 
     // Explicit container width so absolute children center correctly
     const containerWidth = cols * colWidth + (cols - 1) * GAP;
