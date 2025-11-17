@@ -784,10 +784,9 @@ if (!isMainCard) {
     );
     if (!previews.length) return;
 
-    // Helper to convert video URL to poster path (if you have thumbs)
-    const toPoster = (u) =>
-      u.replace("/vid/", "/thumbs/").replace(/\.(mp4|mov|webm|m4v)$/i, ".png");
-
+    // Helper to convert video URL to poster path (if you have thumbs)const to
+   const toPoster = (u) =>
+  u.replace("/videoSmallLoad/", "/thumbs/").replace(/\.(mp4|mov|webm|m4v)$/i, ".png");
     // Set poster and lazy detach source
     previews.forEach((v) => {
       const src = v.currentSrc || v.getAttribute("src");
