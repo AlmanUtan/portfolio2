@@ -215,11 +215,23 @@ body.fade-out {
     transform: translateY(100%); /* JS will animate only Y on mobile */
   }
   .galleryScroll {
-    height: calc(100vh - 48px);
-    padding: 12px;
+    height: 100%;
+    padding: 0 12px 24px;
+    scroll-padding-top: 80px;
+    scroll-padding-bottom: 56px;
+  }
+  .galleryScroll::before,
+  .galleryScroll::after {
+    margin: 0 -12px;
+    height: 48px;
   }
   .galleryHeaderRow {
-    padding: 8px 12px;
+    margin: 0 -12px 8px;
+    padding: 14px 12px 10px;
+  }
+  .galleryHeaderRow::after {
+    bottom: -18px;
+    height: 18px;
   }
   .organicGrid {
     grid-template-columns: 1fr; /* single column base grid before masonry-on */
@@ -380,10 +392,48 @@ body.fade-out {
 
 .galleryScroll {
   position: relative;
-  height: calc(100% - 48px);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 16px;
+  padding: 0 16px 28px;
+  scroll-padding-top: 88px;
+  scroll-padding-bottom: 72px;
+  scrollbar-width: thin;
+}
+
+.galleryScroll::before,
+.galleryScroll::after {
+  content: "";
+  position: sticky;
+  left: 0;
+  right: 0;
+  height: 60px;
+  pointer-events: none;
+  z-index: 40;
+}
+
+.galleryScroll::before {
+  top: 0;
+  margin: 0 -16px;
+  background: linear-gradient(
+    to bottom,
+    rgba(15, 15, 15, 0.92),
+    rgba(15, 15, 15, 0.45),
+    rgba(15, 15, 15, 0)
+  );
+}
+
+.galleryScroll::after {
+  bottom: 0;
+  margin: 0 -16px;
+  background: linear-gradient(
+    to top,
+    rgba(15, 15, 15, 0.92),
+    rgba(15, 15, 15, 0.45),
+    rgba(15, 15, 15, 0)
+  );
 }
 /* Mobile/coarse pointers: allow vertical scroll inside the gallery overlay */
 @media (pointer: coarse) {
@@ -396,6 +446,7 @@ body.fade-out {
 
 /* === Clean gallery grid === */
 .galleryGrid {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -404,10 +455,38 @@ body.fade-out {
 
 /* Header row */
 .galleryHeaderRow {
+  position: sticky;
+  top: 0;
+  z-index: 120;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 4px 8px;
+  gap: 12px;
+  padding: 16px 16px 12px;
+  margin: 0 -16px 8px;
+  background: transparent;
+  isolation: isolate;
+}
+
+.galleryHeaderRow::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -24px;
+  height: 24px;
+  background: linear-gradient(
+    to bottom,
+    rgba(15, 15, 15, 0.85),
+    rgba(15, 15, 15, 0)
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+.galleryHeaderRow > * {
+  position: relative;
+  z-index: 1;
 }
 
 
@@ -430,6 +509,8 @@ body.fade-out {
 
 /* Project Cards */
 .projectCard {
+  position: relative;
+  z-index: 1;
   background: #2f2f2f;
   border-radius: 8px;
   overflow: hidden;
