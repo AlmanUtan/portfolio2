@@ -409,25 +409,7 @@ body.fade-out {
   align-items: center;
   padding: 4px 8px;
 }
-.galleryTitle {
-  font-family: "chivo-mono", sans-serif;
-  font-size: 14px;
-  letter-spacing: 0.02em;
-  color: rgba(250, 250, 250, 0.9);
-  text-transform: uppercase;
-}
-.galleryClose {
-  font-family: "chivo-mono", sans-serif;
-  font-size: 13px;
-  color: rgba(250, 250, 250, 0.9);
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-decoration: underline;
-}
-.galleryClose:hover {
-  opacity: 0.8;
-}
+
 
 /* Organic, responsive grid (used before masonry-on kicks in) */
 .organicGrid {
@@ -644,25 +626,7 @@ body.fade-out {
   color: #d0d0d0;
 }
 
-/* Close button for expanded in-grid cards */
-.projectCard .cardCollapse {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 5;
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  cursor: pointer;
-}
-.projectCard:not(.expanded) .cardCollapse {
-  display: none;
-}
-.projectCard.expanded .cardCollapse:hover {
-  background: rgba(255, 255, 255, 0.18);
-}
+
 
 
 /* Hashtag blobs for other cards */
@@ -736,12 +700,12 @@ body.fade-out {
   position: absolute;
   top: 24px;
   right: 24px;
-  width: 26px;
-  height: 26px;
+  width: 52px;
+  height: 52px;
   padding: 0;
   border-radius: 4px;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0);
+  border: 1px solid rgba(255, 255, 255, 0);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -760,35 +724,33 @@ body.fade-out {
 .caseCloseBtn .arrow-bar {
   position: absolute;
   background-color: #ffffff;
-  border-radius: 999px;
+  border-radius: 0px;
 }
 
-/* Main shaft (horizontal-ish) */
+/* Horizontal bar (bottom) */
 .caseCloseBtn .arrow-bar-main {
-  left: 2px;
-  right: 2px;
-  top: 8px;
+  left: 0;
+  bottom: 0;
+  width: 20px;
   height: 2px;
 }
 
-/* Diagonal part going down-left */
+/* Vertical bar (left side) */
 .caseCloseBtn .arrow-bar-diag {
-  width: 10px;
-  height: 2px;
-  right: 3px;
-  top: 6px;
-  transform-origin: right center;
-  transform: rotate(225deg); /* arrow pointing to bottom-left */
+  left: 0px;
+  bottom: 0px;
+  width: 2px;
+  height: 20px;
 }
 
-/* Tail / extra bar to get the 3-rect look */
+/* Diagonal bar (connecting top-right to bottom-left) */
 .caseCloseBtn .arrow-bar-tail {
-  width: 8px;
+  left:1px;
+  bottom: 0;
+  width: 26px;
   height: 2px;
-  right: 3px;
-  top: 10px;
-  transform-origin: right center;
-  transform: rotate(135deg);
+  transform-origin: left bottom;
+  transform: rotate(-45deg);
 }
 
 .caseVideoWrap .caseCloseBtn:hover {
@@ -800,12 +762,12 @@ body.fade-out {
   position: absolute;
   right: 24px;
   bottom: 24px;
-  width: 30px;
-  height: 30px;
+  width: 52px;
+  height: 52px;
   padding: 0;
   border-radius: 4px;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0);
+  border: 1px solid rgba(255, 255, 255, 0);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -816,15 +778,16 @@ body.fade-out {
 /* Box + 4 corners to mimic a generic fullscreen icon */
 .caseFullscreenBtn .fs-box {
   position: relative;
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
 }
 
 .caseFullscreenBtn .fs-corner {
   position: absolute;
   border: 2px solid #ffffff;
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius:25%;
 }
 
 /* Top-left */
@@ -862,6 +825,43 @@ body.fade-out {
 .caseFullscreenBtn:hover {
   background: rgba(0, 0, 0, 0.55);
 }
+
+.caseFullscreenBtn:hover {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.caseVideoWrap .caseMuteBtn {
+  position: absolute;
+  left: 24px; /* 24px from edge + 30px button + 12px gap */
+  bottom: 24px;
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0);
+  border: 1px solid rgba(255, 255, 255, 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: background 0.2s ease;
+
+  /* --- PNG specific styles --- */
+  background-image: url('public/img/speaker.png'); /* Default: unmute icon */
+  background-size: 60%; /* Adjust as needed to fit your PNG */
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: invert(1); /* This will turn black icons white */
+}
+
+
+
+.caseMuteBtn.muted {
+  background-image: url('public/img/speakeroff.png'); /* When muted: mute icon */
+}
+
+
 
 /* ---- Menu ---- */
 .navigation {

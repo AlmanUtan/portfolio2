@@ -1087,6 +1087,77 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+// Close button functionality for case cards
+document.querySelectorAll('.caseCloseBtn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const card = btn.closest('.projectCard');
+    if (card && card.classList.contains('expanded')) {
+      card.classList.remove('expanded');
+      const dv = card.querySelector('.cardDetails video');
+      if (dv) {
+        try {
+          dv.pause();
+          dv.currentTime = 0;
+        } catch (e) {}
+      }
+      if (typeof window.galleryLayout === 'function') {
+        window.galleryLayout();
+      }
+    }
+  });
+});
+
+// Fullscreen and Mute/Unmute functionality for case videos
+document.querySelectorAll('.caseFullscreenBtn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const videoWrap = btn.closest('.caseVideoWrap');
+    const video = videoWrap ? videoWrap.querySelector('.caseVideo') : null;
+    
+    if (!video) return;
+    
+    // Request fullscreen on the video element
+    if (video.requestFullscreen) {
+      video.requestFullscreen();
+    } else if (video.webkitRequestFullscreen) { // Safari
+      video.webkitRequestFullscreen();
+    } else if (video.mozRequestFullScreen) { // Firefox
+      video.mozRequestFullScreen();
+    } else if (video.msRequestFullscreen) { // IE/Edge
+      video.msRequestFullscreen();
+    }
+  });
+});
+
+// Mute/Unmute functionality
+document.querySelectorAll('.caseMuteBtn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const videoWrap = btn.closest('.caseVideoWrap');
+    const video = videoWrap ? videoWrap.querySelector('.caseVideo') : null;
+    
+    if (!video) return;
+    
+    // Toggle mute state
+    video.muted = !video.muted;
+    
+    // Update button appearance
+    if (video.muted) {
+      btn.classList.add('muted');
+    } else {
+      btn.classList.remove('muted');
+    }
+  });
+  
+  // Set initial state based on video's muted property
+  const videoWrap = btn.closest('.caseVideoWrap');
+  const video = videoWrap ? videoWrap.querySelector('.caseVideo') : null;
+  if (video && video.muted) {
+    btn.classList.add('muted');
+  }
+});
+
 //-----------------------------
 // Hamburger button timer
 //-----------------------------
