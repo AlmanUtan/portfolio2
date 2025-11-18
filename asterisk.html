@@ -1331,6 +1331,14 @@
       Click to see the full gallery
     </div>
 
+<!-- Single case overlay -->
+    <div id="caseOverlay" aria-hidden="true">
+      <div class="caseOverlay-backdrop" data-case-overlay-close></div>
+      <div class="caseOverlay-panel" role="dialog" aria-modal="true">
+        <div class="caseOverlay-content"></div>
+      </div>
+    </div>
+
     <!-- Your UI/gallery/masonry JS -->
     <script src="script.js"></script>
 
@@ -2771,21 +2779,14 @@
     </script>
 
     <script>
-      window.openMenu =
-        window.openMenu ||
-        function () {
-          const nav = document.querySelector(".navigation");
-          const btn = document.querySelector(".hamburger");
-          if (nav) nav.classList.toggle("is-active");
-          if (btn) btn.classList.toggle("is-open");
-        };
-
       window.openSubpage =
         window.openSubpage ||
         function (pageNumber) {
-          if (window.App && typeof window.App.openGallery === "function") {
-            window.App.openGallery();
+          if (typeof window.openCaseOverlayByPage === "function") {
+            window.openCaseOverlayByPage(pageNumber);
+            return;
           }
+
           const scroller = document.getElementById("galleryScroll");
           const card = document.querySelector(
             `.projectCard[data-page="${pageNumber}"]`

@@ -203,6 +203,103 @@ body.fade-out {
   pointer-events: none;
   will-change: transform, opacity; /* reduce paint/jank during transitions */
 }
+
+
+/* Single-case overlay */
+#caseOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10020;
+  display: grid;
+  place-items: center;
+  padding: clamp(24px, 8vw, 64px);
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 280ms ease;
+}
+
+#caseOverlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.caseOverlay-backdrop {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+}
+
+.caseOverlay-panel {
+  position: relative;
+  z-index: 1;
+  width: min(1200px, 96vw);
+  max-height: calc(100vh - clamp(48px, 14vh, 120px));
+  background: #0f0f0f;
+  border-radius: 18px;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.caseOverlay-content {
+  padding: clamp(28px, 5vw, 48px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.caseOverlay-content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.caseOverlay-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.caseOverlay-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+}
+
+/* Cloned cards inside the overlay */
+.caseOverlay-card {
+  position: static !important;
+  transform: none !important;
+  width: 100% !important;
+  height: auto !important;
+  content-visibility: visible !important;
+  contain-intrinsic-size: auto !important;
+  margin: 0;
+  box-shadow: none;
+}
+
+.caseOverlay-card .cardPreview {
+  display: none !important;
+}
+
+.caseOverlay-card.expanded .cardDetails {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  #caseOverlay {
+    padding: clamp(12px, 4vw, 24px);
+  }
+
+  .caseOverlay-panel {
+    width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .caseOverlay-content {
+    padding: clamp(20px, 5vw, 32px);
+  }
+}
+
 /* Mobile portrait: gallery should cover the full screen */
 @media (max-width: 768px) and (orientation: portrait) {
   #galleryOverlay {

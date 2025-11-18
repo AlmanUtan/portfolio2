@@ -686,8 +686,14 @@ if (!isMainCard) {
   // ESC closes expanded (in-grid) cards, unless the fullscreen modal is open
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
+
+    if (caseOverlay?.classList.contains("is-open")) {
+      closeCaseOverlay();
+      return;
+    }
+
     const modal = document.getElementById("projectModal");
-    if (modal && modal.classList.contains("is-open")) return; // modal has its own ESC
+    if (modal && modal.classList.contains("is-open")) return;
 
     const anyExpanded = cards.some((c) => c.classList.contains("expanded"));
     if (anyExpanded) {
@@ -720,59 +726,107 @@ if (!isMainCard) {
   // -----------------------------
   // openSubpage(pageNumber) used by the 3D click handler
   // -----------------------------
-  window.openSubpage = function openSubpage(pageNumber) {
-    // Open gallery overlay
-    if (window.App && typeof window.App.openGallery === "function") {
-      window.App.openGallery();
-      // Re-layout as overlay animates open
-      requestAnimationFrame(layout);
-      setTimeout(layout, 140);
+ 
+
+  const caseOverlay = document.getElementById("caseOverlay");
+  const caseOverlayPanel = caseOverlay?.querySelector(".caseOverlay-panel");
+  const caseOverlayContent =
+    caseOverlay?.querySelector(".caseOverlay-content");
+
+  function closeCaseOverlay() {
+    if (!caseOverlay) return;
+
+    caseOverlay.classList.remove("is-open");
+    caseOverlay.setAttribute("aria-hidden", "true");
+
+    caseOverlayContent
+      ?.querySelectorAll("video")
+      .forEach((vid) => {
+        try {
+          vid.pause();
+          vid.currentTime = 0;
+        } catch (e) {}
+      });
+
+    if (caseOverlayContent) {
+      caseOverlayContent.innerHTML = "";
     }
 
-    // Find the matching card
+    window.App?.resumeHeavy?.();
+  }
+
+  function openCaseOverlayForCard(card) {
+    if (!caseOverlay || !caseOverlayContent || !card) return;
+
+    const overlayCard = card.cloneNode(true);
+    overlayCard.classList.add("caseOverlay-card", "expanded");
+    overlayCard.style.position = "static";
+    overlayCard.style.transform = "none";
+    overlayCard.style.width = "100%";
+    overlayCard.style.height = "auto";
+    overlayCard.style.contentVisibility = "visible";
+    overlayCard.style.containIntrinsicSize = "auto";
+
+    const preview = overlayCard.querySelector(".cardPreview");
+    if (preview) preview.remove();
+
+    const collapseBtn = overlayCard.querySelector(".cardCollapse");
+    if (collapseBtn) collapseBtn.remove();
+
+    const details = overlayCard.querySelector(".cardDetails");
+    if (details) details.style.display = "block";
+
+    caseOverlayContent.innerHTML = "";
+    caseOverlayContent.appendChild(overlayCard);
+
+    caseOverlay.classList.add("is-open");
+    caseOverlay.setAttribute("aria-hidden", "false");
+    if (caseOverlayPanel) caseOverlayPanel.scrollTop = 0;
+
+    wireCaseControls(overlayCard);
+    wireDetailVideoHovers(overlayCard);
+
+    const mainVideo = overlayCard.querySelector(".caseVideo");
+    if (mainVideo) {
+      try {
+        mainVideo.muted = true;
+        const playAttempt = mainVideo.play();
+        if (playAttempt?.catch) {
+          playAttempt.catch(() => {});
+        }
+      } catch (err) {}
+    }
+
+    window.App?.pauseHeavy?.();
+  }
+
+  function openCaseOverlayByPage(pageNumber) {
     const target = cards.find(
       (c) => String(c.dataset.page) === String(pageNumber)
     );
     if (!target) return;
 
-    // Expand target in-grid (uniform behavior)
-    collapseAll(target);
+    collapseAll();
+    openCaseOverlayForCard(target);
+  }
 
-    // Ensure AR set before expand
-    const details = target.querySelector(".cardDetails");
-    if (details && !details.style.getPropertyValue("--video-ar")) {
-      const cp = target.querySelector(".cardPreview");
-      if (cp) {
-        const ar = getComputedStyle(cp).getPropertyValue("--card-ar").trim();
-        if (ar) details.style.setProperty("--video-ar", ar);
+  window.closeCaseOverlay = closeCaseOverlay;
+  window.openCaseOverlayByPage = openCaseOverlayByPage;
+  window.openSubpage = openCaseOverlayByPage;
+
+  if (caseOverlay) {
+    caseOverlay.addEventListener("click", (event) => {
+      if (
+        event.target === caseOverlay ||
+        event.target.classList.contains("caseOverlay-backdrop") ||
+        event.target.hasAttribute("data-case-overlay-close")
+      ) {
+        closeCaseOverlay();
       }
-    }
+    });
+  }
 
-    target.classList.add("expanded");
-    layout();
 
-    // Autoplay detail video
-    const dv = target.querySelector(".cardDetails video");
-    if (dv) {
-      try {
-        dv.muted = true;
-        const p = dv.play();
-        if (p && typeof p.then === "function") p.catch(() => {});
-      } catch (e) {}
-    }
-
-    // Scroll to it and ensure it fully fits
-    const pos = posCache.get(target);
-    if (scroller && pos) {
-      setTimeout(() => {
-        scroller.scrollTo({
-          top: Math.max(0, pos.y - 12),
-          behavior: "auto",
-        });
-        focusExpandedCard(target);
-      }, 120);
-    }
-  };
 
   // Hover-to-play previews WITHOUT changing your HTML
   (() => {
@@ -1066,97 +1120,103 @@ function showInstructionsAfterDelay(delayMs = 3000) {
   }, delayMs);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  document
-    .querySelectorAll(".detailVideoInner .detailVideoHover")
-    .forEach((vid) => {
-      const parent = vid.closest(".detailVideoInner");
-      if (!parent) return;
+function wireDetailVideoHovers(scope = document) {
+    scope.querySelectorAll(".detailVideoInner").forEach((wrapper) => {
+      if (wrapper.dataset.hoverBound === "1") return;
+      const hoverVideo = wrapper.querySelector(".detailVideoHover");
+      if (!hoverVideo) return;
 
-      parent.addEventListener("mouseenter", () => {
-        vid.currentTime = 0;
-        const p = vid.play();
-        if (p && typeof p.then === "function") {
-          p.catch(() => {});
+      wrapper.dataset.hoverBound = "1";
+
+      wrapper.addEventListener("mouseenter", () => {
+        hoverVideo.currentTime = 0;
+        const attempt = hoverVideo.play();
+        if (attempt?.catch) {
+          attempt.catch(() => {});
         }
       });
 
-      parent.addEventListener("mouseleave", () => {
-        vid.pause();
+      wrapper.addEventListener("mouseleave", () => {
+        hoverVideo.pause();
       });
     });
-});
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    wireDetailVideoHovers(document);
+  });
 
 // Close button functionality for case cards
-document.querySelectorAll('.caseCloseBtn').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const card = btn.closest('.projectCard');
-    if (card && card.classList.contains('expanded')) {
-      card.classList.remove('expanded');
-      const dv = card.querySelector('.cardDetails video');
-      if (dv) {
-        try {
-          dv.pause();
-          dv.currentTime = 0;
-        } catch (e) {}
-      }
-      if (typeof window.galleryLayout === 'function') {
-        window.galleryLayout();
-      }
-    }
-  });
-});
+function wireCaseControls(scope = document) {
+    scope.querySelectorAll(".caseCloseBtn").forEach((btn) => {
+      if (btn.dataset.wiredClose === "1") return;
+      btn.dataset.wiredClose = "1";
 
-// Fullscreen and Mute/Unmute functionality for case videos
-document.querySelectorAll('.caseFullscreenBtn').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const videoWrap = btn.closest('.caseVideoWrap');
-    const video = videoWrap ? videoWrap.querySelector('.caseVideo') : null;
-    
-    if (!video) return;
-    
-    // Request fullscreen on the video element
-    if (video.requestFullscreen) {
-      video.requestFullscreen();
-    } else if (video.webkitRequestFullscreen) { // Safari
-      video.webkitRequestFullscreen();
-    } else if (video.mozRequestFullScreen) { // Firefox
-      video.mozRequestFullScreen();
-    } else if (video.msRequestFullscreen) { // IE/Edge
-      video.msRequestFullscreen();
-    }
-  });
-});
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
 
-// Mute/Unmute functionality
-document.querySelectorAll('.caseMuteBtn').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const videoWrap = btn.closest('.caseVideoWrap');
-    const video = videoWrap ? videoWrap.querySelector('.caseVideo') : null;
-    
-    if (!video) return;
-    
-    // Toggle mute state
-    video.muted = !video.muted;
-    
-    // Update button appearance
-    if (video.muted) {
-      btn.classList.add('muted');
-    } else {
-      btn.classList.remove('muted');
-    }
-  });
-  
-  // Set initial state based on video's muted property
-  const videoWrap = btn.closest('.caseVideoWrap');
-  const video = videoWrap ? videoWrap.querySelector('.caseVideo') : null;
-  if (video && video.muted) {
-    btn.classList.add('muted');
+        if (btn.closest(".caseOverlay-card")) {
+          closeCaseOverlay();
+          return;
+        }
+
+        const card = btn.closest(".projectCard");
+        if (card && card.classList.contains("expanded")) {
+          card.classList.remove("expanded");
+          const dv = card.querySelector(".cardDetails video");
+          if (dv) {
+            try {
+              dv.pause();
+              dv.currentTime = 0;
+            } catch (err) {}
+          }
+          layout();
+        }
+      });
+    });
+
+    scope.querySelectorAll(".caseFullscreenBtn").forEach((btn) => {
+      if (btn.dataset.wiredFullscreen === "1") return;
+      btn.dataset.wiredFullscreen = "1";
+
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const video = btn.closest(".caseVideoWrap")?.querySelector(".caseVideo");
+        if (!video) return;
+
+        if (video.requestFullscreen) {
+          video.requestFullscreen();
+        } else if (video.webkitRequestFullscreen) {
+          video.webkitRequestFullscreen();
+        } else if (video.mozRequestFullScreen) {
+          video.mozRequestFullScreen();
+        } else if (video.msRequestFullscreen) {
+          video.msRequestFullscreen();
+        }
+      });
+    });
+
+    scope.querySelectorAll(".caseMuteBtn").forEach((btn) => {
+      if (btn.dataset.wiredMute === "1") return;
+      btn.dataset.wiredMute = "1";
+
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const video = btn.closest(".caseVideoWrap")?.querySelector(".caseVideo");
+        if (!video) return;
+
+        video.muted = !video.muted;
+        btn.classList.toggle("muted", video.muted);
+      });
+
+      const video = btn.closest(".caseVideoWrap")?.querySelector(".caseVideo");
+      if (video) {
+        btn.classList.toggle("muted", video.muted);
+      }
+    });
   }
-});
+
+  wireCaseControls(document);
 
 //-----------------------------
 // Hamburger button timer
