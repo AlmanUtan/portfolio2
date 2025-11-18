@@ -1337,54 +1337,72 @@ body.lock-scroll {
   opacity: 1;
 }
 
+
 /*  ======================== */
-/*  “IN DETAIL” SECTION */
+/*  "IN DETAIL" SECTION */
 /*  ======================== */
 
 .caseDetailSection {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-  gap: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
   align-items: flex-start;
 }
 
-/* left text column */
-.caseDetail-left {
+/* Heading spans full width */
+.caseDetail-heading {
+  font-family: "chivo-mono", sans-serif;
+  font-weight: 500;
+  font-size: 36px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin: 0;
+  color: #f1f1f1;
+  text-align: left;
+  width: 100%;
+}
+
+/* Content row: text left, grid right */
+.caseDetailSection .caseDetail-left {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 40px;
+  align-items: center;
+  width: 100%;
+}
+
+/* For WDTW variant: adjust column ratio */
+.caseDetailSection--wdtw .caseDetail-left {
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.25fr);
+  gap: clamp(32px, 7vw, 72px);
+}
+
+/* Text column */
+.caseDetail-text {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-/* heading styled like Description heading but left aligned */
-/* IN DETAIL – left bound */
-.caseDetail-heading {
-  font-family: "chivo-mono", sans-serif;
-  font-weight: 500;          /* Medium */
-  font-size: 36px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  margin: 0 0 8px 0;
-  color: #f1f1f1;
-  text-align: left;
-}
-
 .caseDetail-text p {
   font-family: "chivo-mono", sans-serif;
-  font-weight: 200;          /* Thin */
+  font-weight: 200;
   font-size: 18px;
   line-height: 1.4;
   color: #d0d0d0;
-  text-align: left;          /* left-aligned text */
-  max-width: 50ch;           /* ~7–8 words per line */
+  text-align: left;
+  max-width: 50ch;
+  margin: 0;
 }
 
-/* right image column */
+/* Right side: mosaic or image */
 .caseDetail-right {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
+  align-items: center;
 }
 
-/* image wrapper – exact 622x864 ratio but responsive */
+/* Image wrapper for übertön – exact 622x864 ratio but responsive */
 .caseDetail-imageWrap {
   width: 100%;
   max-width: 622px;
@@ -1415,56 +1433,80 @@ body.lock-scroll {
   margin-left: auto;
 }
 
+/* Base mosaic layout with square rows ≈20% taller */
 .detailVideoMosaic {
+  --square-row: 2fr;  /* squares ≈20% taller than the mid rows */
+  --mid-row: 1fr;
+
   display: grid;
-  width: min(100%, 560px);
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
-  grid-template-areas:
-    "square-tl portrait-tr"
-    "portrait-bl square-br";
-  gap: clamp(18px, 4vw, 28px);
+  width: 100%;
+  max-width: 560px;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: var(--square-row) var(--mid-row) var(--mid-row) var(--square-row);
+  gap: 20px;
   align-items: stretch;
 }
 
+/* WDTW: total height & vertical centering */
+.detailVideoMosaic--wdtw {
+  height: clamp(840px, 60vh, 1220px); /* use the taller height you mentioned */
+  align-self: center;
+}
+
+/* Each card fills its grid slot */
 .detailVideoCard--mosaic {
+  display: flex;
   width: 100%;
+  height: 100%;
 }
 
 .detailVideoCard--mosaic .detailVideoInner {
-  aspect-ratio: unset;
+  position: relative;
+  width: 100%;
+  height: 100%;
   border-radius: clamp(28px, 4vw, 44px);
   overflow: hidden;
   background: #000;
 }
 
-.detailVideoCard--mosaic .detailVideoThumb,
-.detailVideoCard--mosaic .detailVideoHover {
-  border-radius: inherit;
-}
-
-.detailVideoInner--square {
-  aspect-ratio: 1 / 1;
-}
-
-.detailVideoInner--portrait {
-  aspect-ratio: 3 / 4;
-}
-
+/* Grid placement */
 .detailVideoCard--square-tl {
-  grid-area: square-tl;
-}
-
-.detailVideoCard--portrait-tr {
-  grid-area: portrait-tr;
-}
-
-.detailVideoCard--portrait-bl {
-  grid-area: portrait-bl;
+  grid-column: 1;
+  grid-row: 1 / span 1;   /* top-left square */
 }
 
 .detailVideoCard--square-br {
-  grid-area: square-br;
+  grid-column: 2;
+  grid-row: 4 / span 1;   /* bottom-right square */
 }
+
+.detailVideoCard--portrait-tr {
+  grid-column: 2;
+  grid-row: 1 / span 3;   /* top-right portrait (rows 1–3) */
+}
+
+.detailVideoCard--portrait-bl {
+  grid-column: 1;
+  grid-row: 2 / span 3;   /* bottom-left portrait (rows 2–4) */
+}
+
+/* Let the grid control final dimensions */
+.detailVideoInner--square,
+.detailVideoInner--portrait {
+  aspect-ratio: auto;
+}
+
+/* Media fills */
+.detailVideoCard--mosaic .detailVideoThumb,
+.detailVideoCard--mosaic .detailVideoHover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
 
 /*  ============ */
 /*  RESPONSIVE  */
@@ -1482,12 +1524,15 @@ body.lock-scroll {
     order: 2;
   }
 
-  .caseDetailSection {
+  .caseDetailSection .caseDetail-left {
     grid-template-columns: 1fr;
+    gap: 32px;
   }
+  
   .caseDetail-right {
     justify-content: flex-start;
   }
+  
   .caseDetailSection--wdtw .detailVideoMosaic {
     width: 100%;
     max-width: none;
@@ -1671,3 +1716,4 @@ body.lock-scroll {
     height: 120px;
   }
 }
+
