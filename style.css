@@ -568,7 +568,7 @@ body.lock-scroll {
 }
 
 .caseOverlay-card .caseVideoWrap {
-  border-radius: clamp(28px, 4vw, 56px); /* Larger corner radius */
+  border-radius: 20px; /* Larger corner radius */
   overflow: hidden;
   margin-bottom: clamp(28px, 4vw, 56px);
 }
@@ -739,7 +739,7 @@ body.lock-scroll {
   margin: 0;
   aspect-ratio: auto;
   max-height: none;
-  border-radius: 12px;
+  border-radius: 20asdapx;
   overflow: hidden;
   background: #000;
 }
