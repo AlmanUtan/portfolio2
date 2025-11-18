@@ -18,35 +18,35 @@ document
     });
   });
 // Smoothly go back to index.html when the user scrolls up at the very top
-  (function () {
-    let lastScrollY = window.scrollY;
-    let upwardTicks = 0;
-    const UP_TICKS_THRESHOLD = 3;   // how many "up" events in a row
-    const TOP_TOLERANCE = 10;       // px from top
+(function () {
+  let lastScrollY = window.scrollY;
+  let upwardTicks = 0;
+  const UP_TICKS_THRESHOLD = 3; // how many "up" events in a row
+  const TOP_TOLERANCE = 10; // px from top
 
-    window.addEventListener("scroll", () => {
-      const currentY = window.scrollY;
+  window.addEventListener("scroll", () => {
+    const currentY = window.scrollY;
 
-      const atTop = currentY <= TOP_TOLERANCE;
-      const scrollingUp = currentY < lastScrollY;
+    const atTop = currentY <= TOP_TOLERANCE;
+    const scrollingUp = currentY < lastScrollY;
 
-      if (atTop && scrollingUp) {
-        upwardTicks++;
-      } else {
-        upwardTicks = 0;
-      }
+    if (atTop && scrollingUp) {
+      upwardTicks++;
+    } else {
+      upwardTicks = 0;
+    }
 
-      if (atTop && upwardTicks >= UP_TICKS_THRESHOLD) {
-        // small fade-out, then go back
-        document.body.classList.add("fade-out");
-        setTimeout(() => {
-          window.location.href = "index.html?from=nav";
-        }, 300);
-      }
+    if (atTop && upwardTicks >= UP_TICKS_THRESHOLD) {
+      // small fade-out, then go back
+      document.body.classList.add("fade-out");
+      setTimeout(() => {
+        window.location.href = "index.html?from=nav";
+      }, 300);
+    }
 
-      lastScrollY = currentY;
-    });
-  })();
+    lastScrollY = currentY;
+  });
+})();
 
 (function () {
   // -----------------------------
@@ -69,8 +69,6 @@ document
   });
   // ---- Init video -> auto transition to 3D and zoom out on mobile ----
 
-
- 
   // -----------------------------
   // Masonry + Expand for Gallery
   // -----------------------------
@@ -240,35 +238,35 @@ document
 
       const isMainCard = card.dataset.tier === "main";
 
-     const extraContentSpace = isMainCard ? 80 : 180;
+      const extraContentSpace = isMainCard ? 80 : 180;
 
       let MAX_VID_H = 0;
-if (overlayStyles) {
-  const cmh =
-    parseFloat(overlayStyles.getPropertyValue("--gallery-content-max-h")) || 0;
+      if (overlayStyles) {
+        const cmh =
+          parseFloat(overlayStyles.getPropertyValue("--gallery-content-max-h")) ||
+          0;
 
-  if (cmh > 0) {
-    MAX_VID_H = Math.max(200, Math.floor(cmh - extraContentSpace));
-  }
-}
+        if (cmh > 0) {
+          MAX_VID_H = Math.max(200, Math.floor(cmh - extraContentSpace));
+        }
+      }
 
-if (!MAX_VID_H) {
-  const viewportH =
-    scrollerEl && scrollerEl.clientHeight
-      ? scrollerEl.clientHeight
-      : window.innerHeight;
-  MAX_VID_H = Math.max(200, Math.floor(viewportH - extraContentSpace));
-}
+      if (!MAX_VID_H) {
+        const viewportH =
+          scrollerEl && scrollerEl.clientHeight
+            ? scrollerEl.clientHeight
+            : window.innerHeight;
+        MAX_VID_H = Math.max(200, Math.floor(viewportH - extraContentSpace));
+      }
 
-if (!isMainCard) {
-  const VIDEO_MIN = 380;
-  const VIDEO_MAX = 660;
-  MAX_VID_H = Math.min(
-    VIDEO_MAX,
-    Math.max(VIDEO_MIN, MAX_VID_H || desiredVidH)
-  );
-
-  }
+      if (!isMainCard) {
+        const VIDEO_MIN = 380;
+        const VIDEO_MAX = 660;
+        MAX_VID_H = Math.min(
+          VIDEO_MAX,
+          Math.max(VIDEO_MIN, MAX_VID_H || desiredVidH)
+        );
+      }
 
       // parse "W/H"
       const [aw, ah] = String(ar).split(/[/:]/).map(Number);
@@ -726,12 +724,43 @@ if (!isMainCard) {
   // -----------------------------
   // openSubpage(pageNumber) used by the 3D click handler
   // -----------------------------
- 
 
   const caseOverlay = document.getElementById("caseOverlay");
   const caseOverlayPanel = caseOverlay?.querySelector(".caseOverlay-panel");
   const caseOverlayContent =
     caseOverlay?.querySelector(".caseOverlay-content");
+
+  function resetOverlayWiringFlags(root) {
+    if (!root) return;
+    root.querySelectorAll(".caseCloseBtn").forEach((btn) => {
+      delete btn.dataset.wiredClose;
+    });
+    root.querySelectorAll(".caseFullscreenBtn").forEach((btn) => {
+      delete btn.dataset.wiredFullscreen;
+    });
+    root.querySelectorAll(".caseMuteBtn").forEach((btn) => {
+      delete btn.dataset.wiredMute;
+    });
+    root.querySelectorAll(".detailVideoInner").forEach((wrapper) => {
+      delete wrapper.dataset.hoverBound;
+    });
+  }
+
+  function hydrateCaseVideos(root) {
+    if (!root) return;
+    root.querySelectorAll("video").forEach((vid) => {
+      if (!vid) return;
+      if (!vid.src && vid.dataset?.src) {
+        vid.src = vid.dataset.src;
+      }
+      if (!vid.preload || vid.preload === "none") {
+        vid.preload = "auto";
+      }
+      try {
+        vid.load();
+      } catch (_) {}
+    });
+  }
 
   function closeCaseOverlay() {
     if (!caseOverlay) return;
@@ -752,6 +781,9 @@ if (!isMainCard) {
       caseOverlayContent.innerHTML = "";
     }
 
+    document.documentElement.classList.remove("case-overlay-open");
+    document.body.classList.remove("case-overlay-open");
+
     window.App?.resumeHeavy?.();
   }
 
@@ -766,6 +798,9 @@ if (!isMainCard) {
     overlayCard.style.height = "auto";
     overlayCard.style.contentVisibility = "visible";
     overlayCard.style.containIntrinsicSize = "auto";
+    overlayCard.style.margin = "0";
+    overlayCard.style.background = "transparent";
+    overlayCard.style.boxShadow = "none";
 
     const preview = overlayCard.querySelector(".cardPreview");
     if (preview) preview.remove();
@@ -778,18 +813,34 @@ if (!isMainCard) {
 
     caseOverlayContent.innerHTML = "";
     caseOverlayContent.appendChild(overlayCard);
+    if (!caseOverlayContent.hasAttribute("tabindex")) {
+      caseOverlayContent.setAttribute("tabindex", "-1");
+    }
+    caseOverlayContent.scrollTop = 0;
+    try {
+      caseOverlayContent.focus({ preventScroll: true });
+    } catch (_) {}
 
     caseOverlay.classList.add("is-open");
     caseOverlay.setAttribute("aria-hidden", "false");
+    document.documentElement.classList.add("case-overlay-open");
+    document.body.classList.add("case-overlay-open");
     if (caseOverlayPanel) caseOverlayPanel.scrollTop = 0;
 
-    wireCaseControls(overlayCard);
-    wireDetailVideoHovers(overlayCard);
+caseOverlayContent?.addEventListener("wheel", (evt) => {
+  evt.stopPropagation();
+}, { passive: false });
+
+    resetOverlayWiringFlags(overlayCard);
+    hydrateCaseVideos(overlayCard);
+    wireCaseControls(overlayCard, { forceRebind: true });
+    wireDetailVideoHovers(overlayCard, { forceRebind: true });
 
     const mainVideo = overlayCard.querySelector(".caseVideo");
     if (mainVideo) {
       try {
         mainVideo.muted = true;
+        mainVideo.currentTime = 0;
         const playAttempt = mainVideo.play();
         if (playAttempt?.catch) {
           playAttempt.catch(() => {});
@@ -826,8 +877,6 @@ if (!isMainCard) {
     });
   }
 
-
-
   // Hover-to-play previews WITHOUT changing your HTML
   (() => {
     const scroller = document.getElementById("galleryScroll");
@@ -839,8 +888,10 @@ if (!isMainCard) {
     if (!previews.length) return;
 
     // Helper to convert video URL to poster path (if you have thumbs)const to
-   const toPoster = (u) =>
-  u.replace("/videoSmallLoad/", "/thumbs/").replace(/\.(mp4|mov|webm|m4v)$/i, ".png");
+    const toPoster = (u) =>
+      u
+        .replace("/videoSmallLoad/", "/thumbs/")
+        .replace(/\.(mp4|mov|webm|m4v)$/i, ".png");
     // Set poster and lazy detach source
     previews.forEach((v) => {
       const src = v.currentSrc || v.getAttribute("src");
@@ -1120,103 +1171,138 @@ function showInstructionsAfterDelay(delayMs = 3000) {
   }, delayMs);
 }
 
-function wireDetailVideoHovers(scope = document) {
-    scope.querySelectorAll(".detailVideoInner").forEach((wrapper) => {
-      if (wrapper.dataset.hoverBound === "1") return;
-      const hoverVideo = wrapper.querySelector(".detailVideoHover");
-      if (!hoverVideo) return;
+function wireDetailVideoHovers(scope = document, { forceRebind = false } = {}) {
+  scope.querySelectorAll(".detailVideoInner").forEach((wrapper) => {
+    if (forceRebind && wrapper.dataset.hoverBound === "1") {
+      delete wrapper.dataset.hoverBound;
+    }
+    if (wrapper.dataset.hoverBound === "1") return;
+    const hoverVideo = wrapper.querySelector(".detailVideoHover");
+    if (!hoverVideo) return;
 
-      wrapper.dataset.hoverBound = "1";
+    const startHover = () => {
+      if (!hoverVideo.src && hoverVideo.dataset?.src) {
+        hoverVideo.src = hoverVideo.dataset.src;
+      }
+      hoverVideo.preload = "auto";
+      hoverVideo.currentTime = 0;
+      const attempt = hoverVideo.play();
+      if (attempt?.catch) {
+        attempt.catch(() => {});
+      }
+    };
 
-      wrapper.addEventListener("mouseenter", () => {
-        hoverVideo.currentTime = 0;
-        const attempt = hoverVideo.play();
-        if (attempt?.catch) {
-          attempt.catch(() => {});
-        }
-      });
-
-      wrapper.addEventListener("mouseleave", () => {
+    const endHover = () => {
+      try {
         hoverVideo.pause();
-      });
-    });
-  }
+      } catch (_) {}
+      hoverVideo.currentTime = 0;
+    };
 
-  document.addEventListener("DOMContentLoaded", () => {
-    wireDetailVideoHovers(document);
+    wrapper.addEventListener("mouseenter", startHover);
+    wrapper.addEventListener("mouseleave", endHover);
+    wrapper.addEventListener("touchstart", startHover, { passive: true });
+    wrapper.addEventListener("touchend", endHover);
+    wrapper.addEventListener("touchcancel", endHover);
+
+    wrapper.dataset.hoverBound = "1";
   });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  wireDetailVideoHovers(document);
+});
 
 // Close button functionality for case cards
-function wireCaseControls(scope = document) {
-    scope.querySelectorAll(".caseCloseBtn").forEach((btn) => {
-      if (btn.dataset.wiredClose === "1") return;
-      btn.dataset.wiredClose = "1";
+function wireCaseControls(scope = document, { forceRebind = false } = {}) {
+  scope.querySelectorAll(".caseCloseBtn").forEach((btn) => {
+    if (forceRebind && btn.dataset.wiredClose === "1") {
+      delete btn.dataset.wiredClose;
+    }
+    if (btn.dataset.wiredClose === "1") return;
 
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
 
-        if (btn.closest(".caseOverlay-card")) {
-          closeCaseOverlay();
-          return;
+      if (btn.closest(".caseOverlay-card")) {
+        closeCaseOverlay();
+        return;
+      }
+
+      const card = btn.closest(".projectCard");
+      if (card && card.classList.contains("expanded")) {
+        card.classList.remove("expanded");
+        const dv = card.querySelector(".cardDetails video");
+        if (dv) {
+          try {
+            dv.pause();
+            dv.currentTime = 0;
+          } catch (err) {}
         }
-
-        const card = btn.closest(".projectCard");
-        if (card && card.classList.contains("expanded")) {
-          card.classList.remove("expanded");
-          const dv = card.querySelector(".cardDetails video");
-          if (dv) {
-            try {
-              dv.pause();
-              dv.currentTime = 0;
-            } catch (err) {}
-          }
-          layout();
-        }
-      });
-    });
-
-    scope.querySelectorAll(".caseFullscreenBtn").forEach((btn) => {
-      if (btn.dataset.wiredFullscreen === "1") return;
-      btn.dataset.wiredFullscreen = "1";
-
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const video = btn.closest(".caseVideoWrap")?.querySelector(".caseVideo");
-        if (!video) return;
-
-        if (video.requestFullscreen) {
-          video.requestFullscreen();
-        } else if (video.webkitRequestFullscreen) {
-          video.webkitRequestFullscreen();
-        } else if (video.mozRequestFullScreen) {
-          video.mozRequestFullScreen();
-        } else if (video.msRequestFullscreen) {
-          video.msRequestFullscreen();
-        }
-      });
-    });
-
-    scope.querySelectorAll(".caseMuteBtn").forEach((btn) => {
-      if (btn.dataset.wiredMute === "1") return;
-      btn.dataset.wiredMute = "1";
-
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const video = btn.closest(".caseVideoWrap")?.querySelector(".caseVideo");
-        if (!video) return;
-
-        video.muted = !video.muted;
-        btn.classList.toggle("muted", video.muted);
-      });
-
-      const video = btn.closest(".caseVideoWrap")?.querySelector(".caseVideo");
-      if (video) {
-        btn.classList.toggle("muted", video.muted);
+        window.galleryLayout?.();
       }
     });
-  }
 
-  wireCaseControls(document);
+    btn.dataset.wiredClose = "1";
+  });
+
+  scope.querySelectorAll(".caseFullscreenBtn").forEach((btn) => {
+    if (forceRebind && btn.dataset.wiredFullscreen === "1") {
+      delete btn.dataset.wiredFullscreen;
+    }
+    if (btn.dataset.wiredFullscreen === "1") return;
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const video = btn
+        .closest(".caseVideoWrap")
+        ?.querySelector(".caseVideo");
+      if (!video) return;
+
+      if (video.requestFullscreen) {
+        video.requestFullscreen();
+      } else if (video.webkitRequestFullscreen) {
+        video.webkitRequestFullscreen();
+      } else if (video.mozRequestFullScreen) {
+        video.mozRequestFullScreen();
+      } else if (video.msRequestFullscreen) {
+        video.msRequestFullscreen();
+      }
+    });
+
+    btn.dataset.wiredFullscreen = "1";
+  });
+
+  scope.querySelectorAll(".caseMuteBtn").forEach((btn) => {
+    if (forceRebind && btn.dataset.wiredMute === "1") {
+      delete btn.dataset.wiredMute;
+    }
+    if (btn.dataset.wiredMute === "1") return;
+
+    const syncBtnState = (video) => {
+      if (!video) return;
+      btn.classList.toggle("muted", video.muted);
+    };
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const video = btn
+        .closest(".caseVideoWrap")
+        ?.querySelector(".caseVideo");
+      if (!video) return;
+
+      video.muted = !video.muted;
+      syncBtnState(video);
+    });
+
+    const video = btn.closest(".caseVideoWrap")?.querySelector(".caseVideo");
+    syncBtnState(video);
+
+    btn.dataset.wiredMute = "1";
+  });
+}
+
+wireCaseControls(document);
 
 //-----------------------------
 // Hamburger button timer

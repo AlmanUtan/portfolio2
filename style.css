@@ -1,4 +1,6 @@
-/* Global resets */
+/* ----------------------------------------------------------
+   Global resets / transitions
+---------------------------------------------------------- */
 button {
   font: inherit;
   border: none;
@@ -10,112 +12,123 @@ button {
 #page-transition-overlay {
   position: fixed;
   inset: 0;
-  background: #000000;
+  background: #000;
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.3s ease;
-  z-index: 9999; /* Above everything */
+  z-index: 9999;
 }
 
-/* When body has .fade-out, show black overlay */
 body.fade-out #page-transition-overlay {
   opacity: 1;
-}
-
-/* REST OF THE CODE*/
-html,
-body {
-  margin: 0;
-  padding: 0;
-  overflow: hidden; /* custom scroll via JS */
-  background: #000; /* was #ffff */
-  height: 100%;
 }
 
 body.fade-out {
   opacity: 0;
 }
 
-/* 3D canvas */
+/* ----------------------------------------------------------
+   Root canvas + scroll locking
+---------------------------------------------------------- */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #000;
+  overflow: hidden; /* base scene never scrolls */
+}
+
+html.case-overlay-open,
+body.case-overlay-open,
+html.lock-scroll,
+body.lock-scroll {
+  overflow: hidden !important;
+  overscroll-behavior: contain;
+  touch-action: none;
+}
+
 #canvas-container {
+  position: fixed;
+  inset: 0;
   width: 100vw;
   height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
+  background: #fff; /* force the orbit scene backdrop */
   z-index: 1;
-  background: #ffffff; /* new: force the 3D area to look white */
 }
-/* Subpages (opened by clicking orbiting tiles) */
+
+/* ----------------------------------------------------------
+   Subpages (orbit tiles)
+---------------------------------------------------------- */
 .subpage {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: white;
-  z-index: 1000;
+  inset: 0;
   display: none;
+  z-index: 1000;
+  background: #fff;
+  color: #333;
+  font-size: 48px;
+  font-weight: bold;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 48px;
-  font-weight: bold;
-  color: #333;
 }
+
 .close-btn {
   position: absolute;
   top: 30px;
   right: 30px;
   padding: 10px 20px;
-  background: #333;
-  color: white;
-  border: none;
   border-radius: 6px;
+  background: #333;
+  color: #fff;
   font-size: 16px;
   cursor: pointer;
 }
+
 .close-btn:hover {
   background: #555;
 }
 
 #toggle-rotation-btn {
-  display: none !important; /* removes it from layout/visuals */
+  display: none !important;
   pointer-events: none !important;
 }
 
-/* Start overlay (video) */
+/* ----------------------------------------------------------
+   Intro overlay
+---------------------------------------------------------- */
 #start-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: #0a0a0a;
-  z-index: 2000;
-  opacity: 1;
-  transition: opacity 1.6s cubic-bezier(0.4, 0, 0.2, 1);
-  pointer-events: auto;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #0a0a0a;
   cursor: default;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 1.6s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2000;
 }
+
 #start-overlay.hidden {
   opacity: 0;
   pointer-events: none;
-  visibility: hidden; /* add this if not present */
+  visibility: hidden;
 }
+
 #start-overlay video {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
+
 @media (max-width: 768px) and (orientation: portrait) {
   #start-overlay video {
     object-fit: contain;
-    background: #000; /* ensure bars are black */
+    background: #000;
   }
 }
 
@@ -130,10 +143,8 @@ body.fade-out {
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.9);
   color: #111;
-  cursor: pointer;
 }
 
-/* Small mute/unmute toggle in top-right */
 #introMuteToggle {
   position: absolute;
   right: 16px;
@@ -146,12 +157,9 @@ body.fade-out {
   display: grid;
   place-items: center;
   font-size: 18px;
-  line-height: 1;
-  cursor: pointer;
   user-select: none;
 }
 
-/* Skip video button in bottom right */
 #skipVideoBtn {
   position: absolute;
   right: 24px;
@@ -181,217 +189,41 @@ body.fade-out {
   transform: translateY(0);
 }
 
-/* Gallery overlay - progressive pull-up */
-#galleryOverlay {
-  position: fixed;
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-50%) translateY(100%);
-  width: min(1400px, calc(100vw - 64px));
-  height: calc(100vh - 64px);
-  border-radius: 10px;
-  overflow: hidden;
-  z-index: 999;
-
-  backdrop-filter: blur(6px); /* was 16px */
-  -webkit-backdrop-filter: blur(6px);
-  background: #171717c4;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), 0 4px 16px rgba(0, 0, 0, 0.25);
-
-  opacity: 0;
-  pointer-events: none;
-  will-change: transform, opacity; /* reduce paint/jank during transitions */
-}
-
-
-/* Single-case overlay */
-#caseOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 10020;
-  display: grid;
-  place-items: center;
-  padding: clamp(24px, 8vw, 64px);
-  background: rgba(0, 0, 0, 0.78);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 280ms ease;
-}
-
-#caseOverlay.is-open {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.caseOverlay-backdrop {
-  position: absolute;
-  inset: 0;
-  cursor: pointer;
-}
-
-.caseOverlay-panel {
-  position: relative;
-  z-index: 1;
-  width: min(1200px, 96vw);
-  max-height: calc(100vh - clamp(48px, 14vh, 120px));
-  background: #0f0f0f;
-  border-radius: 18px;
-  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.55);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.caseOverlay-content {
-  padding: clamp(28px, 5vw, 48px);
-  overflow-y: auto;
-  scrollbar-width: thin;
-}
-
-.caseOverlay-content::-webkit-scrollbar {
-  width: 10px;
-}
-
-.caseOverlay-content::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.caseOverlay-content::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.25);
-  border-radius: 999px;
-}
-
-/* Cloned cards inside the overlay */
-.caseOverlay-card {
-  position: static !important;
-  transform: none !important;
-  width: 100% !important;
-  height: auto !important;
-  content-visibility: visible !important;
-  contain-intrinsic-size: auto !important;
-  margin: 0;
-  box-shadow: none;
-}
-
-.caseOverlay-card .cardPreview {
-  display: none !important;
-}
-
-.caseOverlay-card.expanded .cardDetails {
-  display: block;
-}
-
-@media (max-width: 768px) {
-  #caseOverlay {
-    padding: clamp(12px, 4vw, 24px);
-  }
-
-  .caseOverlay-panel {
-    width: 100%;
-    max-height: 100vh;
-    border-radius: 0;
-  }
-
-  .caseOverlay-content {
-    padding: clamp(20px, 5vw, 32px);
-  }
-}
-
-/* Mobile portrait: gallery should cover the full screen */
-@media (max-width: 768px) and (orientation: portrait) {
-  #galleryOverlay {
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    border-radius: 0;
-    border: none;
-    box-shadow: none;
-    transform: translateY(100%); /* JS will animate only Y on mobile */
-  }
-  .galleryScroll {
-    height: 100%;
-    padding: 0 12px 24px;
-    scroll-padding-top: 80px;
-    scroll-padding-bottom: 56px;
-  }
-  .galleryScroll::before,
-  .galleryScroll::after {
-    margin: 0 -12px;
-    height: 48px;
-  }
-  .galleryHeaderRow {
-    margin: 0 -12px 8px;
-    padding: 14px 12px 10px;
-  }
-  .galleryHeaderRow::after {
-    bottom: -18px;
-    height: 18px;
-  }
-  .organicGrid {
-    grid-template-columns: 1fr; /* single column base grid before masonry-on */
-    gap: 12px;
-  }
-}
-
-/* Bottom CTA bar to open the gallery */
-/* Bottom CTA bar to open the gallery — with swoosh-up entrance */
+/* ----------------------------------------------------------
+   Gallery launcher CTA
+---------------------------------------------------------- */
 #galleryCTA {
   position: fixed;
   left: 50%;
   bottom: 24px;
-
-  /* Start hidden well below the viewport (relative to its own height) */
   transform: translateX(-50%) translateY(140%) scale(0.98);
   z-index: 998;
-
-  width: 50vw; /* half screen width */
+  width: 50vw;
   padding: 12px 22px;
   text-align: center;
   font-family: "chivo-mono", sans-serif;
   font-size: 14px;
   color: rgba(250, 250, 250, 0.95);
-
   background: #171717c4;
   border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35), 0 3px 12px rgba(0, 0, 0, 0.2);
+  border-radius: 9999px;
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.35),
+    0 3px 12px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  border-radius: 9999px;
-
   opacity: 0;
   pointer-events: none;
-
-  /* Transition used for exit (hide). Entrance uses keyframes animation below. */
   transition: opacity 360ms ease, transform 360ms ease;
-
   user-select: none;
   cursor: pointer;
   will-change: transform, opacity, filter;
 }
-/* Mobile portrait: keep CTA visually balanced */
-@media (max-width: 768px) and (orientation: portrait) {
-  #galleryCTA {
-    width: auto;
-    max-width: 92vw;
-    bottom: 16px;
-    padding: 10px 16px;
-    font-size: 13px;
-    white-space: nowrap; /* keep single-line */
-    overflow: hidden; /* avoid wrapping causing excessive height */
-    text-overflow: ellipsis; /* just in case */
-  }
-}
 
 #galleryCTA.is-visible {
-  /* Final state after animation; also enables interaction */
   opacity: 1;
   pointer-events: auto;
   transform: translateX(-50%) translateY(0) scale(1);
-
-  /* Swoosh-up entrance with overshoot and settle */
   animation: ctaSwooshUp 1100ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
@@ -403,7 +235,6 @@ body.fade-out {
   transform: translateX(-50%) translateY(0) scale(0.99);
 }
 
-/* Optional: respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   #galleryCTA {
     transition: opacity 20ms ease, transform 20ms ease;
@@ -413,78 +244,42 @@ body.fade-out {
   }
 }
 
-/* Fullscreen modal for main projects */
-#projectModal {
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  display: none;
-  background: rgba(0, 0, 0, 0.82);
-  backdrop-filter: blur(4px);
-  overflow-y: auto; /* allow overlay to scroll */
-}
-#projectModal.is-open {
-  display: block;
-}
-#projectModal .modalBox {
-  width: min(1400px, 96vw);
-  margin: 32px auto;
-  background: #0f0f0f;
-  color: #eaeaea;
-  border-radius: 10px;
-  padding: 16px 16px 24px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
-}
-#projectModal .modalHeader {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: #0f0f0f;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: -16px -16px 12px;
-  padding: 12px 16px;
-  border-bottom: 1px solid #1e1e1e;
-}
-#projectModal .modalVideoWrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: var(--video-ar, 16/9);
-  margin-bottom: 16px;
-  background: #000;
-  border-radius: 8px;
-  overflow: hidden;
-}
-#projectModal .modalVideoWrap video,
-#projectModal .modalVideoWrap iframe {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+@media (max-width: 768px) and (orientation: portrait) {
+  #galleryCTA {
+    width: auto;
+    max-width: 92vw;
+    bottom: 16px;
+    padding: 10px 16px;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
-.galleryTitle {
-  font-family: "chivo-mono", sans-serif;
-  font-weight: 400;
-  font-size: 16px;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: #e5e7eb;
-}
-.galleryClose {
-  background-color: transparent;
-  color: #e5e7eb;
-  cursor: pointer;
-  font-family: "chivo-mono", sans-serif;
-  font-weight: 500;
-  font-size: 12px;
-}
-.galleryClose:hover {
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  text-decoration-thickness: 1.5px;
+/* ----------------------------------------------------------
+   Pull-up gallery overlay
+---------------------------------------------------------- */
+#galleryOverlay {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%) translateY(100%);
+  width: min(1400px, calc(100vw - 64px));
+  height: calc(100vh - 64px);
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  background: rgba(23, 23, 23, 0.77);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.45),
+    0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
 .galleryScroll {
@@ -493,11 +288,20 @@ body.fade-out {
   flex-direction: column;
   height: 100%;
   overflow-y: auto;
-  overscroll-behavior: contain;
   padding: 0 16px 28px;
   scroll-padding-top: 88px;
   scroll-padding-bottom: 72px;
   scrollbar-width: thin;
+  overscroll-behavior: contain;
+}
+
+.galleryScroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+.galleryScroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
 }
 
 .galleryScroll::before,
@@ -532,16 +336,7 @@ body.fade-out {
     rgba(15, 15, 15, 0)
   );
 }
-/* Mobile/coarse pointers: allow vertical scroll inside the gallery overlay */
-@media (pointer: coarse) {
-  #galleryOverlay,
-  .galleryScroll {
-    overscroll-behavior: contain;
-    touch-action: pan-y; /* allow vertical scrolling in the gallery */
-  }
-}
 
-/* === Clean gallery grid === */
 .galleryGrid {
   position: relative;
   display: flex;
@@ -550,7 +345,6 @@ body.fade-out {
   height: 100%;
 }
 
-/* Header row */
 .galleryHeaderRow {
   position: sticky;
   top: 0;
@@ -581,13 +375,30 @@ body.fade-out {
   z-index: -1;
 }
 
-.galleryHeaderRow > * {
-  position: relative;
-  z-index: 1;
+.galleryTitle {
+  font-family: "chivo-mono", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #e5e7eb;
 }
 
+.galleryClose {
+  background: transparent;
+  font-family: "chivo-mono", sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  color: #e5e7eb;
+  cursor: pointer;
+}
 
-/* Organic, responsive grid (used before masonry-on kicks in) */
+.galleryClose:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
+}
+
 .organicGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -595,16 +406,185 @@ body.fade-out {
   gap: 18px;
   align-items: start;
 }
+
 .projectCard.span-2 {
   grid-column: span 2;
 }
+
 @media (max-width: 700px) {
   .projectCard.span-2 {
     grid-column: span 1;
   }
 }
 
-/* Project Cards */
+@media (pointer: coarse) {
+  #galleryOverlay,
+  .galleryScroll {
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+  }
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+  #galleryOverlay {
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    transform: translateY(100%);
+  }
+
+  .galleryScroll {
+    height: 100%;
+    padding: 0 12px 24px;
+    scroll-padding-top: 80px;
+    scroll-padding-bottom: 56px;
+  }
+
+  .galleryScroll::before,
+  .galleryScroll::after {
+    margin: 0 -12px;
+    height: 48px;
+  }
+
+  .galleryHeaderRow {
+    margin: 0 -12px 8px;
+    padding: 14px 12px 10px;
+  }
+
+  .galleryHeaderRow::after {
+    bottom: -18px;
+    height: 18px;
+  }
+
+  .organicGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* ----------------------------------------------------------
+   Single-case overlay
+---------------------------------------------------------- */
+/* Single-case overlay */
+#caseOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10020;
+  display: grid;
+  place-items: center;
+  padding: clamp(20px, 6vw, 72px);
+  background: rgba(0, 0, 0, 0.72);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 280ms ease;
+}
+
+#caseOverlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.caseOverlay-backdrop {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+}
+
+.caseOverlay-panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: min(1500px, calc(100vw - clamp(48px, 10vw, 128px)));
+  max-height: calc(100vh - clamp(60px, 14vh, 140px));
+  padding: clamp(12px, 2vw, 28px);
+  background: rgba(32, 32, 32, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: clamp(24px, 4vw, 40px);
+  box-shadow: 0 50px 140px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(26px);
+  -webkit-backdrop-filter: blur(26px);
+  overflow: hidden;
+}
+
+.caseOverlay-content {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: clamp(32px, 5vw, 48px) clamp(18px, 4vw, 36px);
+  scrollbar-width: thin;
+}
+
+.caseOverlay-content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.caseOverlay-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.caseOverlay-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+}
+
+.caseOverlay-content > * {
+  max-width: min(1400px, 100%);
+  margin-inline: auto;
+}
+
+.caseOverlay-card,
+.caseOverlay-card.expanded {
+  position: static !important;
+  transform: none !important;
+  width: 100% !important;
+  height: auto !important;
+  background: transparent !important;
+  margin: 0;
+  box-shadow: none;
+  content-visibility: visible !important;
+  contain-intrinsic-size: auto !important;
+}
+
+.caseOverlay-card .cardPreview {
+  display: none !important;
+}
+
+.caseOverlay-card .cardDetails {
+  display: block;
+  background: transparent;
+  padding: 0;
+}
+
+.caseOverlay-card .caseVideoWrap {
+  border-radius: clamp(24px, 3.5vw, 48px);
+  overflow: hidden;
+  margin-bottom: clamp(28px, 4vw, 56px);
+}
+
+@media (max-width: 768px) {
+  #caseOverlay {
+    padding: clamp(12px, 4vw, 24px);
+  }
+
+  .caseOverlay-panel {
+    width: 100%;
+    max-height: 100vh;
+    border-radius: clamp(12px, 4vw, 24px);
+    padding: clamp(10px, 3vw, 18px);
+  }
+
+  .caseOverlay-content {
+    padding: clamp(24px, 6vw, 36px) clamp(14px, 5vw, 22px);
+  }
+}
+
+/* ----------------------------------------------------------
+   Legacy expanded cards (within gallery)
+---------------------------------------------------------- */
 .projectCard {
   position: relative;
   z-index: 1;
@@ -612,18 +592,19 @@ body.fade-out {
   border-radius: 8px;
   overflow: hidden;
   transition: all 0.4s ease;
-
-  /* Big perf win: don’t render offscreen cards */
   content-visibility: auto;
   contain-intrinsic-size: 300px 400px;
 }
 
-/* Preview section in compact state */
 .projectCard:not(.expanded) .cardPreview {
+  position: relative;
   width: 100%;
+  padding: 0;
   aspect-ratio: var(--card-ar, 1 / 1);
   border-radius: 8px;
+  overflow: hidden;
 }
+
 .cardPreview {
   padding: 16px;
   font-family: "chivo-mono", sans-serif;
@@ -632,20 +613,14 @@ body.fade-out {
   color: #fff;
   cursor: pointer;
 }
-/* Make the closed-card preview fill its aspect box */
-.projectCard:not(.expanded) .cardPreview {
-  position: relative;
-  padding: 0;
-  border-radius: 8px;
-  overflow: hidden;
-}
+
 .cardPreview .previewVideo {
-  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
-/* Optional: keep the label on top of the video */
+
 .cardPreview .projectName {
   position: absolute;
   left: 8px;
@@ -657,13 +632,11 @@ body.fade-out {
   font-size: 13px;
 }
 
-/* Hidden details by default */
 .cardDetails {
   display: none;
   color: #ccc;
 }
 
-/* Expanded state toggles */
 .projectCard.expanded .cardPreview {
   display: none;
 }
@@ -672,7 +645,6 @@ body.fade-out {
   display: block;
 }
 
-/* Expanded card container */
 .projectCard.expanded {
   grid-column: 1 / -1;
   background: #1a1a1a;
@@ -694,25 +666,18 @@ body.fade-out {
   padding-bottom: 28px;
 }
 
-.projectCard.expanded[data-tier="standard"] .cardDetails > .videoWrapper,
-.projectCard.expanded:not([data-tier="main"]) .cardDetails > .videoWrapper {
-  margin-bottom: 0;
-}
-
-/* Non-main cards: flex stack keeps media + meta in view */
 .projectCard.expanded:not([data-tier="main"]) .cardDetails {
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 20px;
-  padding: 24px 24px 40px;   /* extra bottom padding keeps hashtags comfy */
+  padding: 24px 24px 40px;
 }
 
 .projectCard.expanded[data-tier="main"] .caseDetail-text p:last-of-type {
   margin-bottom: 64px;
 }
 
-/* Base wrapper for detail media (used by expanded cards and modal) */
 .videoWrapper {
   width: 100%;
   max-width: 100%;
@@ -721,39 +686,42 @@ body.fade-out {
 
 .videoWrapper video,
 .videoWrapper iframe {
-  display: block;
   width: 100%;
   height: auto;
-  border-radius: 0;
+  display: block;
   object-fit: contain;
+  border-radius: 0;
 }
 
-/* Expanded card media: full card width, clamped to visible gallery height */
 .projectCard.expanded .videoWrapper {
   margin-bottom: 16px;
-  aspect-ratio: var(--video-ar, var(--card-ar, 16/9));
-  max-height: var(--gallery-content-max-h, calc((100vh - 64px) - 140px));
+  aspect-ratio: var(--video-ar, var(--card-ar, 16 / 9));
+  max-height: var(
+    --gallery-content-max-h,
+    calc((100vh - 64px) - 140px)
+  );
 }
 
-/* Main cards: let the video claim almost the full content height */
 .projectCard.expanded[data-tier="main"] .videoWrapper {
   margin-bottom: 0;
-  max-height: var(--gallery-content-max-h, calc((100vh - 64px) - 80px));
+  max-height: var(
+    --gallery-content-max-h,
+    calc((100vh - 64px) - 80px)
+  );
 }
 
-/* Non-main cards: keep media compact so hashtags remain visible */
 .projectCard.expanded:not([data-tier="main"]) .videoWrapper {
   flex: 1 1 auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  margin: 0;
   height: clamp(
     380px,
     calc(var(--gallery-content-max-h, (100vh - 64px)) - 180px),
     660px
   );
+  width: 100%;
+  margin: 0;
   aspect-ratio: auto;
   max-height: none;
   border-radius: 12px;
@@ -765,29 +733,26 @@ body.fade-out {
 .projectCard.expanded:not([data-tier="main"]) .videoWrapper iframe {
   width: 100%;
   height: 100%;
-  max-height: 100%;
   object-fit: contain;
   background: #000;
 }
 
-/* If you want no cropping in the detail view (class on the <video>) */
 .detailVideo {
   object-fit: contain;
   background: #000;
 }
 
-/* Optional fallback for very old browsers (keeps things from collapsing) */
 @supports not (aspect-ratio: 1) {
   .videoWrapper {
-    padding-top: calc(100% / var(--video-ar, 16/9));
+    padding-top: calc(100% / var(--video-ar, 16 / 9));
   }
 }
 
-/* Sections */
 .projectDescription,
 .projectProcess {
   margin-bottom: 24px;
 }
+
 .projectDescription h3,
 .projectProcess h3 {
   font-size: 14px;
@@ -797,6 +762,7 @@ body.fade-out {
   margin-bottom: 8px;
   color: #f1f1f1;
 }
+
 .projectDescription p,
 .projectProcess p {
   font-size: 13px;
@@ -804,10 +770,6 @@ body.fade-out {
   color: #d0d0d0;
 }
 
-
-
-
-/* Hashtag blobs for other cards */
 .projectCard.expanded:not([data-tier="main"]) .cardHashtags {
   display: flex;
   flex-wrap: wrap;
@@ -830,13 +792,10 @@ body.fade-out {
   color: #f5f5f5;
   background: rgba(255, 255, 255, 0.06);
 }
-/* === Expanded ÜBERTÖN case header === */
 
-.projectCard.expanded .caseHeader {
-  margin-bottom: 24px;
-}
-
-/* 16:9 video container spanning the full card width */
+/* ----------------------------------------------------------
+   Case header controls (ÜBERTÖN template)
+---------------------------------------------------------- */
 .caseVideoWrap {
   position: relative;
   width: 100%;
@@ -846,174 +805,37 @@ body.fade-out {
   background: #000;
 }
 
-/* Actual video: covers container */
 .caseVideoWrap .caseVideo {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* “stretched” in the sense of filling the frame */
+  object-fit: cover;
 }
 
-/* Title: top-left overlay */
 .caseVideoWrap .caseTitle {
   position: absolute;
   left: 24px;
   top: 24px;
-  min-width: 152px;
-  min-height: 43px;
   display: flex;
   align-items: center;
+  min-width: 152px;
+  min-height: 43px;
   font-family: "chivo-mono", sans-serif;
-  font-weight: 500; /* medium */
+  font-weight: 500;
   font-size: 36px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #ffffff;
+  color: #fff;
   z-index: 2;
 }
 
-/* Close arrow: top-right, 26x26 hit area */
-.caseVideoWrap .caseCloseBtn {
-  position: absolute;
-  top: 24px;
-  right: 24px;
-  width: 52px;
-  height: 52px;
-  padding: 0;
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0);
-  border: 1px solid rgba(255, 255, 255, 0);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 2;
-}
-
-/* Group containing the 3 rectangles */
-.caseCloseBtn .arrowParts {
-  position: relative;
-  width: 18px;
-  height: 18px;
-}
-
-/* Base rect style */
-.caseCloseBtn .arrow-bar {
-  position: absolute;
-  background-color: #ffffff;
-  border-radius: 0px;
-}
-
-/* Horizontal bar (bottom) */
-.caseCloseBtn .arrow-bar-main {
-  left: 0;
-  bottom: 0;
-  width: 20px;
-  height: 2px;
-}
-
-/* Vertical bar (left side) */
-.caseCloseBtn .arrow-bar-diag {
-  left: 0px;
-  bottom: 0px;
-  width: 2px;
-  height: 20px;
-}
-
-/* Diagonal bar (connecting top-right to bottom-left) */
-.caseCloseBtn .arrow-bar-tail {
-  left:1px;
-  bottom: 0;
-  width: 26px;
-  height: 2px;
-  transform-origin: left bottom;
-  transform: rotate(-45deg);
-}
-
-.caseVideoWrap .caseCloseBtn:hover {
-  background: rgba(0, 0, 0, 0.55);
-}
-
-/* Fullscreen icon: bottom-right 30x30 */
-.caseVideoWrap .caseFullscreenBtn {
-  position: absolute;
-  right: 24px;
-  bottom: 24px;
-  width: 52px;
-  height: 52px;
-  padding: 0;
-  border-radius: 0px;
-  background: rgba(0, 0, 0, 0);
-  border: 1px solid rgba(255, 255, 255, 0);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 2;
-}
-
-/* Box + 4 corners to mimic a generic fullscreen icon */
-.caseFullscreenBtn .fs-box {
-  position: relative;
-  width: 24px;
-  height: 24px;
-}
-
-.caseFullscreenBtn .fs-corner {
-  position: absolute;
-  border: 2px solid #ffffff;
-  width: 6px;
-  height: 6px;
-  border-radius:25%;
-}
-
-/* Top-left */
-.caseFullscreenBtn .fs-tl {
-  left: 0;
-  top: 0;
-  border-right: 0;
-  border-bottom: 0;
-}
-
-/* Top-right */
-.caseFullscreenBtn .fs-tr {
-  right: 0;
-  top: 0;
-  border-left: 0;
-  border-bottom: 0;
-}
-
-/* Bottom-left */
-.caseFullscreenBtn .fs-bl {
-  left: 0;
-  bottom: 0;
-  border-right: 0;
-  border-top: 0;
-}
-
-/* Bottom-right */
-.caseFullscreenBtn .fs-br {
-  right: 0;
-  bottom: 0;
-  border-left: 0;
-  border-top: 0;
-}
-
-.caseFullscreenBtn:hover {
-  background: rgba(0, 0, 0, 0.55);
-}
-
-.caseFullscreenBtn:hover {
-  background: rgba(0, 0, 0, 0.55);
-}
-
+.caseVideoWrap .caseCloseBtn,
+.caseVideoWrap .caseFullscreenBtn,
 .caseVideoWrap .caseMuteBtn {
   position: absolute;
-  left: 24px; /* 24px from edge + 30px button + 12px gap */
-  bottom: 24px;
-  width: 60px;
-  height: 60px;
+  width: 52px;
+  height: 52px;
   padding: 0;
   border-radius: 4px;
   background: rgba(0, 0, 0, 0);
@@ -1024,269 +846,124 @@ body.fade-out {
   cursor: pointer;
   z-index: 2;
   transition: background 0.2s ease;
-
-  /* --- PNG specific styles --- */
-  background-image: url('public/img/speaker.png'); /* Default: unmute icon */
-  background-size: 60%; /* Adjust as needed to fit your PNG */
-  background-repeat: no-repeat;
-  background-position: center;
-  filter: invert(1); /* This will turn black icons white */
 }
 
-
-
-.caseMuteBtn.muted {
-  background-image: url('public/img/speakeroff.png'); /* When muted: mute icon */
+.caseVideoWrap .caseCloseBtn {
+  top: 24px;
+  right: 24px;
 }
 
-
-
-/* ---- Menu ---- */
-.navigation {
-  position: fixed;
-  right: -150vw;
-  width: 100vw;
-  height: 100%;
-  background-color: #d4d4d4;
-  transition: 0.5s;
-  z-index: 10000;
-}
-nav {
-  position: absolute;
-  top: 100px;
-  width: 100%;
-  height: calc(100vh - 200px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.navigation ul li {
-  font-family: "chivo-mono", sans-serif;
-  font-weight: 400;
-  color: #fff;
-  text-align: center;
-  text-transform: none;
-  list-style-type: none;
-  font-size: 96px;
-  min-height: 114px;
-  padding: 0px 30px;
-  min-width: 403.2px;
-}
-.navigation ul li:not(:last-child) {
-  border-bottom: 1px solid #a1a1a1;
-}
-.navigation ul li a {
-  text-decoration: none;
-  color: #000;
-  position: relative;
-}
-.navigation ul li a:hover {
-  font-family: "jacquard-12", sans-serif;
-  font-size: 128px;
-}
-.navigation ul li a::before {
-  content: "";
-  position: absolute;
-  background-color: rgba(114, 204, 119, 0.3);
-  top: 5%;
-  left: -5%;
-  width: 110%;
-  height: 80%;
-  pointer-events: none;
-  border-radius: 8px;
-  transform: rotate(var(--rand-rotate, -5deg));
-  z-index: -1;
-  opacity: 0;
-  transition: all 0.15s ease-in-out;
-}
-.navigation ul li a:hover::before {
-  opacity: 1;
+.caseVideoWrap .caseFullscreenBtn {
+  right: 24px;
+  bottom: 24px;
+  border-radius: 0;
 }
 
-/* Social media links at the bottom */
-.navigation .socials {
-  position: absolute;
-  bottom: 25px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 66px;
-}
-.navigation .socials a {
-  font-family: "chivo-mono", sans-serif;
-  font-weight: 300;
-  color: #a1a1a1;
-  text-decoration: none;
-  font-size: 20px;
-  transition: color 0.3s;
-}
-.navigation .socials a:hover {
-  text-decoration: underline;
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 2px;
-}
-
-/* Asterisk image */
-.navigation .asterisk-image {
-  display: block;
-  position: absolute;
+.caseVideoWrap .caseMuteBtn {
+  left: 24px;
+  bottom: 24px;
   width: 60px;
   height: 60px;
-  top: 2%;
-  right: 95%;
-}
-.navigation .asterisk-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+  background-image: url("public/img/speaker.png");
+  background-size: 60%;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: invert(1);
 }
 
-/* Hamburger menu */
-.hamburger {
-  position: fixed; /* stick the button to the viewport */
-}
-.bar {
-  position: absolute; /* position bars inside the button */
-  left: 0;
-  right: 0;
-}
-.hamburger {
-  position: fixed; /* keep it stuck to viewport */
-  top: 16px; /* consistent spacing */
-  right: 16px; /* move to the right */
-  left: auto; /* unset the old left */
-  width: 30px;
-  height: 30px;
-  z-index: 10001; /* stays above overlay */
-  transform: none; /* no vertical translate needed */
-  border: 0;
-  background: transparent;
-  display: block;
-}
-.bar {
-  top: 3px;
-  background-color: #000;
-  width: 100%;
-  height: 4px;
-  transition: all 0.3s ease-in;
-}
-#bar2 {
-  top: 11px;
-}
-#bar3 {
-  top: 19px;
-}
-.navigation.is-active {
-  right: 0;
-}
-.hamburger.is-opened #bar1 {
-  transform: rotate(45deg) translate(6px, 5px);
-}
-.hamburger.is-opened #bar2 {
-  background-color: transparent;
-}
-.hamburger.is-opened #bar3 {
-  transform: rotate(-45deg) translate(6px, -5px);
-}
-/* Mobile portrait: menu drops from top, keep same look/feel */
-@media (max-width: 768px) and (orientation: portrait) {
-  .navigation {
-    right: auto;
-    left: 0;
-    top: 0;
-    width: 100vw;
-    height: 100vh;
-    transform: translateY(-100%);
-    transition: transform 0.45s ease;
-  }
-  .navigation.is-active {
-    transform: translateY(0);
-  }
-
-  .hamburger {
-    top: 16px;
-    right: 16px; /* move to the right */
-    left: auto;
-    z-index: 10001;
-  }
-
-  nav {
-    top: 80px;
-    height: calc(100vh - 160px);
-  }
-  .navigation ul li {
-    font-size: 48px;
-    min-height: 60px;
-  }
-  .navigation ul li a:hover {
-    font-size: 64px;
-  }
-  .navigation .socials {
-    gap: 28px;
-  }
-  .navigation .asterisk-image {
-    top: 16px;
-    right: auto;
-    left: 16px;
-  }
+.caseMuteBtn.muted {
+  background-image: url("public/img/speakeroff.png");
 }
 
-/* Masonry override for organicGrid (JS positions cards absolutely) */
-.organicGrid.masonry-on {
-  display: block;
+.caseVideoWrap .caseCloseBtn:hover,
+.caseVideoWrap .caseFullscreenBtn:hover,
+.caseVideoWrap .caseMuteBtn:hover {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.caseCloseBtn .arrowParts {
   position: relative;
-  margin: 0 auto;
-  transition: height 0.2s ease;
-  will-change: height;
+  width: 18px;
+  height: 18px;
 }
-/* Absolutely position cards when masonry is enabled */
-.organicGrid.masonry-on .projectCard {
+
+.caseCloseBtn .arrow-bar {
   position: absolute;
+  background: #fff;
+}
+
+.caseCloseBtn .arrow-bar-main {
+  left: 0;
+  bottom: 0;
+  width: 20px;
+  height: 2px;
+}
+
+.caseCloseBtn .arrow-bar-diag {
+  left: 0;
+  bottom: 0;
+  width: 2px;
+  height: 20px;
+}
+
+.caseCloseBtn .arrow-bar-tail {
+  left: 1px;
+  bottom: 0;
+  width: 26px;
+  height: 2px;
+  transform-origin: left bottom;
+  transform: rotate(-45deg);
+}
+
+.caseFullscreenBtn .fs-box {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+.caseFullscreenBtn .fs-corner {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border: 2px solid #fff;
+  border-radius: 25%;
+}
+
+.caseFullscreenBtn .fs-tl {
   left: 0;
   top: 0;
-}
-html.lock-scroll,
-body.lock-scroll {
-  overflow: hidden !important;
-  height: 100%;
-  overscroll-behavior: contain;
-  touch-action: none;
-}
-@keyframes ctaSwooshUp {
-  0% {
-    transform: translateX(-50%) translateY(140%) scale(0.5);
-    opacity: 0;
-    filter: blur(8px);
-  }
-  90% {
-    /* slight overshoot above final position */
-    transform: translateX(-50%) translateY(-8px) scale(1.01);
-    opacity: 1;
-    filter: blur(0px);
-  }
-  100% {
-    transform: translateX(-50%) translateY(0) scale(1);
-    opacity: 1;
-    filter: blur(0);
-  }
-  /* Mobile 3D gallery: lock page scroll */
-}
-#instructions {
-  position: fixed;
-  bottom: 70px;
-  left: 37px;
-  font-family: "chivo-mono", sans-serif;
-  font-size: 13px;
-  color: #a1a1a1;
-  z-index: 9999;
+  border-right: 0;
+  border-bottom: 0;
 }
 
-/* ========================= */
-/* ÜBERTÖN CASE – BODY LAYOUT */
-/* ========================= */
+.caseFullscreenBtn .fs-tr {
+  right: 0;
+  top: 0;
+  border-left: 0;
+  border-bottom: 0;
+}
 
-/* layout under the header video: left blobs + right text */
+.caseFullscreenBtn .fs-bl {
+  left: 0;
+  bottom: 0;
+  border-right: 0;
+  border-top: 0;
+}
+
+.caseFullscreenBtn .fs-br {
+  right: 0;
+  bottom: 0;
+  border-left: 0;
+  border-top: 0;
+}
+
+/* ----------------------------------------------------------
+   Case body layout (ÜBERTÖN)
+---------------------------------------------------------- */
+.projectCard.expanded .caseHeader {
+  margin-bottom: 24px;
+}
+
 .caseBody {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
@@ -1295,32 +972,28 @@ body.lock-scroll {
   margin-bottom: 40px;
 }
 
-/* left column with 3 blobs */
 .caseBody-left {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-/* blobs container */
 .caseBlobs {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-/* single blob wrapper */
 .caseBlob {
   display: flex;
 }
 
-/* squared logo blob */
 .caseBlob-square {
   width: 120px;
   height: 120px;
   border-radius: 24px;
   overflow: hidden;
-  background: #111111;
+  background: #111;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1332,7 +1005,6 @@ body.lock-scroll {
   object-fit: cover;
 }
 
-/* pill-style blobs */
 .caseBlob-pill {
   display: inline-flex;
   align-items: center;
@@ -1340,7 +1012,6 @@ body.lock-scroll {
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   font-family: "chivo-mono", sans-serif;
-  font-weight: 400;
   font-size: 13px;
   letter-spacing: 0.04em;
   text-transform: lowercase;
@@ -1348,43 +1019,36 @@ body.lock-scroll {
   background: rgba(255, 255, 255, 0.03);
 }
 
-/* right column with description */
 .caseBody-right {
   display: flex;
   flex-direction: column;
 }
 
-/* reuse projectDescription styling but ensure left-aligned */
 .projectDescription--wide {
   max-width: 100%;
 }
 
-/* DESCRIPTION – right bound */
 .projectDescription--wide h3 {
   font-family: "chivo-mono", sans-serif;
-  font-weight: 500;          /* Medium */
+  font-weight: 500;
   font-size: 36px;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   margin-bottom: 8px;
   color: #f1f1f1;
-  text-align: right;         /* right-aligned heading */
+  text-align: right;
 }
 
 .projectDescription--wide p {
   font-family: "chivo-mono", sans-serif;
-  font-weight: 200;          /* Thin */
+  font-weight: 200;
   font-size: 18px;
-  line-height: 1.4;          /* ~7 words/line with this size */
+  line-height: 1.4;
   color: #d0d0d0;
-  text-align: right;         /* right-aligned text */
-  max-width: 50ch;           /* ~7–8 words per line */
-  margin-left: auto;         /* right-bind the block */
+  text-align: right;
+  max-width: 50ch;
+  margin-left: auto;
 }
-
-/*  ======================== */
-/*  FOUR VERTICAL DETAIL VIDEOS */
-/*  ======================== */
 
 .caseDetailVideos {
   display: grid;
@@ -1393,7 +1057,6 @@ body.lock-scroll {
   margin-bottom: 40px;
 }
 
-/* each video card keeps 330x586 ratio but scales responsively */
 .detailVideoCard {
   width: 100%;
 }
@@ -1407,37 +1070,25 @@ body.lock-scroll {
   background: #000;
 }
 
-/* thumbnail visible by default */
-.detailVideoThumb {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* hover video on top */
+.detailVideoThumb,
 .detailVideoHover {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 50px;
+  display: block;
+  border-radius: inherit;
+}
+
+.detailVideoHover {
   opacity: 0;
   transition: opacity 0.2s ease-out;
 }
 
-/* on hover: fade video in, start playing via JS */
 .detailVideoInner:hover .detailVideoHover {
   opacity: 1;
 }
-
-
-/*  ======================== */
-/*  "IN DETAIL" SECTION */
-/*  ======================== */
 
 .caseDetailSection {
   display: flex;
@@ -1446,7 +1097,6 @@ body.lock-scroll {
   align-items: flex-start;
 }
 
-/* Heading spans full width */
 .caseDetail-heading {
   font-family: "chivo-mono", sans-serif;
   font-weight: 500;
@@ -1455,11 +1105,10 @@ body.lock-scroll {
   text-transform: uppercase;
   margin: 0;
   color: #f1f1f1;
-  text-align: left;
   width: 100%;
+  text-align: left;
 }
 
-/* Content row: text left, grid right */
 .caseDetailSection .caseDetail-left {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
@@ -1468,13 +1117,11 @@ body.lock-scroll {
   width: 100%;
 }
 
-/* For WDTW variant: adjust column ratio */
 .caseDetailSection--wdtw .caseDetail-left {
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.25fr);
   gap: clamp(32px, 7vw, 72px);
 }
 
-/* Text column */
 .caseDetail-text {
   display: flex;
   flex-direction: column;
@@ -1492,14 +1139,12 @@ body.lock-scroll {
   margin: 0;
 }
 
-/* Right side: mosaic or image */
 .caseDetail-right {
   display: flex;
   justify-content: flex-start;
   align-items: center;
 }
 
-/* Image wrapper for übertön – exact 622x864 ratio but responsive */
 .caseDetail-imageWrap {
   width: 100%;
   max-width: 622px;
@@ -1513,28 +1158,11 @@ body.lock-scroll {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
-/* WDTW detail mosaic layout */
-.caseDetailSection--wdtw {
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.25fr);
-  gap: clamp(32px, 7vw, 72px);
-}
-
-.caseDetailSection--wdtw .caseDetail-right {
-  justify-content: flex-start;
-}
-
-.caseDetailSection--wdtw .detailVideoMosaic {
-  margin-left: auto;
-}
-
-/* Base mosaic layout with square rows ≈20% taller */
 .detailVideoMosaic {
-  --square-row: 2fr;  /* squares ≈20% taller than the mid rows */
+  --square-row: 2fr;
   --mid-row: 1fr;
-
   display: grid;
   width: 100%;
   max-width: 560px;
@@ -1544,13 +1172,11 @@ body.lock-scroll {
   align-items: stretch;
 }
 
-/* WDTW: total height & vertical centering */
 .detailVideoMosaic--wdtw {
-  height: clamp(840px, 60vh, 1220px); /* use the taller height you mentioned */
+  height: clamp(840px, 60vh, 1220px);
   align-self: center;
 }
 
-/* Each card fills its grid slot */
 .detailVideoCard--mosaic {
   display: flex;
   width: 100%;
@@ -1558,57 +1184,34 @@ body.lock-scroll {
 }
 
 .detailVideoCard--mosaic .detailVideoInner {
-  position: relative;
   width: 100%;
   height: 100%;
   border-radius: clamp(28px, 4vw, 44px);
-  overflow: hidden;
-  background: #000;
 }
 
-/* Grid placement */
 .detailVideoCard--square-tl {
   grid-column: 1;
-  grid-row: 1 / span 1;   /* top-left square */
+  grid-row: 1;
 }
 
 .detailVideoCard--square-br {
   grid-column: 2;
-  grid-row: 4 / span 1;   /* bottom-right square */
+  grid-row: 4;
 }
 
 .detailVideoCard--portrait-tr {
   grid-column: 2;
-  grid-row: 1 / span 3;   /* top-right portrait (rows 1–3) */
+  grid-row: 1 / span 3;
 }
 
 .detailVideoCard--portrait-bl {
   grid-column: 1;
-  grid-row: 2 / span 3;   /* bottom-left portrait (rows 2–4) */
+  grid-row: 2 / span 3;
 }
 
-/* Let the grid control final dimensions */
-.detailVideoInner--square,
-.detailVideoInner--portrait {
-  aspect-ratio: auto;
-}
-
-/* Media fills */
-.detailVideoCard--mosaic .detailVideoThumb,
-.detailVideoCard--mosaic .detailVideoHover {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: inherit;
-}
-
-
-/*  ============ */
-/*  RESPONSIVE  */
-/*  ============ */
-
+/* ----------------------------------------------------------
+   Responsive tweaks
+---------------------------------------------------------- */
 @media (max-width: 1100px) {
   .caseBody {
     grid-template-columns: 1fr;
@@ -1617,6 +1220,7 @@ body.lock-scroll {
   .caseBody-left {
     order: 1;
   }
+
   .caseBody-right {
     order: 2;
   }
@@ -1625,11 +1229,11 @@ body.lock-scroll {
     grid-template-columns: 1fr;
     gap: 32px;
   }
-  
+
   .caseDetail-right {
     justify-content: flex-start;
   }
-  
+
   .caseDetailSection--wdtw .detailVideoMosaic {
     width: 100%;
     max-width: none;
@@ -1642,25 +1246,12 @@ body.lock-scroll {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     row-gap: 24px;
   }
+
   .caseDetailSection--wdtw .detailVideoMosaic {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
       "square-tl portrait-tr"
       "portrait-bl square-br";
-  }
-}
-
-@media (max-width: 600px) {
-  .caseDetailVideos {
-    grid-template-columns: 1fr;
-  }
-  .caseDetailSection--wdtw .detailVideoMosaic {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "square-tl"
-      "portrait-tr"
-      "portrait-bl"
-      "square-br";
   }
 }
 
@@ -1677,10 +1268,330 @@ body.lock-scroll {
   }
 }
 
-/* About page layout */
+@media (max-width: 600px) {
+  .caseDetailVideos {
+    grid-template-columns: 1fr;
+  }
+
+  .caseDetailSection--wdtw .detailVideoMosaic {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "square-tl"
+      "portrait-tr"
+      "portrait-bl"
+      "square-br";
+  }
+}
+
+/* ----------------------------------------------------------
+   Project modal (fullscreen)
+---------------------------------------------------------- */
+#projectModal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: none;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(4px);
+  overflow-y: auto;
+}
+
+#projectModal.is-open {
+  display: block;
+}
+
+#projectModal .modalBox {
+  width: min(1400px, 96vw);
+  margin: 32px auto;
+  padding: 16px 16px 24px;
+  background: #0f0f0f;
+  color: #eaeaea;
+  border-radius: 10px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+}
+
+#projectModal .modalHeader {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: -16px -16px 12px;
+  padding: 12px 16px;
+  background: #0f0f0f;
+  border-bottom: 1px solid #1e1e1e;
+}
+
+#projectModal .modalVideoWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--video-ar, 16 / 9);
+  margin-bottom: 16px;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#projectModal .modalVideoWrap video,
+#projectModal .modalVideoWrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ----------------------------------------------------------
+   Navigation drawer
+---------------------------------------------------------- */
+.navigation {
+  position: fixed;
+  right: -150vw;
+  width: 100vw;
+  height: 100%;
+  background: #d4d4d4;
+  transition: 0.5s;
+  z-index: 10000;
+}
+
+.navigation.is-active {
+  right: 0;
+}
+
+nav {
+  position: absolute;
+  top: 100px;
+  width: 100%;
+  height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navigation ul li {
+  list-style: none;
+  font-family: "chivo-mono", sans-serif;
+  font-weight: 400;
+  font-size: 96px;
+  min-height: 114px;
+  min-width: 403.2px;
+  padding: 0 30px;
+  text-align: center;
+  color: #fff;
+}
+
+.navigation ul li:not(:last-child) {
+  border-bottom: 1px solid #a1a1a1;
+}
+
+.navigation ul li a {
+  position: relative;
+  text-decoration: none;
+  color: #000;
+}
+
+.navigation ul li a:hover {
+  font-family: "jacquard-12", sans-serif;
+  font-size: 128px;
+}
+
+.navigation ul li a::before {
+  content: "";
+  position: absolute;
+  top: 5%;
+  left: -5%;
+  width: 110%;
+  height: 80%;
+  border-radius: 8px;
+  background: rgba(114, 204, 119, 0.3);
+  transform: rotate(var(--rand-rotate, -5deg));
+  z-index: -1;
+  opacity: 0;
+  transition: all 0.15s ease-in-out;
+  pointer-events: none;
+}
+
+.navigation ul li a:hover::before {
+  opacity: 1;
+}
+
+.navigation .socials {
+  position: absolute;
+  bottom: 25px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 66px;
+}
+
+.navigation .socials a {
+  font-family: "chivo-mono", sans-serif;
+  font-weight: 300;
+  font-size: 20px;
+  color: #a1a1a1;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.navigation .socials a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
+}
+
+.navigation .asterisk-image {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  top: 2%;
+  right: 95%;
+  display: block;
+}
+
+.navigation .asterisk-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.hamburger {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  width: 30px;
+  height: 30px;
+  z-index: 10001;
+  background: transparent;
+  border: 0;
+  display: block;
+}
+
+.bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #000;
+  transition: all 0.3s ease-in;
+}
+
+#bar1 {
+  top: 3px;
+}
+
+#bar2 {
+  top: 11px;
+}
+
+#bar3 {
+  top: 19px;
+}
+
+.hamburger.is-opened #bar1 {
+  transform: rotate(45deg) translate(6px, 5px);
+}
+
+.hamburger.is-opened #bar2 {
+  background: transparent;
+}
+
+.hamburger.is-opened #bar3 {
+  transform: rotate(-45deg) translate(6px, -5px);
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+  .navigation {
+    right: auto;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    transform: translateY(-100%);
+    transition: transform 0.45s ease;
+  }
+
+  .navigation.is-active {
+    transform: translateY(0);
+  }
+
+  nav {
+    top: 80px;
+    height: calc(100vh - 160px);
+  }
+
+  .navigation ul li {
+    font-size: 48px;
+    min-height: 60px;
+  }
+
+  .navigation ul li a:hover {
+    font-size: 64px;
+  }
+
+  .navigation .socials {
+    gap: 28px;
+  }
+
+  .navigation .asterisk-image {
+    top: 16px;
+    right: auto;
+    left: 16px;
+  }
+}
+
+/* ----------------------------------------------------------
+   Misc
+---------------------------------------------------------- */
+.organicGrid.masonry-on {
+  display: block;
+  position: relative;
+  margin: 0 auto;
+  transition: height 0.2s ease;
+  will-change: height;
+}
+
+.organicGrid.masonry-on .projectCard {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+#instructions {
+  position: fixed;
+  bottom: 70px;
+  left: 37px;
+  font-family: "chivo-mono", sans-serif;
+  font-size: 13px;
+  color: #a1a1a1;
+  z-index: 9999;
+}
+
+@keyframes ctaSwooshUp {
+  0% {
+    transform: translateX(-50%) translateY(140%) scale(0.5);
+    opacity: 0;
+    filter: blur(8px);
+  }
+  90% {
+    transform: translateX(-50%) translateY(-8px) scale(1.01);
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+/* ----------------------------------------------------------
+   About page
+---------------------------------------------------------- */
 .about-page {
-  background: #0b0b0b;
   min-height: 100vh;
+  background: #0b0b0b;
   color: #e6e6e6;
   font-family: "chivo-mono", sans-serif;
 }
@@ -1695,7 +1606,7 @@ body.lock-scroll {
 }
 
 .about-title {
-  font-family: "horsham-serial", sans-serif; /* confirm kit name in Adobe Fonts */
+  font-family: "horsham-serial", sans-serif;
   font-weight: 200;
   font-size: clamp(72px, 12vw, 187px);
   text-transform: lowercase;
@@ -1769,7 +1680,6 @@ body.lock-scroll {
   object-fit: cover;
 }
 
-/* Responsive tweaks */
 @media (max-width: 1200px) {
   .about-layout {
     grid-template-columns: 1fr;
@@ -1813,4 +1723,3 @@ body.lock-scroll {
     height: 120px;
   }
 }
-
