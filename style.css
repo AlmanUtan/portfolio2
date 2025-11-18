@@ -27,6 +27,17 @@ body.fade-out {
   opacity: 0;
 }
 
+
+/* Hide scrollbars but keep scrolling */
+* {
+  scrollbar-width: none; /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
 /* ----------------------------------------------------------
    Root canvas + scroll locking
 ---------------------------------------------------------- */
@@ -291,18 +302,11 @@ body.lock-scroll {
   padding: 0 16px 28px;
   scroll-padding-top: 88px;
   scroll-padding-bottom: 72px;
-  scrollbar-width: thin;
+ 
   overscroll-behavior: contain;
 }
 
-.galleryScroll::-webkit-scrollbar {
-  width: 10px;
-}
 
-.galleryScroll::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.25);
-  border-radius: 999px;
-}
 
 .galleryScroll::before,
 .galleryScroll::after {
@@ -465,6 +469,11 @@ body.lock-scroll {
   }
 }
 
+
+#caseOverlay:focus,
+#caseOverlay *:focus {
+  outline: none !important;
+}
 /* ----------------------------------------------------------
    Single-case overlay
 ---------------------------------------------------------- */
@@ -475,8 +484,8 @@ body.lock-scroll {
   z-index: 10020;
   display: grid;
   place-items: center;
-  padding: clamp(20px, 6vw, 72px);
-  background: rgba(0, 0, 0, 0.72);
+  padding: 0;
+  background: rgba(0, 0, 0, 0.5); /* Subtle dark scrim, no blur */
   opacity: 0;
   pointer-events: none;
   transition: opacity 280ms ease;
@@ -498,15 +507,21 @@ body.lock-scroll {
   z-index: 1;
   display: flex;
   flex-direction: column;
-  width: min(1500px, calc(100vw - clamp(48px, 10vw, 128px)));
+
+  /* Hard centering: panel itself is centered block */
+  width: 90%;
+  max-width: 1440px;
+  margin: 0 auto;
+
   max-height: calc(100vh - clamp(60px, 14vh, 140px));
-  padding: clamp(12px, 2vw, 28px);
-  background: rgba(32, 32, 32, 0.82);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: clamp(6px, 2vw, 24px);
+
+  background: rgba(40, 40, 40, 0.85); /* Translucent grey */
+  border: 0px solid rgba(0, 0, 0, 0); /* Slightly stronger line */
   border-radius: clamp(24px, 4vw, 40px);
   box-shadow: 0 50px 140px rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(26px);
-  -webkit-backdrop-filter: blur(26px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   overflow: hidden;
 }
 
@@ -514,26 +529,19 @@ body.lock-scroll {
   flex: 1;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: clamp(32px, 5vw, 48px) clamp(18px, 4vw, 36px);
-  scrollbar-width: thin;
+
+  /* Much tighter padding so case hugs the panel */
+  padding:  0;
+
+  
+  max-width: 100%;
 }
 
-.caseOverlay-content::-webkit-scrollbar {
-  width: 10px;
-}
 
-.caseOverlay-content::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.caseOverlay-content::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.25);
-  border-radius: 999px;
-}
 
 .caseOverlay-content > * {
-  max-width: min(1400px, 100%);
-  margin-inline: auto;
+  max-width: 100%;
+  margin-inline: 0; /* no extra centering margin; fill content area */
 }
 
 .caseOverlay-card,
@@ -560,7 +568,7 @@ body.lock-scroll {
 }
 
 .caseOverlay-card .caseVideoWrap {
-  border-radius: clamp(24px, 3.5vw, 48px);
+  border-radius: clamp(28px, 4vw, 56px); /* Larger corner radius */
   overflow: hidden;
   margin-bottom: clamp(28px, 4vw, 56px);
 }
@@ -652,18 +660,31 @@ body.lock-scroll {
   z-index: 2;
 }
 
+.projectCard.expanded .videoWrapper {
+  margin-bottom: 16px;
+  aspect-ratio: var(--video-ar, var(--card-ar, 16 / 9));
+  max-height: var(
+    --gallery-content-max-h,
+    calc((100vh - 64px) - 140px)
+  );
+}
+
+/* MAIN CASES – expanded inside the gallery */
 .projectCard.expanded[data-tier="main"] .cardDetails > .videoWrapper {
-  margin: 0;
+  margin: 0; /* video hugs the card edges */
 }
 
+/* Every direct child AFTER the video, except the collapse control:
+   gets consistent inner padding = your “margin for everything except top video” */
 .projectCard.expanded[data-tier="main"]
-  .cardDetails > :not(.videoWrapper):not(.cardCollapse) {
-  padding: 16px 20px;
+  .cardDetails > *:not(.videoWrapper):not(.cardCollapse) {
+  padding: 20px 24px;
 }
 
+/* Extra breathing room on the very last block */
 .projectCard.expanded[data-tier="main"]
-  .cardDetails > :not(.videoWrapper):not(.cardCollapse):last-child {
-  padding-bottom: 28px;
+  .cardDetails > *:not(.videoWrapper):not(.cardCollapse):last-child {
+  padding-bottom: 32px;
 }
 
 .projectCard.expanded:not([data-tier="main"]) .cardDetails {
@@ -702,13 +723,7 @@ body.lock-scroll {
   );
 }
 
-.projectCard.expanded[data-tier="main"] .videoWrapper {
-  margin-bottom: 0;
-  max-height: var(
-    --gallery-content-max-h,
-    calc((100vh - 64px) - 80px)
-  );
-}
+
 
 .projectCard.expanded:not([data-tier="main"]) .videoWrapper {
   flex: 1 1 auto;
