@@ -1300,6 +1300,51 @@ function wireCaseControls(scope = document, { forceRebind = false } = {}) {
 
     btn.dataset.wiredMute = "1";
   });
+
+  // Setup visibility-based audio fading for case videos
+  scope.querySelectorAll(".caseVideo").forEach((video) => {
+    if (video.dataset.visibilityWired === "1") return;
+    
+    const videoWrap = video.closest(".caseVideoWrap");
+    if (!videoWrap) return;
+
+    // Store original volume
+    if (!video.dataset.originalVolume) {
+      video.dataset.originalVolume = String(video.volume || 1);
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const ratio = entry.intersectionRatio;
+          // Fade out when less than 20% visible (80% not visible)
+          const visibilityThreshold = 0.2;
+          
+          if (ratio < visibilityThreshold) {
+            // Fade out based on visibility
+            const fadeProgress = ratio / visibilityThreshold;
+            const targetVolume = parseFloat(video.dataset.originalVolume) * Math.max(0, fadeProgress);
+            video.volume = targetVolume;
+          } else {
+            // Fully visible - restore original volume
+            const slider = videoWrap.querySelector(".caseVolumeSlider");
+            if (slider) {
+              video.volume = parseFloat(slider.value) || parseFloat(video.dataset.originalVolume);
+            } else {
+              video.volume = parseFloat(video.dataset.originalVolume);
+            }
+          }
+        });
+      },
+      {
+        threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+        rootMargin: "0px"
+      }
+    );
+
+    observer.observe(videoWrap);
+    video.dataset.visibilityWired = "1";
+  });
 }
 
 wireCaseControls(document);

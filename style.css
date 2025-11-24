@@ -901,8 +901,7 @@ body.lock-scroll {
 }
 
 .caseVideoWrap .caseCloseBtn:hover,
-.caseVideoWrap .caseFullscreenBtn:hover,
-.caseVideoWrap .caseMuteBtn:hover {
+.caseVideoWrap .caseFullscreenBtn:hover {
   background: rgba(0, 0, 0, 0.55);
 }
 
