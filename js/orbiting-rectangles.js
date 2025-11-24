@@ -210,9 +210,23 @@ export class OrbitingRectanglesManager {
     });
   }
 
-  updatePlayback(camera, maxActive = this.maxActiveVideos) {
+  updatePlayback(camera, playAll = false) {
     if (!camera || !this.rects.length) return;
 
+    // When playAll is true (asterisk view, gallery closed, overlay inactive),
+    // play all videos that aren't manually paused
+    if (playAll) {
+      this.videos.forEach((video) => {
+        if (video._manualPause) {
+          this.setVideoPlaybackState(video, false);
+        } else {
+          this.setVideoPlaybackState(video, true);
+        }
+      });
+      return;
+    }
+
+    // Otherwise, use camera-based limiting (for performance when gallery is open or overlay is active)
     this._playbackFrameCounter =
       (this._playbackFrameCounter + 1) % this._playbackFrameStride;
     if (this._playbackFrameCounter !== 0) return;
@@ -256,7 +270,7 @@ export class OrbitingRectanglesManager {
     });
 
     const active = new Set(
-      candidates.slice(0, maxActive).map((entry) => entry.video)
+      candidates.slice(0, this.maxActiveVideos).map((entry) => entry.video)
     );
 
     this.videos.forEach((video) => {

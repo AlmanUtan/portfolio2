@@ -235,7 +235,9 @@ export class App {
     if (!this.heavyPaused) return;
     if (this.orbitingRects) {
       this.orbitingRects.resume();
-      this.orbitingRects.updatePlayback(this.sceneManager.camera);
+      // Play all videos when resuming in asterisk view
+      const playAll = !this.overlayActive && this.galleryProgress <= 0.01;
+      this.orbitingRects.updatePlayback(this.sceneManager.camera, playAll);
     }
     this.heavyPaused = false;
   }
@@ -1022,7 +1024,10 @@ export class App {
 
   updateOrbitVideoPlayback() {
     if (!this.orbitingRects) return;
-    this.orbitingRects.updatePlayback(this.sceneManager.camera);
+    // Play all 8 videos when in asterisk view (gallery closed, overlay inactive)
+    // Otherwise use camera-based limiting for performance
+    const playAll = !this.overlayActive && this.galleryProgress <= 0.01;
+    this.orbitingRects.updatePlayback(this.sceneManager.camera, playAll);
   }
 
   computeMobilePortrait() {

@@ -63,7 +63,8 @@ export class SceneManager {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.NoToneMapping;
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.renderer.setPixelRatio(window.devicePixelRatio);
+    // Clamp pixel ratio for performance on high DPI displays (e.g. Retina)
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     this.container.appendChild(this.renderer.domElement);
 
     window.addEventListener("resize", () => this.onWindowResize());
@@ -179,6 +180,8 @@ export class SceneManager {
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+    // Clamp pixel ratio for performance on high DPI displays
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     this.composer.setSize(window.innerWidth, window.innerHeight);
   }
 }

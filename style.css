@@ -1645,9 +1645,9 @@ body.about-page {
 }
 
 .about-me-heading {
-  position: absolute;
+  position: fixed;
   left: 37px;
-  top: 149px;
+  top: 99px;
   font-family: "Horsham Serial Xlight", "horsham-serial-xlight", "horsham-serial", sans-serif;
   font-weight: 200;
   font-size: 128px;
@@ -1660,9 +1660,9 @@ body.about-page {
 }
 
 .about-me-text {
-  position: absolute;
+  position: fixed;
   left: 37px;
-  top: 287px;
+  top: 237px;
   width: 483px;
   font-family: "chivo-mono", sans-serif;
   font-weight: 400;
@@ -1688,8 +1688,8 @@ body.about-page {
 
 .about-me-image {
   position: absolute;
-  left: 445px;
-  top: 227px;
+  left: 500px;
+  top: 150px;
   width: 481px;
   height: 647px;
   border-radius: 10px;
@@ -1705,9 +1705,9 @@ body.about-page {
 }
 
 .expertise-section {
-  position: absolute;
+  position: fixed;
   left: 633px;
-  top: 646px;
+  top: 546px;
   width: 842px;
   max-width: calc(100vw - 37px - 633px);
   display: flex;
@@ -1777,7 +1777,7 @@ body.about-page {
 
   .expertise-section {
     left: clamp(400px, 42vw, 633px);
-    top: clamp(500px, 66vh, 646px);
+    top: clamp(400px, 66vh, 546px);
     width: clamp(600px, 56vw, 842px);
   }
 }
