@@ -1343,25 +1343,30 @@
     <script src="script.js"></script>
 
     <!-- 3D app -->
-    <script type="module">
-      import * as THREE from "https://esm.sh/three@0.160.0";
-      import { OrbitControls } from "https://esm.sh/three@0.160.0/examples/jsm/controls/OrbitControls.js";
-      import { EffectComposer } from "https://esm.sh/three@0.160.0/examples/jsm/postprocessing/EffectComposer.js";
-      import { RenderPass } from "https://esm.sh/three@0.160.0/examples/jsm/postprocessing/RenderPass.js";
-      import { OutlinePass } from "https://esm.sh/three@0.160.0/examples/jsm/postprocessing/OutlinePass.js";
-      import { OutputPass } from "https://esm.sh/three@0.160.0/examples/jsm/postprocessing/OutputPass.js";
+    <script type="module" src="js/init.js"></script>
 
-      const easeInOutCubic = (t) =>
-        t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    <script>
+      window.openSubpage =
+        window.openSubpage ||
+        function (pageNumber) {
+          if (typeof window.openCaseOverlayByPage === "function") {
+            window.openCaseOverlayByPage(pageNumber);
+            return;
+          }
 
-      class SceneManager {
-        constructor(container) {
-          this.container = container;
-          this.scene = new THREE.Scene();
-          this.scene.background = null;
-
-          this.setupRenderer();
-          this.setupCamera();
+          const scroller = document.getElementById("galleryScroll");
+          const card = document.querySelector(
+            `.projectCard[data-page="${pageNumber}"]`
+          );
+          if (card) {
+            card.classList.add("expanded");
+            setTimeout(() => {
+              card.scrollIntoView({ behavior: "auto", block: "start" });
+              if (scroller) scroller.focus({ preventScroll: true });
+            }, 0);
+          }
+        };
+    </script>
           this.setupLighting();
           this.setupControls();
           this.setupPostFX();
@@ -1645,13 +1650,27 @@
             vid.muted = true;
             vid.loop = true;
             vid.playsInline = true;
-            vid.preload = "none";
+            // Start preloading immediately - critical for smooth playback
+            vid.preload = "auto";
+            // Start loading immediately if video loader has already loaded it
+            if (window.videoLoader && window.videoLoader.isVideoLoaded(entry.src)) {
+              vid.src = entry.src;
+              vid.load();
+            } else {
+              // Start loading early even if not preloaded
+              vid.src = entry.src;
+              vid.load();
+            }
             this.videos.push(vid);
 
             const vtex = new THREE.VideoTexture(vid);
             vtex.colorSpace = THREE.SRGBColorSpace;
             vtex.minFilter = THREE.LinearFilter;
             vtex.magFilter = THREE.LinearFilter;
+            // Disable mipmaps for video textures (better performance)
+            vtex.generateMipmaps = false;
+            // Store reference to texture for easy access
+            vid._texture = vtex;
 
             const geometry = new THREE.PlaneGeometry(width, height);
             const material = new THREE.MeshBasicMaterial({
@@ -1714,16 +1733,60 @@
         }
 
         resume() {
-          this.videos.forEach((v) => {
+          this.videos.forEach((v, index) => {
             try {
+              // Set src if not already set
               if (!v.src && v.dataset.src) {
                 v.src = v.dataset.src;
-                v.preload = "metadata";
+                v.preload = "auto"; // Full buffering
                 v.load();
               }
-              v.muted = true;
-              const p = v.play();
-              if (p && typeof p.then === "function") p.catch(() => {});
+              
+              // Wait for canplaythrough (fully buffered) before playing for smooth playback
+              const playVideo = () => {
+                v.muted = true;
+                // Ensure video is ready
+                if (v.readyState >= 3) { // HAVE_FUTURE_DATA minimum
+                  const p = v.play();
+                  if (p && typeof p.then === "function") {
+                    p.catch((err) => {
+                      // If play fails, try again after a short delay
+                      setTimeout(() => {
+                        v.play().catch(() => {});
+                      }, 100);
+                    });
+                  }
+                }
+              };
+              
+              // If video is already ready, play immediately
+              if (v.readyState >= 4) { // HAVE_ENOUGH_DATA
+                playVideo();
+              } else if (v.readyState >= 3) { // HAVE_FUTURE_DATA
+                // Good enough to start, but wait a bit for more buffer
+                setTimeout(playVideo, 100);
+              } else {
+                // Wait for enough data
+                const onCanPlayThrough = () => {
+                  v.removeEventListener('canplaythrough', onCanPlayThrough);
+                  v.removeEventListener('canplay', onCanPlay);
+                  playVideo();
+                };
+                
+                const onCanPlay = () => {
+                  // If canplaythrough doesn't fire, use canplay after a delay
+                  setTimeout(() => {
+                    if (v.readyState >= 3) {
+                      v.removeEventListener('canplaythrough', onCanPlayThrough);
+                      v.removeEventListener('canplay', onCanPlay);
+                      playVideo();
+                    }
+                  }, 200);
+                };
+                
+                v.addEventListener('canplaythrough', onCanPlayThrough, { once: true });
+                v.addEventListener('canplay', onCanPlay, { once: true });
+              }
             } catch (_) {}
           });
         }
@@ -1750,6 +1813,18 @@
           this.sceneManager.enableOutlineFor(this.asterisk);
           this.orbitingRects = new OrbitingRectanglesManager();
           this.sceneManager.addObject(this.orbitingRects.group);
+
+          // Start loading videos immediately after creation
+          // Don't wait for resume() - start buffering right away
+          if (this.orbitingRects && this.orbitingRects.videos) {
+            this.orbitingRects.videos.forEach((vid) => {
+              if (vid.dataset.src && !vid.src) {
+                vid.src = vid.dataset.src;
+                vid.preload = "auto";
+                vid.load();
+              }
+            });
+          }
 
           this.overlay = null;
           this.overlayActive = false;
@@ -2852,5 +2927,8 @@
         }
       }
     </script>
+
+    <!-- Priority-based video loading -->
+    <script src="video-loader.js"></script>
   </body>
 </html>
