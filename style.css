@@ -661,13 +661,19 @@ body.lock-scroll {
 
 .projectCard.expanded .cardDetails {
   display: block;
+  width: 100%;
+  max-width: 100%;
 }
 
 .projectCard.expanded {
   grid-column: 1 / -1;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 100% !important;
   background: #1a1a1a;
   overflow: hidden;
   z-index: 2;
+  box-sizing: border-box;
 }
 
 .projectCard.expanded .videoWrapper {
@@ -749,7 +755,7 @@ body.lock-scroll {
   margin: 0;
   aspect-ratio: auto;
   max-height: none;
-  border-radius: 20asdapx;
+  border-radius: 20px;
   overflow: hidden;
   background: #000;
 }
@@ -994,6 +1000,8 @@ body.lock-scroll {
   gap: 32px;
   margin-top: 24px;
   margin-bottom: 40px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .caseBody-left {

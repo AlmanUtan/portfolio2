@@ -353,10 +353,25 @@ document
       }
 
       const ratio = parseRatio(card.dataset.ratio || "1:1");
-      const width = span * colWidth + (span - 1) * GAP;
+      let width = span * colWidth + (span - 1) * GAP;
       let height;
 
       if (isExpanded) {
+        // For expanded cards, use full container width (accounting for grid padding/gap)
+        const gridRect = grid.getBoundingClientRect();
+        const computedStyle = window.getComputedStyle(grid);
+        const gridPaddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
+        const gridPaddingRight = parseFloat(computedStyle.paddingRight) || 0;
+        width = gridRect.width - gridPaddingLeft - gridPaddingRight;
+        // Ensure width accounts for any container constraints
+        const scroller = grid.closest('.galleryScroll');
+        if (scroller) {
+          const scrollerRect = scroller.getBoundingClientRect();
+          const scrollerPaddingLeft = parseFloat(window.getComputedStyle(scroller).paddingLeft) || 0;
+          const scrollerPaddingRight = parseFloat(window.getComputedStyle(scroller).paddingRight) || 0;
+          const maxWidth = scrollerRect.width - scrollerPaddingLeft - scrollerPaddingRight;
+          width = Math.min(width, maxWidth);
+        }
         // Robust: measure expansion height using a hidden clone
         height = measureExpandedHeight(card, width);
       } else {
@@ -375,7 +390,7 @@ document
         }
       }
 
-      const x = bestCol * (colWidth + GAP);
+      const x = isExpanded ? 0 : bestCol * (colWidth + GAP);
 
       // Higher y -> above lower y (prevents underlying peeking through)
       card.style.zIndex = String(100 + Math.floor(bestY));
