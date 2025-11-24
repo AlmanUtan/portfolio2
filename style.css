@@ -1707,7 +1707,7 @@ body.about-page {
 .expertise-section {
   position: fixed;
   left: 633px;
-  top: 546px;
+  top: 446px; /* moved up by 100px */
   width: 842px;
   max-width: calc(100vw - 37px - 633px);
   display: flex;
@@ -1777,7 +1777,8 @@ body.about-page {
 
   .expertise-section {
     left: clamp(400px, 42vw, 633px);
-    top: clamp(400px, 66vh, 546px);
+    /* move up by 100px across the range */
+    top: clamp(300px, 56vh, 446px);
     width: clamp(600px, 56vw, 842px);
   }
 }
