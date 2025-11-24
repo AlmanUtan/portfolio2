@@ -3,8 +3,12 @@
  * 
  * Loading order:
  * 1. Intro video (highest priority)
- * 2. Asterisk/project videos (medium priority)
- * 3. Gallery videos (lowest priority, lazy loaded)
+ * 2. Asterisk videos (high priority, immediate) - 8 small preview videos for 3D scene
+ * 3. Project detail videos (deferred, 4.5s delay) - Large 1080p files, loaded after scene stabilizes
+ * 4. Gallery videos (lowest priority, lazy loaded)
+ * 
+ * Performance optimization: Project detail videos are deferred to avoid resource contention
+ * with the asterisk videos during initial 3D scene playback.
  */
 
 class VideoLoader {
@@ -18,6 +22,7 @@ class VideoLoader {
     this.maxConcurrent = 1; // Load one video at a time for smooth playback
     this.loadedVideos = new Set();
     this.loadingPromises = new Map();
+    this.projectVideosLoading = false; // Flag to prevent duplicate loading
   }
 
   /**
@@ -154,7 +159,8 @@ class VideoLoader {
   }
 
   /**
-   * Load asterisk videos (medium priority) - CRITICAL: These must be fully buffered
+   * Load asterisk videos (high priority) - CRITICAL: These must be fully buffered
+   * These are the 8 small preview videos in the 3D scene
    */
   async loadAsteriskVideos() {
     // Start loading immediately after intro video is ready (don't wait)
@@ -183,7 +189,34 @@ class VideoLoader {
       'public/videoSmallLoad/extra%204%20%281080x1080%29.mp4'
     ];
 
-    // Load project detail videos (main case videos) - these are the most important
+    // Load asterisk videos with HIGH priority (they're most critical after intro)
+    // These need to be fully buffered before playing
+    console.log('Loading asterisk videos (high priority)...');
+    for (const src of asteriskVideos) {
+      try {
+        // Use 'high' priority for asterisk videos to ensure full buffering
+        await this.preloadVideo(src, 'high');
+        // Small delay between loads to avoid overwhelming the network
+        await new Promise(resolve => setTimeout(resolve, 50));
+      } catch (e) {
+        console.warn(`Failed to preload asterisk video: ${src}`);
+      }
+    }
+
+    console.log('✓ Asterisk videos loaded');
+  }
+
+  /**
+   * Load project detail videos (deferred) - These are large 1080p files
+   * Deferred to avoid resource contention with asterisk videos
+   */
+  async loadProjectDetailVideos() {
+    // Prevent duplicate loading
+    if (this.projectVideosLoading) {
+      return;
+    }
+    this.projectVideosLoading = true;
+
     const projectDetailVideos = [
       'public/vid/übertön main (1920x1080).mp4',
       'public/vid/wdtw v1 (1920x1080).mp4',
@@ -192,32 +225,77 @@ class VideoLoader {
       'public/vid/giftedness (1920x1080).mp4'
     ];
 
-    // Load asterisk videos FIRST and with HIGH priority (they're most critical after intro)
-    // These need to be fully buffered before playing
-    console.log('Loading asterisk videos (high priority)...');
-    for (const src of asteriskVideos) {
-      try {
-        // Use 'high' priority for asterisk videos to ensure full buffering
-        await this.preloadVideo(src, 'high');
-        // Small delay between loads
-        await new Promise(resolve => setTimeout(resolve, 50));
-      } catch (e) {
-        console.warn(`Failed to preload asterisk video: ${src}`);
-      }
-    }
-
-    // Then load project detail videos
-    console.log('Loading project detail videos...');
+    console.log('Loading project detail videos (deferred)...');
     for (const src of projectDetailVideos) {
       try {
         await this.preloadVideo(src, 'medium');
+        // Delay between loads to avoid overwhelming the network
         await new Promise(resolve => setTimeout(resolve, 150));
       } catch (e) {
         console.warn(`Failed to preload project video: ${src}`);
       }
     }
 
-    console.log('✓ Asterisk and project videos loaded');
+    console.log('✓ Project detail videos loaded');
+  }
+
+  /**
+   * Schedule deferred loading of project detail videos
+   * Uses requestIdleCallback if available, otherwise setTimeout with delay
+   */
+  scheduleDeferredProjectVideos() {
+    const delay = 4500; // 4.5 seconds delay to let 3D scene stabilize
+
+    // Use requestIdleCallback if available (runs when browser is idle)
+    if (window.requestIdleCallback) {
+      requestIdleCallback(
+        () => {
+          // Additional delay even after idle callback
+          setTimeout(() => {
+            this.loadProjectDetailVideos().catch(e => {
+              console.warn('Error loading project detail videos:', e);
+            });
+          }, delay);
+        },
+        { timeout: delay + 2000 } // Fallback timeout
+      );
+    } else {
+      // Fallback to setTimeout
+      setTimeout(() => {
+        this.loadProjectDetailVideos().catch(e => {
+          console.warn('Error loading project detail videos:', e);
+        });
+      }, delay);
+    }
+  }
+
+  /**
+   * Setup user interaction triggers for deferred loading
+   * Starts loading project videos when user interacts with the page
+   */
+  setupInteractionTriggers() {
+    let triggered = false;
+    const triggerLoad = () => {
+      if (triggered) return;
+      triggered = true;
+      
+      // Remove all listeners once triggered
+      window.removeEventListener('scroll', triggerLoad, { passive: true });
+      window.removeEventListener('mousemove', triggerLoad, { once: true });
+      window.removeEventListener('touchstart', triggerLoad, { once: true });
+      window.removeEventListener('click', triggerLoad, { once: true });
+      
+      // Load project videos on interaction
+      this.loadProjectDetailVideos().catch(e => {
+        console.warn('Error loading project detail videos:', e);
+      });
+    };
+
+    // Trigger on various user interactions
+    window.addEventListener('scroll', triggerLoad, { passive: true });
+    window.addEventListener('mousemove', triggerLoad, { once: true });
+    window.addEventListener('touchstart', triggerLoad, { once: true });
+    window.addEventListener('click', triggerLoad, { once: true });
   }
 
   /**
@@ -283,7 +361,16 @@ class VideoLoader {
       console.warn('Error loading asterisk videos:', e);
     });
 
-    // Step 3: Setup lazy loading for gallery videos
+    // Step 3: Schedule deferred loading of project detail videos
+    // These are large files that would compete with asterisk videos
+    // Delay by 4.5 seconds to let 3D scene stabilize
+    this.scheduleDeferredProjectVideos();
+
+    // Step 4: Setup interaction triggers as backup/optimization
+    // If user interacts before delay, start loading immediately
+    this.setupInteractionTriggers();
+
+    // Step 5: Setup lazy loading for gallery videos
     this.setupGalleryLazyLoad();
   }
 }
