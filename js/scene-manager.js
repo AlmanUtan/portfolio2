@@ -27,6 +27,17 @@ export class SceneManager {
     this.isDragging = false;
     this.mouseDownPos = { x: 0, y: 0 };
     this.mouseUpPos = { x: 0, y: 0 };
+
+    // PERFORMANCE: FPS cap to reduce rendering load
+    // Cap at 30 FPS instead of 60 FPS to reduce GPU/CPU load by ~50%
+    // This is especially important when 8 videos are playing simultaneously
+    this.targetFPS = 30; // Configurable: set to 60 for higher quality, 30 for better performance
+    this.frameInterval = 1000 / this.targetFPS; // milliseconds per frame
+    this.lastFrameTime = 0;
+    
+    // PERFORMANCE: Track hover state for conditional OutlinePass
+    this.outlineEnabled = true; // Start enabled, can be toggled
+    this.hoveredObject = null;
   }
 
   setupPostFX() {
@@ -53,6 +64,24 @@ export class SceneManager {
   enableOutlineFor(objs) {
     if (!this.outlinePass) return;
     this.outlinePass.selectedObjects = Array.isArray(objs) ? objs : [objs];
+    this.hoveredObject = Array.isArray(objs) ? objs[0] : objs;
+  }
+
+  /**
+   * PERFORMANCE: Conditionally enable/disable outline pass
+   * OutlinePass is expensive - only enable when hovering/interacting
+   * This reduces post-processing overhead during normal playback
+   */
+  setOutlineEnabled(enabled) {
+    this.outlineEnabled = enabled;
+    if (this.outlinePass) {
+      // When disabled, clear selected objects to skip outline rendering
+      if (!enabled) {
+        this.outlinePass.selectedObjects = [];
+      } else if (this.hoveredObject) {
+        this.outlinePass.selectedObjects = [this.hoveredObject];
+      }
+    }
   }
 
   setupRenderer() {
@@ -163,6 +192,18 @@ export class SceneManager {
   animate() {
     requestAnimationFrame(() => this.animate());
 
+    // PERFORMANCE: FPS cap using timestamp-based throttling
+    // Only render if enough time has passed since last frame
+    const now = performance.now();
+    const elapsed = now - this.lastFrameTime;
+    
+    if (elapsed < this.frameInterval) {
+      // Skip this frame to maintain target FPS
+      return;
+    }
+    
+    this.lastFrameTime = now - (elapsed % this.frameInterval); // Maintain frame timing accuracy
+
     const isGalleryOpen = !!(
       window.App && window.App.galleryProgress >= 0.98
     );
@@ -172,7 +213,22 @@ export class SceneManager {
     this.animationCallbacks.forEach((cb) => cb());
 
     if (!isGalleryOpen && !introOverlayVisible) {
-      this.composer.render();
+      // PERFORMANCE: Conditionally disable outline pass when not hovering
+      // This reduces post-processing overhead during normal playback
+      if (this.outlinePass && !this.outlineEnabled) {
+        // Temporarily disable outline pass by clearing selected objects
+        const wasEnabled = this.outlinePass.selectedObjects.length > 0;
+        if (wasEnabled) {
+          this.outlinePass.selectedObjects = [];
+        }
+        this.composer.render();
+        // Restore if it was enabled (for next frame)
+        if (wasEnabled && this.hoveredObject) {
+          this.outlinePass.selectedObjects = [this.hoveredObject];
+        }
+      } else {
+        this.composer.render();
+      }
     }
   }
 
@@ -180,9 +236,13 @@ export class SceneManager {
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-    // Clamp pixel ratio for performance on high DPI displays
+    // PERFORMANCE: Clamp pixel ratio for performance on high DPI displays
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     this.composer.setSize(window.innerWidth, window.innerHeight);
+    // Update outline pass size
+    if (this.outlinePass) {
+      this.outlinePass.setSize(window.innerWidth, window.innerHeight);
+    }
   }
 }
 

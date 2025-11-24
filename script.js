@@ -850,6 +850,7 @@ caseOverlayContent?.addEventListener("wheel", (evt) => {
     hydrateCaseVideos(overlayCard);
     wireCaseControls(overlayCard, { forceRebind: true });
     wireDetailVideoHovers(overlayCard, { forceRebind: true });
+    wireDetailVideosMuteButton(overlayCard, { forceRebind: true }); // NEW
 
     const mainVideo = overlayCard.querySelector(".caseVideo");
     if (mainVideo) {
@@ -1226,7 +1227,61 @@ function wireDetailVideoHovers(scope = document, { forceRebind = false } = {}) {
 
 document.addEventListener("DOMContentLoaded", () => {
   wireDetailVideoHovers(document);
+  wireDetailVideosMuteButton(document); // NEW
 });
+
+// Wire single mute button for all detail video blobs
+function wireDetailVideosMuteButton(scope = document, { forceRebind = false } = {}) {
+  scope.querySelectorAll('.detailVideosMuteControl').forEach((controlContainer) => {
+    const muteBtn = controlContainer.querySelector('.detailVideosMuteBtn');
+    if (!muteBtn) return;
+    
+    // Skip if already bound (unless forcing rebind)
+    if (muteBtn.dataset.muteBound === '1' && !forceRebind) return;
+    
+    // Find the parent card to scope our video search
+    const card = controlContainer.closest('.projectCard, .caseOverlay-card');
+    if (!card) return;
+    
+    // Get all detail videos in this card's detail videos section
+    const detailVideosSection = card.querySelector('.caseDetailVideos');
+    if (!detailVideosSection) return;
+    
+    const detailVideos = Array.from(detailVideosSection.querySelectorAll('.detailVideoHover'));
+    if (!detailVideos.length) return;
+    
+    // Sync button state based on whether ALL videos are muted
+    const syncBtnState = () => {
+      const allMuted = detailVideos.every(v => v.muted);
+      muteBtn.classList.toggle('muted', allMuted);
+    };
+    
+    // Toggle mute for ALL detail videos
+    muteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      
+      // Check current state - if all are muted, unmute all; otherwise mute all
+      const allMuted = detailVideos.every(v => v.muted);
+      const newMutedState = !allMuted;
+      
+      detailVideos.forEach(video => {
+        video.muted = newMutedState;
+      });
+      
+      syncBtnState();
+    });
+    
+    // Also sync state whenever any video's mute state changes
+    detailVideos.forEach(video => {
+      video.addEventListener('volumechange', syncBtnState);
+    });
+    
+    // Initial state
+    syncBtnState();
+    
+    muteBtn.dataset.muteBound = '1';
+  });
+}
 
 // Close button functionality for case cards
 function wireCaseControls(scope = document, { forceRebind = false } = {}) {

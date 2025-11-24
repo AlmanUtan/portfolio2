@@ -161,6 +161,11 @@ class VideoLoader {
   /**
    * Load asterisk videos (high priority) - CRITICAL: These must be fully buffered
    * These are the 8 small preview videos in the 3D scene
+   * 
+   * PERFORMANCE: Optimized loading strategy for continuous looping playback
+   * - Use 'high' priority for full buffering
+   * - Staggered loading to avoid network congestion
+   * - Videos are preloaded for cache warming, then OrbitingRectanglesManager creates its own elements
    */
   async loadAsteriskVideos() {
     // Start loading immediately after intro video is ready (don't wait)
@@ -189,14 +194,17 @@ class VideoLoader {
       'public/videoSmallLoad/extra%204%20%281080x1080%29.mp4'
     ];
 
-    // Load asterisk videos with HIGH priority (they're most critical after intro)
-    // These need to be fully buffered before playing
+    // PERFORMANCE: Load asterisk videos with HIGH priority (they're most critical after intro)
+    // These need to be fully buffered before playing for smooth continuous looping
+    // Note: video-loader.js preloads for cache warming; OrbitingRectanglesManager creates actual video elements
     console.log('Loading asterisk videos (high priority)...');
     for (const src of asteriskVideos) {
       try {
         // Use 'high' priority for asterisk videos to ensure full buffering
+        // This preloads the video into browser cache for fast access when OrbitingRectanglesManager creates elements
         await this.preloadVideo(src, 'high');
-        // Small delay between loads to avoid overwhelming the network
+        // PERFORMANCE: Small delay between loads to avoid overwhelming the network/decoder
+        // This prevents resource contention during initial load
         await new Promise(resolve => setTimeout(resolve, 50));
       } catch (e) {
         console.warn(`Failed to preload asterisk video: ${src}`);

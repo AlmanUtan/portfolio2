@@ -211,6 +211,17 @@
           }
           lastTapTime = now;
         });
+
+        // Skip button functionality
+        const skipBtn = document.getElementById('skipVideoBtn');
+        if (skipBtn) {
+          skipBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Instantly jump to max scroll to trigger redirect
+            targetScroll = maxScroll;
+            scrollAccumulator = maxScroll;
+          });
+        }
       })();
     </script>
   </body>

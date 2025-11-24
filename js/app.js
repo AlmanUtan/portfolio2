@@ -80,6 +80,12 @@ export class App {
     this.sceneManager.addAnimationCallback(() =>
       this.updateOrbitVideoPlayback()
     );
+    // PERFORMANCE: Update video textures with frame-skipping to reduce GPU load
+    this.sceneManager.addAnimationCallback(() => {
+      if (this.orbitingRects) {
+        this.orbitingRects.updateTextures();
+      }
+    });
 
     this.sceneManager.animate();
 

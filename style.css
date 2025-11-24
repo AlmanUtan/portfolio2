@@ -189,29 +189,37 @@ body.lock-scroll {
   position: absolute;
   right: 24px;
   bottom: 24px;
+  
+  /* Match galleryClose styling */
+  background: transparent;
   font-family: "chivo-mono", sans-serif;
-  font-size: 14px;
   font-weight: 500;
-  padding: 10px 20px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 12px;
+  color: #e5e7eb;
   cursor: pointer;
-  transition: all 0.3s ease;
+  
+  /* Remove old glassmorphism styles */
+  padding: 8px 16px;
+  border: none;
+  border-radius: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  
+  transition: all 0.2s ease;
   z-index: 10;
 }
 
 #skipVideoBtn:hover {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.4);
-  transform: translateY(-2px);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
+  background: transparent;
+  border: none;
+  transform: none;
 }
 
 #skipVideoBtn:active {
-  transform: translateY(0);
+  transform: none;
 }
 
 /* ----------------------------------------------------------
@@ -536,13 +544,13 @@ body.lock-scroll {
 }
 
 .caseOverlay-content {
-  flex: 1;
+  flex: 1 1 auto;
   overflow-y: auto;
   overscroll-behavior: contain;
+  max-height: none; /* Allow content to define height, scroll internally if needed */
 
-  /* Much tighter padding so case hugs the panel */
-  padding:  0;
-
+  /* Add proper horizontal padding */
+  padding: clamp(24px, 4vw, 48px) clamp(20px, 3vw, 32px);
   
   max-width: 100%;
 }
@@ -565,6 +573,11 @@ body.lock-scroll {
   box-shadow: none;
   content-visibility: visible !important;
   contain-intrinsic-size: auto !important;
+  border-radius: 24px;
+  overflow: hidden;
+  
+  /* Ensure content doesn't overflow */
+  max-width: 100%;
 }
 
 .caseOverlay-card .cardPreview {
@@ -578,7 +591,7 @@ body.lock-scroll {
 }
 
 .caseOverlay-card .caseVideoWrap {
-  border-radius: 20px; /* Larger corner radius */
+  border-radius: inherit; /* Respect parent card's border radius */
   overflow: hidden;
   margin-bottom: clamp(28px, 4vw, 56px);
 }
@@ -596,18 +609,22 @@ body.lock-scroll {
   }
 
   .caseOverlay-content {
-    padding: clamp(24px, 6vw, 36px) clamp(14px, 5vw, 22px);
+    padding: clamp(24px, 6vw, 36px) clamp(16px, 4vw, 24px);
   }
+  
+  /* Keep this consistent by not re-adding conflicting right padding
+     to .projectDescription--wide, .detailVideosMuteControl, etc. */
 }
 
 /* ----------------------------------------------------------
    Legacy expanded cards (within gallery)
 ---------------------------------------------------------- */
+/* Base project card radius – both main and non-main */
 .projectCard {
   position: relative;
   z-index: 1;
   background: #2f2f2f;
-  border-radius: 8px;
+  border-radius: 24px;
   overflow: hidden;
   transition: all 0.4s ease;
   content-visibility: auto;
@@ -663,38 +680,54 @@ body.lock-scroll {
   display: block;
   width: 100%;
   max-width: 100%;
+  max-height: none;
+  height: auto;
+  overflow: visible;
 }
 
+/* Expanded state – keep same radius on all corners */
 .projectCard.expanded {
   grid-column: 1 / -1;
   width: 100% !important;
   max-width: 100% !important;
   min-width: 100% !important;
   background: #1a1a1a;
+  border-radius: 24px;
   overflow: hidden;
   z-index: 2;
   box-sizing: border-box;
+  position: relative; /* card should flow in layout */
+  max-height: none; /* let contents define height */
+  height: auto;
 }
 
 .projectCard.expanded .videoWrapper {
   margin-bottom: 16px;
   aspect-ratio: var(--video-ar, var(--card-ar, 16 / 9));
-  max-height: var(
-    --gallery-content-max-h,
-    calc((100vh - 64px) - 140px)
-  );
+  /* Removed max-height constraint to allow full content display */
 }
 
 /* MAIN CASES – expanded inside the gallery */
 .projectCard.expanded[data-tier="main"] .cardDetails > .videoWrapper {
   margin: 0; /* video hugs the card edges */
+  border-radius: inherit; /* Respect parent card's border radius */
+  overflow: hidden;
 }
 
-/* Every direct child AFTER the video, except the collapse control:
-   gets consistent inner padding = your “margin for everything except top video” */
-.projectCard.expanded[data-tier="main"]
-  .cardDetails > *:not(.videoWrapper):not(.cardCollapse) {
-  padding: 20px 24px;
+/* Main cases – everything below the hero video shares same horizontal padding as header */
+.projectCard.expanded[data-tier="main"] .cardDetails > *:not(.videoWrapper):not(.cardCollapse) {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.projectCard.expanded[data-tier="main"] .cardDetails > .caseHeader,
+.projectCard.expanded[data-tier="main"] .cardDetails > .caseBody,
+.projectCard.expanded[data-tier="main"] .cardDetails > .projectDescription--wide,
+.projectCard.expanded[data-tier="main"] .cardDetails > .detailVideosMuteControl,
+.projectCard.expanded[data-tier="main"] .cardDetails > .caseCredits {
+  /* All these sections share the same horizontal padding */
+  padding-left: clamp(24px, 3vw, 40px);
+  padding-right: clamp(24px, 3vw, 40px);
 }
 
 /* Extra breathing room on the very last block */
@@ -709,6 +742,12 @@ body.lock-scroll {
   align-items: stretch;
   gap: 20px;
   padding: 24px 24px 40px;
+}
+
+/* Override any legacy "flat right" radius for safety */
+.projectCard.expanded[data-tier="secondary"],
+.projectCard.expanded:not([data-tier="main"]) {
+  border-radius: 24px;
 }
 
 .projectCard.expanded[data-tier="main"] .caseDetail-text p:last-of-type {
@@ -733,13 +772,8 @@ body.lock-scroll {
 .projectCard.expanded .videoWrapper {
   margin-bottom: 16px;
   aspect-ratio: var(--video-ar, var(--card-ar, 16 / 9));
-  max-height: var(
-    --gallery-content-max-h,
-    calc((100vh - 64px) - 140px)
-  );
+  /* Removed max-height constraint to allow full content display */
 }
-
-
 
 .projectCard.expanded:not([data-tier="main"]) .videoWrapper {
   flex: 1 1 auto;
@@ -755,7 +789,7 @@ body.lock-scroll {
   margin: 0;
   aspect-ratio: auto;
   max-height: none;
-  border-radius: 20px;
+  border-radius: inherit; /* Respect parent card's border radius */
   overflow: hidden;
   background: #000;
 }
@@ -990,6 +1024,13 @@ body.lock-scroll {
 /* ----------------------------------------------------------
    Case body layout (ÜBERTÖN)
 ---------------------------------------------------------- */
+
+/* Unified inner padding for case content (header, body, controls, etc.) */
+.caseInnerPadding {
+  padding-left: clamp(24px, 3vw, 40px);
+  padding-right: clamp(24px, 3vw, 40px);
+}
+
 .projectCard.expanded .caseHeader {
   margin-bottom: 24px;
 }
@@ -1002,6 +1043,8 @@ body.lock-scroll {
   margin-bottom: 40px;
   width: 100%;
   max-width: 100%;
+  box-sizing: border-box;
+  /* Horizontal padding is handled by parent container's .caseInnerPadding rule */
 }
 
 .caseBody-left {
@@ -1080,6 +1123,8 @@ body.lock-scroll {
   text-align: right;
   max-width: 50ch;
   margin-left: auto;
+  margin-right: 0; /* stays aligned to container's right edge */
+  padding-right: 0; /* IMPORTANT: let the container padding define the margin */
 }
 
 .caseDetailVideos {
@@ -1120,6 +1165,53 @@ body.lock-scroll {
 
 .detailVideoInner:hover .detailVideoHover {
   opacity: 1;
+}
+
+/* Mute control container for detail video grid */
+.detailVideosMuteControl {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: -8px;
+  margin-bottom: 24px;
+  /* REMOVE any custom padding-right here */
+  padding-right: 0;
+  /* Instead: this will be placed inside a container that has .caseInnerPadding logic
+     OR we apply the canonical padding directly on its parent in the main-case rule above. */
+  box-sizing: border-box;
+  z-index: 5;
+}
+
+/* Single mute button for all detail videos */
+.detailVideosMuteBtn {
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  
+  /* Speaker icon - same as main video mute button */
+  background-image: url("public/img/speaker.png");
+  background-size: 60%;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: invert(1);
+}
+
+.detailVideosMuteBtn:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.detailVideosMuteBtn.muted {
+  background-image: url("public/img/speakeroff.png");
 }
 
 .caseDetailSection {
@@ -1278,6 +1370,16 @@ body.lock-scroll {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     row-gap: 24px;
   }
+  
+  .detailVideosMuteControl {
+    justify-content: center; /* Center on smaller screens */
+    margin-top: 8px;
+  }
+  
+  .detailVideosMuteBtn {
+    width: 50px;
+    height: 50px;
+  }
 
   .caseDetailSection--wdtw .detailVideoMosaic {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1303,6 +1405,11 @@ body.lock-scroll {
 @media (max-width: 600px) {
   .caseDetailVideos {
     grid-template-columns: 1fr;
+  }
+  
+  .detailVideosMuteBtn {
+    width: 44px;
+    height: 44px;
   }
 
   .caseDetailSection--wdtw .detailVideoMosaic {
@@ -1647,7 +1754,7 @@ body.about-page {
 .about-me-heading {
   position: fixed;
   left: 37px;
-  top: 99px;
+  top: 49px;
   font-family: "Horsham Serial Xlight", "horsham-serial-xlight", "horsham-serial", sans-serif;
   font-weight: 200;
   font-size: 128px;
@@ -1662,7 +1769,7 @@ body.about-page {
 .about-me-text {
   position: fixed;
   left: 37px;
-  top: 237px;
+  top: 187px;
   width: 483px;
   font-family: "chivo-mono", sans-serif;
   font-weight: 400;
