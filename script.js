@@ -1243,8 +1243,8 @@ function wireDetailVideosMuteButton(scope = document, { forceRebind = false } = 
     const card = controlContainer.closest('.projectCard, .caseOverlay-card');
     if (!card) return;
     
-    // Get all detail videos in this card's detail videos section
-    const detailVideosSection = card.querySelector('.caseDetailVideos');
+    // Get all detail videos - support both .caseDetailVideos and .detailVideoMosaic structures
+    const detailVideosSection = card.querySelector('.caseDetailVideos, .detailVideoMosaic');
     if (!detailVideosSection) return;
     
     const detailVideos = Array.from(detailVideosSection.querySelectorAll('.detailVideoHover'));

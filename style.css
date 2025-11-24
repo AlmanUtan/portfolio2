@@ -13,6 +13,13 @@
 
 
 /* ----------------------------------------------------------
+   CSS Custom Properties - Single source of truth
+---------------------------------------------------------- */
+:root {
+  --case-radius: 24px; /* Canonical corner radius for all case elements */
+}
+
+/* ----------------------------------------------------------
    Global resets / transitions
 ---------------------------------------------------------- */
 button {
@@ -515,7 +522,29 @@ body.lock-scroll {
 /* ----------------------------------------------------------
    Single-case overlay
 ---------------------------------------------------------- */
-/* Single-case overlay */
+/* 
+ * DOM STRUCTURE FOR NON-MAIN CASES IN OVERLAY (from DevTools inspection):
+ * 
+ * <div id="caseOverlay" class="is-open">
+ *   <div class="caseOverlay-panel">
+ *     <div class="caseOverlay-content">
+ *       <article class="projectCard caseOverlay-card expanded" data-page="X">
+ *         <div class="cardDetails">
+ *           <div class="videoWrapper caseVideoWrap">  <!-- BOTH classes present -->
+ *             <video class="caseVideo">...</video>
+ *           </div>
+ *           <!-- rest of content -->
+ *         </div>
+ *       </article>
+ *     </div>
+ *   </div>
+ * </div>
+ * 
+ * KEY FINDINGS:
+ * - Overlay cards have: .projectCard.caseOverlay-card.expanded
+ * - Video container has: .videoWrapper.caseVideoWrap (both classes)
+ * - Non-main cases don't have [data-tier="main"] attribute
+ */
 #caseOverlay {
   position: fixed;
   inset: 0;
@@ -551,26 +580,27 @@ body.lock-scroll {
   max-width: 1440px;
   margin: 0 auto;
 
-  max-height: calc(100vh - clamp(60px, 14vh, 140px));
-  padding: clamp(6px, 2vw, 24px);
+  max-height: calc(100vh - clamp(60px, 14vh, 60px));
+  padding: clamp(3px, 2vw, 2px) clamp(10px, 3vw, 16px);
 
   background: rgba(40, 40, 40, 0.85); /* Translucent grey */
   border: 0px solid rgba(0, 0, 0, 0); /* Slightly stronger line */
-  border-radius: clamp(24px, 4vw, 40px);
+  border-radius: clamp(var(--case-radius), 4vw, 40px);
   box-shadow: 0 50px 140px rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   overflow: hidden;
 }
 
+/* MAIN CASE & SECONDARY CASE – Overlays opened from asterisk */
 .caseOverlay-content {
   flex: 1 1 auto;
   overflow-y: auto;
   overscroll-behavior: contain;
   max-height: none; /* Allow content to define height, scroll internally if needed */
 
-  /* Add proper horizontal padding */
-  padding: clamp(24px, 4vw, 48px) clamp(20px, 3vw, 32px);
+  /* Equal spacing top/left/right - unified padding for all cases */
+  padding: clamp(24px, 4vw, 48px) clamp(24px, 3vw, 32px);
   
   max-width: 100%;
 }
@@ -582,6 +612,7 @@ body.lock-scroll {
   margin-inline: 0; /* no extra centering margin; fill content area */
 }
 
+/* MAIN CASE & SECONDARY CASE – Overlays opened from asterisk */
 .caseOverlay-card,
 .caseOverlay-card.expanded {
   position: static !important;
@@ -610,11 +641,72 @@ body.lock-scroll {
   padding: 0;
 }
 
-.caseOverlay-card .caseVideoWrap {
-  border-radius: inherit; /* Respect parent card's border radius */
+/* OVERLAY – Make any videoWrapper inside overlay cases behave like main hero */
+.caseOverlay-card .videoWrapper {
+  margin: 0;                            /* hug card edges */
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: var(--video-ar, 16 / 9);
+  border-radius: var(--case-radius);    /* match overlay card radius */
   overflow: hidden;
-  margin-bottom: clamp(28px, 4vw, 56px);
+  background: #000;
+  display: block;
 }
+
+/* Ensure gallery-expanded styles do not fight overlay layout */
+.caseOverlay-card.projectCard.expanded .videoWrapper {
+  height: auto;
+  max-height: none;
+  aspect-ratio: var(--video-ar, 16 / 9);
+}
+
+/* Media inside overlay video wrappers: always fill and be clipped */
+.caseOverlay-card .videoWrapper video,
+.caseOverlay-card .videoWrapper iframe {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;                      /* wrapper handles clipping */
+  display: block;
+}
+
+/* 
+ * ====================================================================
+ * EXPLANATION: Which selectors control NON-MAIN overlay video layout
+ * ====================================================================
+ * 
+ * PROBLEM IDENTIFIED:
+ * - Non-main cases in overlay were missing rounded corners and using gallery's tall flexbox layout
+ * - Gallery rule `.projectCard.expanded:not([data-tier="main"]) .videoWrapper` (line 878)
+ *   was applying `flex: 1 1 auto; display: flex;` which created vertical centering
+ * - This rule had higher specificity than `.caseOverlay-card .videoWrapper` (line 645)
+ * 
+ * SOLUTION IMPLEMENTED:
+ * 
+ * 1. BORDER-RADIUS CONTROL:
+ *    Selector: `.caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .videoWrapper` (line 898)
+ *    - Sets `border-radius: var(--case-radius)` to match overlay card
+ *    - Also: `.caseOverlay-card .caseVideoWrap` (line 988) ensures .caseVideoWrap also gets radius
+ *    - WHY IT WORKS: More specific than gallery rule, explicitly sets radius
+ * 
+ * 2. LAYOUT OVERRIDE (cancels gallery "tall centered" layout):
+ *    Selector: `.caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .videoWrapper` (line 898)
+ *    - Sets `flex: 0 0 auto` (cancels gallery's `flex: 1 1 auto`)
+ *    - Sets `display: block` (cancels gallery's `display: flex`)
+ *    - Sets `height: auto` (cancels gallery's `height: clamp(...)`)
+ *    - WHY IT WORKS: Higher specificity than `.projectCard.expanded:not([data-tier="main"]) .videoWrapper`
+ *                    because it includes `.caseOverlay-card` class
+ * 
+ * 3. WHY PREVIOUS CHANGES DIDN'T WORK:
+ *    - `.caseOverlay-card .videoWrapper` (line 645) had correct styles but lower specificity
+ *    - Gallery rule `.projectCard.expanded:not([data-tier="main"]) .videoWrapper` was winning
+ *    - Missing explicit `border-radius` in the override rule
+ * 
+ * SPECIFICITY BREAKDOWN:
+ * - Gallery rule: `.projectCard.expanded:not([data-tier="main"]) .videoWrapper` = 0,3,0
+ * - Overlay rule: `.caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .videoWrapper` = 0,4,0
+ * - Overlay rule wins due to additional `.caseOverlay-card` class
+ */
 
 @media (max-width: 768px) {
   #caseOverlay {
@@ -624,7 +716,7 @@ body.lock-scroll {
   .caseOverlay-panel {
     width: 100%;
     max-height: 100vh;
-    border-radius: clamp(12px, 4vw, 24px);
+    border-radius: clamp(12px, 4vw, var(--case-radius));
     padding: clamp(10px, 3vw, 18px);
   }
 
@@ -644,7 +736,7 @@ body.lock-scroll {
   position: relative;
   z-index: 1;
   background: #2f2f2f;
-  border-radius: 24px;
+  border-radius: var(--case-radius);
   overflow: hidden;
   transition: all 0.4s ease;
   content-visibility: auto;
@@ -705,6 +797,7 @@ body.lock-scroll {
   overflow: visible;
 }
 
+/* MAIN CASE & SECONDARY CASE – Expanded in gallery */
 /* Expanded state – keep same radius on all corners */
 .projectCard.expanded {
   grid-column: 1 / -1;
@@ -712,7 +805,7 @@ body.lock-scroll {
   max-width: 100% !important;
   min-width: 100% !important;
   background: #1a1a1a;
-  border-radius: 24px;
+  border-radius: var(--case-radius);
   overflow: hidden;
   z-index: 2;
   box-sizing: border-box;
@@ -727,11 +820,25 @@ body.lock-scroll {
   /* Removed max-height constraint to allow full content display */
 }
 
-/* MAIN CASES – expanded inside the gallery */
+/* MAIN CASE – Expanded in gallery */
+/* Hero video spans full width, edge-to-edge, matching card radius */
 .projectCard.expanded[data-tier="main"] .cardDetails > .videoWrapper {
-  margin: 0; /* video hugs the card edges */
-  border-radius: inherit; /* Respect parent card's border radius */
+  margin: 0; /* video hugs the card edges - no top/bottom/left/right margin */
+  margin-bottom: 0; /* Override default margin-bottom from .projectCard.expanded .videoWrapper */
+  width: 100%;
+  max-width: 100%;
+  border-radius: var(--case-radius); /* Match card radius on all corners */
   overflow: hidden;
+  aspect-ratio: var(--video-ar, var(--card-ar, 16 / 9)); /* Maintain aspect ratio */
+}
+
+/* Main case video elements - fill container, no border-radius (container clips) */
+.projectCard.expanded[data-tier="main"] .videoWrapper video,
+.projectCard.expanded[data-tier="main"] .videoWrapper iframe {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Cover the container for hero videos */
+  border-radius: 0;
 }
 
 /* Main cases – everything below the hero video shares same horizontal padding as header */
@@ -756,18 +863,27 @@ body.lock-scroll {
   padding-bottom: 32px;
 }
 
+/* SECONDARY CASE – Expanded in gallery */
+/* Symmetric horizontal padding - no flush right edge */
 .projectCard.expanded:not([data-tier="main"]) .cardDetails {
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 20px;
-  padding: 24px 24px 40px;
+  padding: 24px clamp(24px, 3vw, 40px) 40px; /* Symmetric left/right padding */
 }
 
 /* Override any legacy "flat right" radius for safety */
 .projectCard.expanded[data-tier="secondary"],
 .projectCard.expanded:not([data-tier="main"]) {
-  border-radius: 24px;
+  border-radius: var(--case-radius);
+}
+
+/* SECONDARY CASE – Expanded in gallery */
+/* Video wrapper matches card radius */
+.projectCard.expanded:not([data-tier="main"]) .videoWrapper {
+  border-radius: var(--case-radius);
+  overflow: hidden;
 }
 
 .projectCard.expanded[data-tier="main"] .caseDetail-text p:last-of-type {
@@ -786,7 +902,7 @@ body.lock-scroll {
   height: auto;
   display: block;
   object-fit: contain;
-  border-radius: 0;
+  border-radius: 0; /* Inner video has no radius - container clips it */
 }
 
 .projectCard.expanded .videoWrapper {
@@ -813,6 +929,18 @@ body.lock-scroll {
   overflow: hidden;
   background: #000;
 }
+/* SECONDARY CASE – Overlay opened from asterisk */
+/* Override gallery's tall flexbox layout - use hero video layout instead */
+.caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .videoWrapper {
+  flex: 0 0 auto;                          /* Cancel gallery flex: 1 1 auto */
+  display: block;                           /* Cancel gallery display: flex */
+  height: auto;                             /* Cancel gallery height: clamp(...) */
+  margin: 0;                                /* Hug card edges */
+  aspect-ratio: var(--video-ar, 16 / 9);   /* Maintain aspect ratio */
+  border-radius: var(--case-radius);        /* Match overlay card radius - THIS WAS MISSING */
+  overflow: hidden;                         /* Clip video to rounded corners */
+  background: #000;                        /* Black background */
+}
 
 .projectCard.expanded:not([data-tier="main"]) .videoWrapper video,
 .projectCard.expanded:not([data-tier="main"]) .videoWrapper iframe {
@@ -820,6 +948,7 @@ body.lock-scroll {
   height: 100%;
   object-fit: contain;
   background: #000;
+  border-radius: 0; /* Inner video has no radius - container clips it */
 }
 
 .detailVideo {
@@ -885,18 +1014,29 @@ body.lock-scroll {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
-  border-radius: 8px;
+  border-radius: 8px; /* default radius when not in overlay card */
   overflow: hidden;
   background: #000;
 }
 
-.caseVideoWrap .caseVideo {
+/* SECONDARY CASE – Overlay opened from asterisk */
+/* .caseVideoWrap also needs radius when inside overlay (non-main cases use both .videoWrapper and .caseVideoWrap) */
+.caseOverlay-card .caseVideoWrap {
+  border-radius: var(--case-radius) !important; /* Match overlay card radius - explicit value for consistency */
+}
+
+.caseVideoWrap .caseVideo,
+.caseVideoWrap video,
+.caseVideoWrap iframe {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 0; /* wrapper does the clipping */
+  display: block;
 }
+
 
 .caseVideoWrap .caseTitle {
   position: absolute;
