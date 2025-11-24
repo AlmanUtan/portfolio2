@@ -929,19 +929,30 @@ body.lock-scroll {
   overflow: hidden;
   background: #000;
 }
-/* SECONDARY CASE – Overlay opened from asterisk */
-/* Override gallery's tall flexbox layout - use hero video layout instead */
-.caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .videoWrapper {
+/* NON-MAIN CASES – Overlay layout:
+   Canonical authority for non-main case video layout in #caseOverlay.
+   Targets elements with both .videoWrapper and .caseVideoWrap classes.
+   Ensures:
+   - Full-width, unclipped player (never cut off on right side)
+   - Equal thin margins top/left/right within overlay content area
+   - Slightly larger bottom margin for hashtags/copy to breathe
+   - Video respects aspect ratio, never stretched (object-fit: contain)
+   - Centered video with black letterboxing when needed */
+.caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .videoWrapper.caseVideoWrap {
   flex: 0 0 auto;                          /* Cancel gallery flex: 1 1 auto */
-  display: block;                           /* Cancel gallery display: flex */
+  display: block;                           /* Stop it from being a flex item */
+  width: auto;                              /* Crucial! Do not use 100%. Let it fill space minus margins */
   height: auto;                             /* Cancel gallery height: clamp(...) */
-  margin: 0;                                /* Hug card edges */
-  aspect-ratio: var(--video-ar, 16 / 9);   /* Maintain aspect ratio */
-  border-radius: var(--case-radius);        /* Match overlay card radius - THIS WAS MISSING */
+  margin: clamp(16px, 2.5vw, 24px);        /* Equal margins for Top, Left, Right */
+  margin-bottom: clamp(28px, 4vw, 40px);    /* Override bottom margin to be larger for hashtags */
+  border-radius: var(--case-radius);        /* Match overlay card radius */
   overflow: hidden;                         /* Clip video to rounded corners */
-  background: #000;                        /* Black background */
+  background: #000;                         /* Black background for letterboxing */
+  aspect-ratio: var(--video-ar, 16 / 9);    /* Maintain aspect ratio */
+  box-sizing: border-box;                   /* Include padding/border in width calculation */
 }
 
+/* Gallery non-main cases - keep existing behavior */
 .projectCard.expanded:not([data-tier="main"]) .videoWrapper video,
 .projectCard.expanded:not([data-tier="main"]) .videoWrapper iframe {
   width: 100%;
@@ -949,6 +960,26 @@ body.lock-scroll {
   object-fit: contain;
   background: #000;
   border-radius: 0; /* Inner video has no radius - container clips it */
+}
+
+/* NON-MAIN CASES – Overlay video elements:
+   use object-fit: contain to prevent stretching, center with black bars */
+.caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .videoWrapper video,
+.caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .videoWrapper iframe {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;                     /* Never stretch or crop - show full video with letterboxing */
+  background: #000;                        /* Black background shows in letterbox areas */
+  border-radius: 0;                        /* Container handles clipping */
+  display: block;
+}
+
+/* NON-MAIN CASES – Overlay: Specific targeting for .videoWrapper.caseVideoWrap video elements */
+.caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .videoWrapper.caseVideoWrap video {
+  object-fit: contain;                     /* Ensure the video is never squished/stretched */
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .detailVideo {
@@ -1019,8 +1050,7 @@ body.lock-scroll {
   background: #000;
 }
 
-/* SECONDARY CASE – Overlay opened from asterisk */
-/* .caseVideoWrap also needs radius when inside overlay (non-main cases use both .videoWrapper and .caseVideoWrap) */
+/* All overlay .caseVideoWrap get radius (margin handled by .videoWrapper rule above) */
 .caseOverlay-card .caseVideoWrap {
   border-radius: var(--case-radius) !important; /* Match overlay card radius - explicit value for consistency */
 }
@@ -1032,9 +1062,17 @@ body.lock-scroll {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  border-radius: 0; /* wrapper does the clipping */
+  object-fit: cover;                       /* Default: cover for main cases */
+  border-radius: 0;                        /* wrapper does the clipping */
   display: block;
+}
+
+/* NON-MAIN CASES – Overlay: .caseVideoWrap video elements use contain */
+.caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .caseVideoWrap .caseVideo,
+.caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .caseVideoWrap video,
+.caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .caseVideoWrap iframe {
+  object-fit: contain;                     /* Never stretch - show full video with letterboxing */
+  background: #000;                        /* Black background for letterbox areas */
 }
 
 
