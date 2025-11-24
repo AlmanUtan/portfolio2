@@ -10,6 +10,25 @@ export class OrbitingRectanglesManager {
     this.rects = [];
     this.videos = [];
 
+// Create a hidden container for videos to prevent browser throttling
+    // We use a specific ID to ensure we don't create duplicates
+   // Create a hidden container for videos
+   let hiddenContainer = document.getElementById('hidden-video-container');
+   if (!hiddenContainer) {
+     hiddenContainer = document.createElement('div');
+     hiddenContainer.id = 'hidden-video-container';
+     // FIX: Position FIXED at 0,0 to be "in viewport" so browser doesn't throttle
+     hiddenContainer.style.position = 'fixed';
+     hiddenContainer.style.top = '0';
+     hiddenContainer.style.left = '0';
+     hiddenContainer.style.width = '10px';
+     hiddenContainer.style.height = '10px';
+     hiddenContainer.style.opacity = '0.001'; // Not 0, to avoid "hidden" optimization
+     hiddenContainer.style.pointerEvents = 'none';
+     hiddenContainer.style.zIndex = '-1000'; // Behind everything
+     document.body.appendChild(hiddenContainer);
+   }
+
     const videoEntries = [
       { src: "public/videoSmallLoad/ton1.mp4", page: 1, aspect: 1 / 1 },
       { src: "public/videoSmallLoad/wdtw1.mp4", page: 2, aspect: 16 / 9 },
@@ -58,6 +77,13 @@ export class OrbitingRectanglesManager {
       vid.loop = true;
       vid.playsInline = true;
       vid.preload = "auto";
+
+      // FIX: Give video dimensions so browser renders frames
+      vid.style.width = '100%';
+      vid.style.height = '100%';
+      vid.style.position = 'absolute';
+      
+      hiddenContainer.appendChild(vid);
 
       if (window.videoLoader && window.videoLoader.isVideoLoaded(entry.src)) {
         vid.src = entry.src;
