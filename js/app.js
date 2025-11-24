@@ -77,6 +77,9 @@ export class App {
     this.sceneManager.addAnimationCallback(() => this.animateRects());
     this.sceneManager.addAnimationCallback(() => this.smoothScrollStep());
     this.sceneManager.addAnimationCallback(() => this.billboardVideosToCamera());
+    this.sceneManager.addAnimationCallback(() =>
+      this.updateOrbitVideoPlayback()
+    );
 
     this.sceneManager.animate();
 
@@ -230,7 +233,10 @@ export class App {
 
   resumeHeavy() {
     if (!this.heavyPaused) return;
-    if (this.orbitingRects) this.orbitingRects.resume();
+    if (this.orbitingRects) {
+      this.orbitingRects.resume();
+      this.orbitingRects.updatePlayback(this.sceneManager.camera);
+    }
     this.heavyPaused = false;
   }
 
@@ -1012,6 +1018,11 @@ export class App {
         rect.quaternion.copy(this._tmpLocalQuat);
       }
     }
+  }
+
+  updateOrbitVideoPlayback() {
+    if (!this.orbitingRects) return;
+    this.orbitingRects.updatePlayback(this.sceneManager.camera);
   }
 
   computeMobilePortrait() {

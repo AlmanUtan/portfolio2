@@ -10,6 +10,14 @@ export class OrbitingRectanglesManager {
     this.rects = [];
     this.videos = [];
 
+    this.maxActiveVideos = 3;
+    this._tmpWorldPos = new THREE.Vector3();
+    this._tmpToCamera = new THREE.Vector3();
+    this._tmpNormal = new THREE.Vector3();
+    this._tmpQuat = new THREE.Quaternion();
+    this._playbackFrameStride = 2; // run every other frame
+    this._playbackFrameCounter = 0;
+
 // Create a hidden container for videos to prevent browser throttling
     // We use a specific ID to ensure we don't create duplicates
    // Create a hidden container for videos
@@ -94,6 +102,10 @@ export class OrbitingRectanglesManager {
       }
       this.videos.push(vid);
 
+      // Initialize video tracking flags
+      vid._targetState = "paused";
+      vid._manualPause = false;
+
       const vtex = new THREE.VideoTexture(vid);
       vtex.colorSpace = THREE.SRGBColorSpace;
       vtex.minFilter = THREE.LinearFilter;
@@ -112,6 +124,7 @@ export class OrbitingRectanglesManager {
       rect.position.set(px, py, pz);
       rect.lookAt(0, 0, 0);
       rect.userData.pageNumber = pageNumber;
+      rect.userData.video = vid;
 
       const squareSize = 0.13;
       const squareGeo = new THREE.PlaneGeometry(squareSize, squareSize);
@@ -146,69 +159,109 @@ export class OrbitingRectanglesManager {
     this.group.rotation.x += dir * 0.005;
   }
 
-  pause() {
-    this.videos.forEach((v) => {
-      try {
-        v.pause();
-      } catch (_) {}
+  setVideoPlaybackState(video, shouldPlay) {
+    if (!video) return;
 
-      if (window.App?.overlayActive) {
-        v.removeAttribute("src");
-        try {
-          v.load();
-        } catch (_) {}
+    if (shouldPlay) {
+      if (video._targetState === "playing") return;
+      video._targetState = "playing";
+
+      const attemptPlay = () => {
+        if (video._manualPause) return;
+        const playPromise = video.play();
+        if (playPromise && typeof playPromise.then === "function") {
+          playPromise.catch((err) => {
+            if (err?.name === "AbortError") return;
+            setTimeout(attemptPlay, 120);
+          });
+        }
+      };
+
+      if (video.readyState >= 3) {
+        attemptPlay();
+      } else {
+        const onReady = () => {
+          video.removeEventListener("canplay", onReady);
+          video.removeEventListener("canplaythrough", onReady);
+          attemptPlay();
+        };
+        video.addEventListener("canplay", onReady, { once: true });
+        video.addEventListener("canplaythrough", onReady, { once: true });
       }
+    } else {
+      if (video._targetState === "paused") return;
+      video._targetState = "paused";
+      try {
+        video.pause();
+      } catch (_) {}
+    }
+  }
+
+  pause() {
+    this.videos.forEach((video) => {
+      video._manualPause = true;
+      this.setVideoPlaybackState(video, false);
     });
   }
 
   resume() {
-    this.videos.forEach((v) => {
-      try {
-        if (!v.src && v.dataset.src) {
-          v.src = v.dataset.src;
-          v.preload = "auto";
-          v.load();
-        }
+    this.videos.forEach((video) => {
+      video._manualPause = false;
+    });
+  }
 
-        const playVideo = () => {
-          v.muted = true;
-          if (v.readyState >= 3) {
-            const p = v.play();
-            if (p && typeof p.then === "function") {
-              p.catch((err) => {
-                setTimeout(() => {
-                  v.play().catch(() => {});
-                }, 100);
-              });
-            }
-          }
-        };
+  updatePlayback(camera, maxActive = this.maxActiveVideos) {
+    if (!camera || !this.rects.length) return;
 
-        if (v.readyState >= 4) {
-          playVideo();
-        } else if (v.readyState >= 3) {
-          setTimeout(playVideo, 100);
-        } else {
-          const onCanPlayThrough = () => {
-            v.removeEventListener("canplaythrough", onCanPlayThrough);
-            v.removeEventListener("canplay", onCanPlay);
-            playVideo();
-          };
+    this._playbackFrameCounter =
+      (this._playbackFrameCounter + 1) % this._playbackFrameStride;
+    if (this._playbackFrameCounter !== 0) return;
 
-          const onCanPlay = () => {
-            setTimeout(() => {
-              if (v.readyState >= 3) {
-                v.removeEventListener("canplaythrough", onCanPlayThrough);
-                v.removeEventListener("canplay", onCanPlay);
-                playVideo();
-              }
-            }, 200);
-          };
+    const candidates = [];
 
-          v.addEventListener("canplaythrough", onCanPlayThrough, { once: true });
-          v.addEventListener("canplay", onCanPlay, { once: true });
-        }
-      } catch (_) {}
+    for (let i = 0; i < this.rects.length; i++) {
+      const rect = this.rects[i];
+      const video = this.videos[i];
+      if (!video) continue;
+
+      if (video._manualPause) {
+        this.setVideoPlaybackState(video, false);
+        continue;
+      }
+
+      rect.getWorldQuaternion(this._tmpQuat);
+      this._tmpNormal.set(0, 0, 1).applyQuaternion(this._tmpQuat);
+      rect.getWorldPosition(this._tmpWorldPos);
+
+      this._tmpToCamera
+        .copy(camera.position)
+        .sub(this._tmpWorldPos)
+        .normalize();
+
+      const facing = this._tmpNormal.dot(this._tmpToCamera);
+      if (facing <= 0.05) {
+        this.setVideoPlaybackState(video, false);
+        continue;
+      }
+
+      const distanceSq = camera.position.distanceToSquared(
+        this._tmpWorldPos
+      );
+      candidates.push({ video, facing, distanceSq });
+    }
+
+    candidates.sort((a, b) => {
+      if (b.facing !== a.facing) return b.facing - a.facing;
+      return a.distanceSq - b.distanceSq;
+    });
+
+    const active = new Set(
+      candidates.slice(0, maxActive).map((entry) => entry.video)
+    );
+
+    this.videos.forEach((video) => {
+      const shouldPlay = active.has(video);
+      this.setVideoPlaybackState(video, shouldPlay);
     });
   }
 }
