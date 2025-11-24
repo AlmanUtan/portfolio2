@@ -278,10 +278,9 @@
 
         // Scroll handlers
         function nudgeScroll(delta) {
-          // If still on pre-video, optionally trigger transition on scroll attempt
+          // Ignore scroll until user clicks to transition from pre-video to main video
           if (!hasTransitioned) {
-            transitionToMainVideo();
-            return;
+            return; // Do nothing - user must click to transition
           }
 
           targetScroll += delta;
