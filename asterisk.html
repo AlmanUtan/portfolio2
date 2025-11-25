@@ -122,7 +122,18 @@
                       <span class="fs-corner fs-br"></span>
                     </span>
                   </button>
-                  <button class="caseMuteBtn" type="button"></button>
+                  <div class="caseVolumeControl">
+                    <button class="caseMuteBtn" type="button"></button>
+                    <input
+                      type="range"
+                      class="caseVolumeSlider"
+                      min="0"
+                      max="1"
+                      step="0.01"
+                      value="1"
+                      aria-label="Volume"
+                    />
+                  </div>
                   <!-- 16:9 video -->
                   <video
                     class="caseVideo"

@@ -57,42 +57,23 @@
     <div id="page-transition-overlay"></div>
     <!-- Intro overlay with video -->
     <div id="start-overlay" aria-hidden="false">
-      <!-- Pre-video: muted, looping, visible by default -->
-      <video
-        id="preVideo"
-        class="intro-video active"
-        autoplay
-        muted
-        loop
-        playsinline
-        webkit-playsinline
-        x5-playsinline
-        preload="auto"
-      >
-        <source src="public/vid/premain.mp4" type="video/mp4" />
-      </video>
-
-      <!-- Main video: muted initially, hidden, will unmute on click -->
       <video
         id="introVideo"
-        class="intro-video"
+        autoplay
         muted
         playsinline
         webkit-playsinline
         x5-playsinline
         preload="auto"
       >
-        <source src="public/vid/main4.mp4" type="video/mp4" />
+        <source src="public/vid/Main3.mp4" type="video/mp4" />
       </video>
-
       <!-- Skip video button in bottom right -->
       <button id="skipVideoBtn" aria-label="Skip video">Skip</button>
       <!-- Fallback play button if autoplay is blocked -->
       <button id="introPlayBtn" aria-label="Play intro" hidden>Play</button>
     </div>
 
-    <!-- Priority-based video loading -->
-    <script src="video-loader.js"></script>
     <!-- Your UI/gallery/masonry JS -->
     <script src="script.js"></script>
 
@@ -100,12 +81,10 @@
       // Redirect to asterisk page after video fade
       (function () {
         const overlay = document.getElementById("start-overlay");
-        const preVideo = document.getElementById("preVideo");
-        const mainVideo = document.getElementById("introVideo");
+        const video = document.getElementById("introVideo");
 
-        if (!overlay || !preVideo || !mainVideo) return;
+        if (!overlay || !video) return;
 
-        let hasTransitioned = false; // Track if we've switched to main video
         let scrollAccumulator = 0;
         const maxScroll = 100; // Total scroll distance
         const fadeStartThreshold = 70; // Start fading at 70% of scroll distance
@@ -114,126 +93,12 @@
         let lastFrameTime = performance.now();
         let hasRedirected = false;
 
-        // ============================================
-        // CLICK TO TRANSITION FROM PRE-VIDEO TO MAIN
-        // ============================================
-
-        function transitionToMainVideo() {
-          if (hasTransitioned) return; // Only allow once
-          hasTransitioned = true;
-
-          // Fade out pre-video
-          preVideo.classList.remove("active");
-
-          // Ensure main video is loaded and ready
-          const playMainVideo = () => {
-            // Fade in main video and unmute it
-            mainVideo.classList.add("active");
-            mainVideo.muted = false;
-            mainVideo.currentTime = 0; // Start from beginning
-
-            // Listen for video end to auto-redirect
-            const onVideoEnd = () => {
-              if (!hasRedirected) {
-                hasRedirected = true;
-                document.body.classList.add("fade-out");
-                setTimeout(() => {
-                  window.location.href = "asterisk.html";
-                }, 300);
-              }
-            };
-            mainVideo.addEventListener("ended", onVideoEnd, { once: true });
-
-            // Play the video smoothly
-            const playPromise = mainVideo.play();
-            if (playPromise !== undefined) {
-              playPromise
-                .then(() => {
-                  // Video is playing smoothly
-                  console.log("Main video playing");
-                })
-                .catch((err) => {
-                  console.warn("Failed to play main video:", err);
-                  // Retry after a short delay
-                  setTimeout(() => {
-                    mainVideo.play().catch(() => {});
-                  }, 100);
-                });
-            }
-          };
-
-          // Wait for video to be ready if needed
-          if (mainVideo.readyState >= 3) {
-            // Video has enough data to play
-            playMainVideo();
-          } else {
-            // Wait for video to load
-            const onCanPlay = () => {
-              mainVideo.removeEventListener("canplay", onCanPlay);
-              mainVideo.removeEventListener("canplaythrough", onCanPlay);
-              playMainVideo();
-            };
-            mainVideo.addEventListener("canplay", onCanPlay, { once: true });
-            mainVideo.addEventListener("canplaythrough", onCanPlay, {
-              once: true,
-            });
-
-            // Force load if not already loading
-            if (mainVideo.readyState === 0) {
-              mainVideo.load();
-            }
-          }
-
-          // Stop and hide pre-video after transition
-          setTimeout(() => {
-            preVideo.pause();
-            preVideo.style.display = "none";
-          }, 600); // Match transition duration
-        }
-
-        // Listen for click on pre-video
-        preVideo.addEventListener("click", transitionToMainVideo);
-
-        // Also allow clicking anywhere on overlay (except skip button)
-        overlay.addEventListener("click", (e) => {
-          // Only trigger if clicking the overlay itself or pre-video, not the skip button
-          if (
-            (e.target === overlay || e.target === preVideo) &&
-            !hasTransitioned
-          ) {
-            transitionToMainVideo();
-          }
-        });
-
-        // Ensure pre-video starts playing (in case autoplay is blocked)
-        preVideo.play().catch(() => {
-          console.log(
-            "Autoplay blocked for pre-video, waiting for user interaction"
-          );
-        });
-
-        // Preload main video in the background for smooth transition
-        mainVideo.load();
-
-        // Ensure main video is ready when needed
-        if (mainVideo.readyState < 2) {
-          mainVideo.addEventListener(
-            "loadedmetadata",
-            () => {
-              console.log("Main video metadata loaded");
-            },
-            { once: true }
-          );
-        }
-
         // Smooth scroll physics
         function updateScroll() {
           const now = performance.now();
           const dt = Math.min(1, (now - lastFrameTime) / 16.67);
           lastFrameTime = now;
 
-          // Only process scroll if we've transitioned to main video
-          if (hasTransitioned) {
           const diff = targetScroll - scrollAccumulator;
           scrollVelocity += diff * 0.16 * dt;
           scrollVelocity *= 0.68;
@@ -242,10 +107,6 @@
             0,
             Math.min(maxScroll, scrollAccumulator)
           );
-
-            // IMPORTANT: Don't scrub the video - let it play smoothly
-            // Scroll only controls the fade and redirect, not video playback
-            // The video should play normally from start to finish
 
           // Calculate fade progress - only fade after threshold
           let opacity = 1;
@@ -258,7 +119,7 @@
 
           // Apply fade
           overlay.style.opacity = opacity.toFixed(3);
-            mainVideo.style.opacity = opacity.toFixed(3);
+          video.style.opacity = opacity.toFixed(3);
 
           // Redirect when scroll reaches end
           if (scrollAccumulator >= maxScroll - 2 && !hasRedirected) {
@@ -267,7 +128,6 @@
             setTimeout(() => {
               window.location.href = "asterisk.html";
             }, 300);
-            }
           }
 
           requestAnimationFrame(updateScroll);
@@ -278,11 +138,6 @@
 
         // Scroll handlers
         function nudgeScroll(delta) {
-          // Ignore scroll until user clicks to transition from pre-video to main video
-          if (!hasTransitioned) {
-            return; // Do nothing - user must click to transition
-          }
-
           targetScroll += delta;
           targetScroll = Math.max(0, Math.min(maxScroll, targetScroll));
         }
@@ -336,28 +191,6 @@
           }
           lastTapTime = now;
         });
-
-        // Skip button functionality
-        const skipBtn = document.getElementById("skipVideoBtn");
-        if (skipBtn) {
-          skipBtn.addEventListener("click", (e) => {
-            e.stopPropagation(); // Prevent triggering overlay click
-            e.preventDefault();
-            // If still on pre-video, transition first
-            if (!hasTransitioned) {
-              transitionToMainVideo();
-              // Wait for transition, then skip
-              setTimeout(() => {
-                targetScroll = maxScroll;
-                scrollAccumulator = maxScroll;
-              }, 650);
-            } else {
-              // Instantly jump to max scroll to trigger redirect
-              targetScroll = maxScroll;
-              scrollAccumulator = maxScroll;
-            }
-          });
-        }
       })();
     </script>
   </body>
