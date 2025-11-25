@@ -234,39 +234,39 @@
 
           // Only process scroll if we've transitioned to main video
           if (hasTransitioned) {
-            const diff = targetScroll - scrollAccumulator;
-            scrollVelocity += diff * 0.16 * dt;
-            scrollVelocity *= 0.68;
-            scrollAccumulator += scrollVelocity * dt;
-            scrollAccumulator = Math.max(
-              0,
-              Math.min(maxScroll, scrollAccumulator)
-            );
+          const diff = targetScroll - scrollAccumulator;
+          scrollVelocity += diff * 0.16 * dt;
+          scrollVelocity *= 0.68;
+          scrollAccumulator += scrollVelocity * dt;
+          scrollAccumulator = Math.max(
+            0,
+            Math.min(maxScroll, scrollAccumulator)
+          );
 
             // IMPORTANT: Don't scrub the video - let it play smoothly
             // Scroll only controls the fade and redirect, not video playback
             // The video should play normally from start to finish
 
-            // Calculate fade progress - only fade after threshold
-            let opacity = 1;
-            if (scrollAccumulator >= fadeStartThreshold) {
-              const fadeProgress =
-                (scrollAccumulator - fadeStartThreshold) /
-                (maxScroll - fadeStartThreshold);
-              opacity = 1 - Math.min(1, fadeProgress);
-            }
+          // Calculate fade progress - only fade after threshold
+          let opacity = 1;
+          if (scrollAccumulator >= fadeStartThreshold) {
+            const fadeProgress =
+              (scrollAccumulator - fadeStartThreshold) /
+              (maxScroll - fadeStartThreshold);
+            opacity = 1 - Math.min(1, fadeProgress);
+          }
 
-            // Apply fade
-            overlay.style.opacity = opacity.toFixed(3);
+          // Apply fade
+          overlay.style.opacity = opacity.toFixed(3);
             mainVideo.style.opacity = opacity.toFixed(3);
 
-            // Redirect when scroll reaches end
-            if (scrollAccumulator >= maxScroll - 2 && !hasRedirected) {
-              hasRedirected = true;
-              document.body.classList.add("fade-out");
-              setTimeout(() => {
-                window.location.href = "asterisk.html";
-              }, 300);
+          // Redirect when scroll reaches end
+          if (scrollAccumulator >= maxScroll - 2 && !hasRedirected) {
+            hasRedirected = true;
+            document.body.classList.add("fade-out");
+            setTimeout(() => {
+              window.location.href = "asterisk.html";
+            }, 300);
             }
           }
 

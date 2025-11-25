@@ -331,14 +331,43 @@ document
     // Track column heights
     const heights = Array(cols).fill(0);
 
-    const anyExpandedFlag = cards.some((c) => c.classList.contains("expanded"));
+    const expandedCard = cards.find((c) => c.classList.contains("expanded"));
+    const anyExpandedFlag = !!expandedCard;
 
-    // Place cards in seeded “organic” order
-    layoutOrder.forEach((card, i) => {
+    // Build DOM-aware layout order when a card is expanded
+    // Layout Order = [cards before expanded (in organic order)] 
+    //              + [expanded card] 
+    //              + [cards after expanded (in organic order)]
+    let orderedCards;
+    if (expandedCard) {
+      const expandedDomIndex = cards.indexOf(expandedCard);
+      
+      // Cards before expanded in DOM (maintain organic shuffle within this group)
+      const cardsBefore = layoutOrder.filter(c => {
+        const domIdx = cards.indexOf(c);
+        return domIdx < expandedDomIndex && c !== expandedCard;
+      });
+      
+      // Cards after expanded in DOM (maintain organic shuffle within this group)
+      const cardsAfter = layoutOrder.filter(c => {
+        const domIdx = cards.indexOf(c);
+        return domIdx > expandedDomIndex && c !== expandedCard;
+      });
+      
+      orderedCards = [...cardsBefore, expandedCard, ...cardsAfter];
+    } else {
+      orderedCards = layoutOrder; // No expansion, use normal organic order
+    }
+
+    // Place cards in DOM-aware order
+    orderedCards.forEach((card) => {
       const isExpanded = card.classList.contains("expanded");
+      
+      // Use original DOM index for stable RNG (not loop index)
+      const originalIndex = cards.indexOf(card);
 
       // Base span when nothing is expanded
-      const baseSpan = Math.min(decideSpan(card, cols, perCardRand[i]), cols);
+      const baseSpan = Math.min(decideSpan(card, cols, perCardRand[originalIndex]), cols);
 
       // Expanded/non-expanded rules
       let span;
@@ -392,8 +421,8 @@ document
 
       const x = isExpanded ? 0 : bestCol * (colWidth + GAP);
 
-      // Higher y -> above lower y (prevents underlying peeking through)
-      card.style.zIndex = String(100 + Math.floor(bestY));
+      // Simplified z-index: expanded card on top, others flat
+      card.style.zIndex = isExpanded ? "1000" : "1";
       // Apply absolute positioning
       card.style.position = "absolute";
       card.style.width = width + "px";
