@@ -296,7 +296,7 @@ document
     const SAFETY_PAD = isMainCard ? MAIN_SAFETY_PAD : 0;
     return h + SAFETY_PAD;
   }
-  
+
 
   function layout() {
     // Enable masonry mode
@@ -635,33 +635,6 @@ document
 
         card.classList.add("expanded");
       } else {
-
-      // Ensure collapse button exists before layout measurement runs
-      let collapseBtn = card.querySelector(".cardCollapse");
-      if (!collapseBtn) {
-        collapseBtn = document.createElement("button");
-        collapseBtn.className = "cardCollapse";
-        collapseBtn.type = "button";
-        collapseBtn.textContent = "Close";
-        card.appendChild(collapseBtn);
-      }
-      if (!collapseBtn.dataset.bound) {
-        collapseBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          if (card.classList.contains("expanded")) {
-            card.classList.remove("expanded");
-            const dv = card.querySelector(".cardDetails video");
-            if (dv) {
-              try {
-                dv.pause();
-              } catch (err) {}
-            }
-            layout();
-          }
-        });
-        collapseBtn.dataset.bound = "1";
-      }
-
         card.classList.remove("expanded");
       }
 
