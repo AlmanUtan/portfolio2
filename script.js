@@ -259,6 +259,11 @@ document
         MAX_VID_H = Math.max(200, Math.floor(viewportH - extraContentSpace));
       }
 
+      // parse "W/H"
+      const [aw, ah] = String(ar).split(/[/:]/).map(Number);
+      const ratio = aw && ah ? ah / aw : 9 / 16;
+      const desiredVidH = Math.round(width * ratio);
+
       if (!isMainCard) {
         const VIDEO_MIN = 380;
         const VIDEO_MAX = 660;
@@ -267,12 +272,6 @@ document
           Math.max(VIDEO_MIN, MAX_VID_H || desiredVidH)
         );
       }
-
-      // parse "W/H"
-      const [aw, ah] = String(ar).split(/[/:]/).map(Number);
-      const ratio = aw && ah ? ah / aw : 9 / 16;
-      const desiredVidH = Math.round(width * ratio);
-
       if (desiredVidH > MAX_VID_H) {
         // Force height cap and disable aspect-ratio for the wrapper in measurement
         cloneWrapper.style.height = MAX_VID_H + "px";
@@ -281,10 +280,20 @@ document
     }
 
     grid.appendChild(clone);
-    const h = Math.ceil(clone.getBoundingClientRect().height);
+    let h = Math.ceil(clone.getBoundingClientRect().height);
     grid.removeChild(clone);
+
+    // Safety margin for main projects: on wide screens, text wrapping + capped video height
+    // can make the real card slightly taller than the clone we measured.
+    const isMainCard = card.dataset.tier === "main";
+    if (isMainCard) {
+      const SAFETY = 72; // tweak if still see clipping; 72–120px is a good range
+      h += SAFETY;
+    }
+
     return h;
   }
+  
 
   function layout() {
     // Enable masonry mode
@@ -331,43 +340,14 @@ document
     // Track column heights
     const heights = Array(cols).fill(0);
 
-    const expandedCard = cards.find((c) => c.classList.contains("expanded"));
-    const anyExpandedFlag = !!expandedCard;
+    const anyExpandedFlag = cards.some((c) => c.classList.contains("expanded"));
 
-    // Build DOM-aware layout order when a card is expanded
-    // Layout Order = [cards before expanded (in organic order)] 
-    //              + [expanded card] 
-    //              + [cards after expanded (in organic order)]
-    let orderedCards;
-    if (expandedCard) {
-      const expandedDomIndex = cards.indexOf(expandedCard);
-      
-      // Cards before expanded in DOM (maintain organic shuffle within this group)
-      const cardsBefore = layoutOrder.filter(c => {
-        const domIdx = cards.indexOf(c);
-        return domIdx < expandedDomIndex && c !== expandedCard;
-      });
-      
-      // Cards after expanded in DOM (maintain organic shuffle within this group)
-      const cardsAfter = layoutOrder.filter(c => {
-        const domIdx = cards.indexOf(c);
-        return domIdx > expandedDomIndex && c !== expandedCard;
-      });
-      
-      orderedCards = [...cardsBefore, expandedCard, ...cardsAfter];
-    } else {
-      orderedCards = layoutOrder; // No expansion, use normal organic order
-    }
-
-    // Place cards in DOM-aware order
-    orderedCards.forEach((card) => {
+    // Place cards in seeded “organic” order
+    layoutOrder.forEach((card, i) => {
       const isExpanded = card.classList.contains("expanded");
-      
-      // Use original DOM index for stable RNG (not loop index)
-      const originalIndex = cards.indexOf(card);
 
       // Base span when nothing is expanded
-      const baseSpan = Math.min(decideSpan(card, cols, perCardRand[originalIndex]), cols);
+      const baseSpan = Math.min(decideSpan(card, cols, perCardRand[i]), cols);
 
       // Expanded/non-expanded rules
       let span;
@@ -386,21 +366,9 @@ document
       let height;
 
       if (isExpanded) {
-        // For expanded cards, use full container width (accounting for grid padding/gap)
-        const gridRect = grid.getBoundingClientRect();
-        const computedStyle = window.getComputedStyle(grid);
-        const gridPaddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
-        const gridPaddingRight = parseFloat(computedStyle.paddingRight) || 0;
-        width = gridRect.width - gridPaddingLeft - gridPaddingRight;
-        // Ensure width accounts for any container constraints
-        const scroller = grid.closest('.galleryScroll');
-        if (scroller) {
-          const scrollerRect = scroller.getBoundingClientRect();
-          const scrollerPaddingLeft = parseFloat(window.getComputedStyle(scroller).paddingLeft) || 0;
-          const scrollerPaddingRight = parseFloat(window.getComputedStyle(scroller).paddingRight) || 0;
-          const maxWidth = scrollerRect.width - scrollerPaddingLeft - scrollerPaddingRight;
-          width = Math.min(width, maxWidth);
-        }
+        // Expanded cards should use full container width
+        width = containerWidth;
+
         // Robust: measure expansion height using a hidden clone
         height = measureExpandedHeight(card, width);
       } else {
@@ -419,10 +387,10 @@ document
         }
       }
 
-      const x = isExpanded ? 0 : bestCol * (colWidth + GAP);
+      const x = bestCol * (colWidth + GAP);
 
-      // Simplified z-index: expanded card on top, others flat
-      card.style.zIndex = isExpanded ? "1000" : "1";
+      // Higher y -> above lower y (prevents underlying peeking through)
+      card.style.zIndex = String(100 + Math.floor(bestY));
       // Apply absolute positioning
       card.style.position = "absolute";
       card.style.width = width + "px";
@@ -649,8 +617,6 @@ document
 
       if (willExpand) {
         collapseAll(card);
-        
-    grid.classList.remove("masonry-on"); // ← ADD THIS LINE
 
         // Ensure detail AR is set before expanding (matches preview)
         const details = card.querySelector(".cardDetails");
@@ -711,7 +677,6 @@ document
               e.stopPropagation();
               if (card.classList.contains("expanded")) {
                 card.classList.remove("expanded");
-                grid.classList.add("masonry-on");
                 const dv = card.querySelector(".cardDetails video");
                 if (dv) {
                   try {
@@ -743,7 +708,6 @@ document
     const anyExpanded = cards.some((c) => c.classList.contains("expanded"));
     if (anyExpanded) {
       collapseAll();
-      grid.classList.add("masonry-on");
       layout();
     }
   });
@@ -883,7 +847,6 @@ caseOverlayContent?.addEventListener("wheel", (evt) => {
     hydrateCaseVideos(overlayCard);
     wireCaseControls(overlayCard, { forceRebind: true });
     wireDetailVideoHovers(overlayCard, { forceRebind: true });
-    wireDetailVideosMuteButton(overlayCard, { forceRebind: true }); // NEW
 
     const mainVideo = overlayCard.querySelector(".caseVideo");
     if (mainVideo) {
@@ -1260,61 +1223,7 @@ function wireDetailVideoHovers(scope = document, { forceRebind = false } = {}) {
 
 document.addEventListener("DOMContentLoaded", () => {
   wireDetailVideoHovers(document);
-  wireDetailVideosMuteButton(document); // NEW
 });
-
-// Wire single mute button for all detail video blobs
-function wireDetailVideosMuteButton(scope = document, { forceRebind = false } = {}) {
-  scope.querySelectorAll('.detailVideosMuteControl').forEach((controlContainer) => {
-    const muteBtn = controlContainer.querySelector('.detailVideosMuteBtn');
-    if (!muteBtn) return;
-    
-    // Skip if already bound (unless forcing rebind)
-    if (muteBtn.dataset.muteBound === '1' && !forceRebind) return;
-    
-    // Find the parent card to scope our video search
-    const card = controlContainer.closest('.projectCard, .caseOverlay-card');
-    if (!card) return;
-    
-    // Get all detail videos - support both .caseDetailVideos and .detailVideoMosaic structures
-    const detailVideosSection = card.querySelector('.caseDetailVideos, .detailVideoMosaic');
-    if (!detailVideosSection) return;
-    
-    const detailVideos = Array.from(detailVideosSection.querySelectorAll('.detailVideoHover'));
-    if (!detailVideos.length) return;
-    
-    // Sync button state based on whether ALL videos are muted
-    const syncBtnState = () => {
-      const allMuted = detailVideos.every(v => v.muted);
-      muteBtn.classList.toggle('muted', allMuted);
-    };
-    
-    // Toggle mute for ALL detail videos
-    muteBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      
-      // Check current state - if all are muted, unmute all; otherwise mute all
-      const allMuted = detailVideos.every(v => v.muted);
-      const newMutedState = !allMuted;
-      
-      detailVideos.forEach(video => {
-        video.muted = newMutedState;
-      });
-      
-      syncBtnState();
-    });
-    
-    // Also sync state whenever any video's mute state changes
-    detailVideos.forEach(video => {
-      video.addEventListener('volumechange', syncBtnState);
-    });
-    
-    // Initial state
-    syncBtnState();
-    
-    muteBtn.dataset.muteBound = '1';
-  });
-}
 
 // Close button functionality for case cards
 function wireCaseControls(scope = document, { forceRebind = false } = {}) {
@@ -1402,51 +1311,6 @@ function wireCaseControls(scope = document, { forceRebind = false } = {}) {
     syncBtnState(video);
 
     btn.dataset.wiredMute = "1";
-  });
-
-  // Setup visibility-based audio fading for case videos
-  scope.querySelectorAll(".caseVideo").forEach((video) => {
-    if (video.dataset.visibilityWired === "1") return;
-    
-    const videoWrap = video.closest(".caseVideoWrap");
-    if (!videoWrap) return;
-
-    // Store original volume
-    if (!video.dataset.originalVolume) {
-      video.dataset.originalVolume = String(video.volume || 1);
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const ratio = entry.intersectionRatio;
-          // Fade out when less than 20% visible (80% not visible)
-          const visibilityThreshold = 0.2;
-          
-          if (ratio < visibilityThreshold) {
-            // Fade out based on visibility
-            const fadeProgress = ratio / visibilityThreshold;
-            const targetVolume = parseFloat(video.dataset.originalVolume) * Math.max(0, fadeProgress);
-            video.volume = targetVolume;
-          } else {
-            // Fully visible - restore original volume
-            const slider = videoWrap.querySelector(".caseVolumeSlider");
-            if (slider) {
-              video.volume = parseFloat(slider.value) || parseFloat(video.dataset.originalVolume);
-            } else {
-              video.volume = parseFloat(video.dataset.originalVolume);
-            }
-          }
-        });
-      },
-      {
-        threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-        rootMargin: "0px"
-      }
-    );
-
-    observer.observe(videoWrap);
-    video.dataset.visibilityWired = "1";
   });
 }
 
