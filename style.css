@@ -580,8 +580,8 @@ body.lock-scroll {
   max-width: 1440px;
   margin: 0 auto;
 
-  max-height: calc(100vh - clamp(60px, 14vh, 60px));
-  padding: clamp(3px, 2vw, 2px) clamp(10px, 3vw, 16px);
+  max-height: calc(100vh - clamp(60px, 14vh, 140px));
+  padding: clamp(6px, 2vw, 24px);
 
   background: rgba(40, 40, 40, 0.85); /* Translucent grey */
   border: 0px solid rgba(0, 0, 0, 0); /* Slightly stronger line */
@@ -599,8 +599,8 @@ body.lock-scroll {
   overscroll-behavior: contain;
   max-height: none; /* Allow content to define height, scroll internally if needed */
 
-  /* Equal spacing top/left/right - unified padding for all cases */
-  padding: clamp(24px, 4vw, 48px) clamp(24px, 3vw, 32px);
+  /* Much tighter padding so case hugs the panel */
+  padding: 0;
   
   max-width: 100%;
 }
@@ -721,7 +721,7 @@ body.lock-scroll {
   }
 
   .caseOverlay-content {
-    padding: clamp(24px, 6vw, 36px) clamp(16px, 4vw, 24px);
+    padding: clamp(24px, 6vw, 36px) clamp(14px, 5vw, 22px);
   }
   
   /* Keep this consistent by not re-adding conflicting right padding
@@ -1078,9 +1078,11 @@ body.lock-scroll {
   background: #000;
 }
 
-/* All overlay .caseVideoWrap get radius (margin handled by .videoWrapper rule above) */
+/* All overlay .caseVideoWrap get radius and larger margin-bottom from style.css2.txt */
 .caseOverlay-card .caseVideoWrap {
-  border-radius: var(--case-radius) !important; /* Match overlay card radius - explicit value for consistency */
+  border-radius: 20px; /* Larger corner radius from style.css2.txt */
+  overflow: hidden;
+  margin-bottom: clamp(28px, 4vw, 56px); /* Larger margin-bottom from style.css2.txt */
 }
 
 .caseVideoWrap .caseVideo,
