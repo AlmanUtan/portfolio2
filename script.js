@@ -6,13 +6,6 @@
    - Click-to-expand cards
    - openSubpage(pageNumber) for 3D tile clicks
 */
-function clearExpandedMetrics(card) {
-  if (!card) return;
-  card.style.removeProperty("content-visibility");
-  card.style.removeProperty("containIntrinsicSize");
-}
-
-
 document
   .querySelectorAll('a[href="index.html"]')
   .forEach((link) => {
@@ -91,6 +84,8 @@ document
 
   // Use your CSS gap of 18px
   const GAP = 18;
+  const MAIN_SAFETY_PAD = 18;
+
   // Column sizing
   const MIN_COL_WIDTH = 200;
   const MAX_COL_WIDTH = 300;
@@ -200,50 +195,108 @@ document
   const posCache = new Map();
 
   function measureExpandedHeight(card, width) {
-    if (!card) return 0;
+    const clone = card.cloneNode(true);
+    clone.classList.add("expanded");
 
-    const prev = {
-      width: card.style.width,
-      height: card.style.height,
-      visibility: card.style.visibility,
-      transform: card.style.transform,
-      contentVisibility: card.style.contentVisibility,
-      containIntrinsicSize: card.style.containIntrinsicSize,
-    };
-
-    card.style.visibility = "hidden";
-    card.style.transform = "none";
-    card.style.width = width + "px";
-    card.style.height = "auto";
-    card.style.contentVisibility = "visible";
-    if ("containIntrinsicSize" in card.style) {
-      card.style.containIntrinsicSize = "auto";
+    // Neutralize layout/positioning so we can measure natural height
+    clone.style.position = "static";
+    clone.style.visibility = "hidden";
+    clone.style.transform = "none";
+    clone.style.width = width + "px";
+    clone.style.height = "auto";
+    clone.style.left = "auto";
+    clone.style.top = "auto";
+    // Ensure content-visibility doesn't block measurement on the clone
+    clone.style.contentVisibility = "visible";
+    if ("containIntrinsicSize" in clone.style) {
+      clone.style.containIntrinsicSize = "auto";
     }
 
-    const measured = Math.ceil(card.getBoundingClientRect().height);
+    // Expanded view: hide preview, show details
+    const prev = clone.querySelector(".cardPreview");
+    if (prev) prev.style.display = "none";
+    const details = clone.querySelector(".cardDetails");
+    if (details) details.style.display = "block";
+
+    // Ensure the aspect variable exists on the clone
+    const origWrapper = card.querySelector(".videoWrapper");
+    const cloneWrapper = clone.querySelector(".videoWrapper");
+    if (cloneWrapper) {
+      let ar = "";
+      if (origWrapper) {
+        ar = getComputedStyle(origWrapper)
+          .getPropertyValue("--video-ar")
+          .trim();
+      }
+      if (!ar) {
+        const dr = (card.dataset.ratio || "16:9").replace(":", "/");
+        ar = dr;
+      }
+      cloneWrapper.style.setProperty("--video-ar", ar || "16/9");
+
+      // Cap the video height according to overlay content height if available
+      const scrollerEl = scroller || grid.parentElement || document.body;
+      const overlayStyles = overlayEl ? getComputedStyle(overlayEl) : null;
+
+      const isMainCard = card.dataset.tier === "main";
+
+      const extraContentSpace = isMainCard ? 80 : 180;
+
+      let MAX_VID_H = 0;
+      if (overlayStyles) {
+        const cmh =
+          parseFloat(overlayStyles.getPropertyValue("--gallery-content-max-h")) ||
+          0;
+
+        if (cmh > 0) {
+          MAX_VID_H = Math.max(200, Math.floor(cmh - extraContentSpace));
+        }
+      }
+
+      if (!MAX_VID_H) {
+        const viewportH =
+          scrollerEl && scrollerEl.clientHeight
+            ? scrollerEl.clientHeight
+            : window.innerHeight;
+        MAX_VID_H = Math.max(200, Math.floor(viewportH - extraContentSpace));
+      }
+
+      // parse "W/H"
+      const [aw, ah] = String(ar).split(/[/:]/).map(Number);
+      const ratio = aw && ah ? ah / aw : 9 / 16;
+      const desiredVidH = Math.round(width * ratio);
+
+      if (!isMainCard) {
+        const VIDEO_MIN = 380;
+        const VIDEO_MAX = 660;
+        MAX_VID_H = Math.min(
+          VIDEO_MAX,
+          Math.max(VIDEO_MIN, MAX_VID_H || desiredVidH)
+        );
+      }
+      if (desiredVidH > MAX_VID_H) {
+        // Force height cap and disable aspect-ratio for the wrapper in measurement
+        cloneWrapper.style.height = MAX_VID_H + "px";
+        cloneWrapper.style.aspectRatio = "auto";
+      }
+    }
+
+    grid.appendChild(clone);
+    let h = Math.ceil(clone.getBoundingClientRect().height);
+    grid.removeChild(clone);
+
+    // Safety margin for main projects: on wide screens, text wrapping + capped video height
+    // can make the real card slightly taller than the clone we measured.
     const isMainCard = card.dataset.tier === "main";
-const SAFETY_PAD = isMainCard ? 18 : 0; // adjust this value to taste
-const height = measured + SAFETY_PAD;
-
-    // Restore styles so the live card doesn't flicker mid-frame
-    card.style.visibility = prev.visibility || "";
-    card.style.transform = prev.transform || "";
-    card.style.width = prev.width || "";
-    card.style.height = prev.height || "";
-    if (prev.contentVisibility) {
-      card.style.contentVisibility = prev.contentVisibility;
-    } else {
-      card.style.removeProperty("content-visibility");
-    }
-    if (prev.containIntrinsicSize) {
-      card.style.containIntrinsicSize = prev.containIntrinsicSize;
-    } else if ("containIntrinsicSize" in card.style) {
-      card.style.removeProperty("containIntrinsicSize");
+    if (isMainCard) {
+      const SAFETY = 72; // tweak if still see clipping; 72–120px is a good range
+      h += SAFETY;
     }
 
-    return height;
+    const SAFETY_PAD = isMainCard ? MAIN_SAFETY_PAD : 0;
+    return h + SAFETY_PAD;
   }
-
+  
 
   function layout() {
     // Enable masonry mode
@@ -347,13 +400,6 @@ const height = measured + SAFETY_PAD;
       card.style.height = height + "px";
       card.style.transform = `translate(${x}px, ${bestY}px)`;
 
-      if (isExpanded) {
-        card.style.contentVisibility = "visible";
-        if ("containIntrinsicSize" in card.style) {
-          card.style.containIntrinsicSize = "auto";
-        }
-      }
-
       posCache.set(card, { x, y: bestY });
 
       // Update column heights
@@ -370,7 +416,6 @@ const height = measured + SAFETY_PAD;
     cards.forEach((c) => {
       if (c !== except) {
         c.classList.remove("expanded");
-        clearExpandedMetrics(c);
         const dv = c.querySelector(".cardDetails video");
         if (dv) {
           try {
@@ -590,8 +635,34 @@ const height = measured + SAFETY_PAD;
 
         card.classList.add("expanded");
       } else {
+
+      // Ensure collapse button exists before layout measurement runs
+      let collapseBtn = card.querySelector(".cardCollapse");
+      if (!collapseBtn) {
+        collapseBtn = document.createElement("button");
+        collapseBtn.className = "cardCollapse";
+        collapseBtn.type = "button";
+        collapseBtn.textContent = "Close";
+        card.appendChild(collapseBtn);
+      }
+      if (!collapseBtn.dataset.bound) {
+        collapseBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (card.classList.contains("expanded")) {
+            card.classList.remove("expanded");
+            const dv = card.querySelector(".cardDetails video");
+            if (dv) {
+              try {
+                dv.pause();
+              } catch (err) {}
+            }
+            layout();
+          }
+        });
+        collapseBtn.dataset.bound = "1";
+      }
+
         card.classList.remove("expanded");
-        clearExpandedMetrics(card);
       }
 
       // Let the DOM apply the expanded state before measuring/layout
@@ -622,32 +693,6 @@ const height = measured + SAFETY_PAD;
             }, 150);
           }
 
-          // Ensure collapse button exists and binds once
-          let btn = card.querySelector(".cardCollapse");
-          if (!btn) {
-            btn = document.createElement("button");
-            btn.className = "cardCollapse";
-            btn.type = "button";
-            btn.textContent = "Close";
-            card.appendChild(btn);
-          }
-          if (!btn.dataset.bound) {
-            btn.addEventListener("click", (e) => {
-              e.stopPropagation();
-              if (card.classList.contains("expanded")) {
-                card.classList.remove("expanded");
-                clearExpandedMetrics(card);
-                const dv = card.querySelector(".cardDetails video");
-                if (dv) {
-                  try {
-                    dv.pause();
-                  } catch (e) {}
-                }
-                layout();
-              }
-            });
-            btn.dataset.bound = "1";
-          }
         });
       });
     });
@@ -1204,7 +1249,6 @@ function wireCaseControls(scope = document, { forceRebind = false } = {}) {
       const card = btn.closest(".projectCard");
       if (card && card.classList.contains("expanded")) {
         card.classList.remove("expanded");
-        clearExpandedMetrics(card);
         const dv = card.querySelector(".cardDetails video");
         if (dv) {
           try {
