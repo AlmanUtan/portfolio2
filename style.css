@@ -865,7 +865,8 @@ body.lock-scroll {
 
 /* SECONDARY CASE – Expanded in gallery */
 /* Symmetric horizontal padding - no flush right edge */
-.projectCard.expanded:not([data-tier="main"]) .cardDetails {
+/* Exclude overlay cards to prevent style leakage */
+.projectCard.expanded:not([data-tier="main"]):not(.caseOverlay-card) .cardDetails {
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -874,14 +875,16 @@ body.lock-scroll {
 }
 
 /* Override any legacy "flat right" radius for safety */
-.projectCard.expanded[data-tier="secondary"],
-.projectCard.expanded:not([data-tier="main"]) {
+/* Exclude overlay cards - they have separate rules */
+.projectCard.expanded[data-tier="secondary"]:not(.caseOverlay-card),
+.projectCard.expanded:not([data-tier="main"]):not(.caseOverlay-card) {
   border-radius: var(--case-radius);
 }
 
 /* SECONDARY CASE – Expanded in gallery */
 /* Video wrapper matches card radius */
-.projectCard.expanded:not([data-tier="main"]) .videoWrapper {
+/* Exclude overlay cards to prevent style leakage */
+.projectCard.expanded:not([data-tier="main"]):not(.caseOverlay-card) .videoWrapper {
   border-radius: var(--case-radius);
   overflow: hidden;
 }
@@ -911,7 +914,9 @@ body.lock-scroll {
   /* Removed max-height constraint to allow full content display */
 }
 
-.projectCard.expanded:not([data-tier="main"]) .videoWrapper {
+/* SECONDARY CASE – Expanded in gallery */
+/* Gallery flex layout for non-main cards - exclude overlay cards */
+.projectCard.expanded:not([data-tier="main"]):not(.caseOverlay-card) .videoWrapper {
   flex: 1 1 auto;
   display: flex;
   align-items: center;
@@ -939,22 +944,43 @@ body.lock-scroll {
    - Video respects aspect ratio, never stretched (object-fit: contain)
    - Centered video with black letterboxing when needed */
 .caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .videoWrapper.caseVideoWrap {
-  flex: 0 0 auto;                          /* Cancel gallery flex: 1 1 auto */
-  display: block;                           /* Stop it from being a flex item */
-  width: auto;                              /* Crucial! Do not use 100%. Let it fill space minus margins */
-  height: auto;                             /* Cancel gallery height: clamp(...) */
-  margin: clamp(16px, 2.5vw, 24px);        /* Equal margins for Top, Left, Right */
-  margin-bottom: clamp(28px, 4vw, 40px);    /* Override bottom margin to be larger for hashtags */
-  border-radius: var(--case-radius);        /* Match overlay card radius */
-  overflow: hidden;                         /* Clip video to rounded corners */
-  background: #000;                         /* Black background for letterboxing */
-  aspect-ratio: var(--video-ar, 16 / 9);    /* Maintain aspect ratio */
+  flex: 0 0 auto !important;                /* Cancel gallery flex: 1 1 auto */
+  display: block !important;                /* Stop it from being a flex item */
+  width: auto !important;                   /* Crucial! Do not use 100%. Let it fill space minus margins */
+  height: auto !important;                  /* Cancel gallery height: clamp(...) */
+  min-width: unset !important;              /* Cancel any min-width from gallery */
+  margin: clamp(16px, 2.5vw, 24px) !important;        /* Equal margins for Top, Left, Right */
+  margin-bottom: clamp(28px, 4vw, 40px) !important;    /* Override bottom margin to be larger for hashtags */
+  border-radius: var(--case-radius) !important;        /* Match overlay card radius - force rounded corners */
+  overflow: hidden !important;              /* Clip video to rounded corners */
+  background: #000 !important;              /* Black background for letterboxing */
+  aspect-ratio: var(--video-ar, 16 / 9) !important;    /* Maintain aspect ratio - cancel gallery aspect-ratio: auto */
   box-sizing: border-box;                   /* Include padding/border in width calculation */
+  align-items: unset !important;            /* Cancel gallery align-items: center */
+  justify-content: unset !important;        /* Cancel gallery justify-content: center */
+}
+
+/* NON-MAIN CASES – Overlay: Fallback for .videoWrapper without .caseVideoWrap class */
+.caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .videoWrapper {
+  flex: 0 0 auto !important;                /* Cancel gallery flex: 1 1 auto */
+  display: block !important;                /* Stop it from being a flex item */
+  width: auto !important;                   /* Crucial! Let it fill space minus margins */
+  height: auto !important;                  /* Cancel gallery height: clamp(...) */
+  min-width: unset !important;              /* Cancel any min-width from gallery */
+  margin: clamp(16px, 2.5vw, 24px) !important;
+  margin-bottom: clamp(28px, 4vw, 40px) !important;
+  border-radius: var(--case-radius) !important;        /* Force rounded corners */
+  overflow: hidden !important;
+  background: #000 !important;
+  aspect-ratio: var(--video-ar, 16 / 9) !important;    /* Cancel gallery aspect-ratio: auto */
+  align-items: unset !important;
+  justify-content: unset !important;
 }
 
 /* Gallery non-main cases - keep existing behavior */
-.projectCard.expanded:not([data-tier="main"]) .videoWrapper video,
-.projectCard.expanded:not([data-tier="main"]) .videoWrapper iframe {
+/* Exclude overlay cards to prevent style leakage */
+.projectCard.expanded:not([data-tier="main"]):not(.caseOverlay-card) .videoWrapper video,
+.projectCard.expanded:not([data-tier="main"]):not(.caseOverlay-card) .videoWrapper iframe {
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -1015,7 +1041,8 @@ body.lock-scroll {
   color: #d0d0d0;
 }
 
-.projectCard.expanded:not([data-tier="main"]) .cardHashtags {
+/* Gallery hashtags - exclude overlay cards */
+.projectCard.expanded:not([data-tier="main"]):not(.caseOverlay-card) .cardHashtags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -1023,7 +1050,8 @@ body.lock-scroll {
   padding-top: 8px;
 }
 
-.projectCard.expanded:not([data-tier="main"]) .hashtagBlob {
+/* Gallery hashtag blob - exclude overlay cards */
+.projectCard.expanded:not([data-tier="main"]):not(.caseOverlay-card) .hashtagBlob {
   display: inline-flex;
   align-items: center;
   padding: 6px 14px;
