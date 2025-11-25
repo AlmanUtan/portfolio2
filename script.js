@@ -620,6 +620,8 @@ document
 
       if (willExpand) {
         collapseAll(card);
+        
+    grid.classList.remove("masonry-on"); // ← ADD THIS LINE
 
         // Ensure detail AR is set before expanding (matches preview)
         const details = card.querySelector(".cardDetails");
@@ -680,6 +682,7 @@ document
               e.stopPropagation();
               if (card.classList.contains("expanded")) {
                 card.classList.remove("expanded");
+                grid.classList.add("masonry-on");
                 const dv = card.querySelector(".cardDetails video");
                 if (dv) {
                   try {
@@ -711,6 +714,7 @@ document
     const anyExpanded = cards.some((c) => c.classList.contains("expanded"));
     if (anyExpanded) {
       collapseAll();
+      grid.classList.add("masonry-on");
       layout();
     }
   });

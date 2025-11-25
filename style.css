@@ -576,8 +576,8 @@ body.lock-scroll {
   flex-direction: column;
 
   /* Hard centering: panel itself is centered block */
-  width: 90%;
-  max-width: 1440px;
+  width: 80%;
+  max-width: 1200px;
   margin: 0 auto;
 
   max-height: calc(100vh - clamp(60px, 14vh, 140px));
@@ -600,7 +600,7 @@ body.lock-scroll {
   max-height: none; /* Allow content to define height, scroll internally if needed */
 
   /* Much tighter padding so case hugs the panel */
-  padding: 0;
+  padding:0;
   
   max-width: 100%;
 }
@@ -857,6 +857,27 @@ body.lock-scroll {
   padding-right: clamp(24px, 3vw, 40px);
 }
 
+/* MAIN CASES – “In Detail” segment:
+   ensure it has the same inner padding as the rest of the main case content */
+   .projectCard.expanded[data-tier="main"] .cardDetails > .caseDetailSection {
+    padding-left: clamp(24px, 3vw, 40px);
+    padding-right: clamp(24px, 3vw, 40px);
+    box-sizing: border-box;
+  }
+
+/* MAIN CASES – Overlay: fix left/right padding for blobs + description */
+.caseOverlay-card.projectCard.expanded[data-tier="main"]
+  .cardDetails > .caseBody {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.caseOverlay-card.projectCard.expanded[data-tier="main"] .caseBody {
+  padding-left: clamp(16px, 3vw, 28px);
+  padding-right: clamp(16px, 3vw, 28px);
+  box-sizing: border-box;
+}
+
 /* Extra breathing room on the very last block */
 .projectCard.expanded[data-tier="main"]
   .cardDetails > *:not(.videoWrapper):not(.cardCollapse):last-child {
@@ -872,6 +893,14 @@ body.lock-scroll {
   align-items: stretch;
   gap: 20px;
   padding: 24px clamp(24px, 3vw, 40px) 40px; /* Symmetric left/right padding */
+}
+
+/* MAIN CASE – Expanded in gallery: allow full natural height, no clipping */
+.projectCard.expanded[data-tier="main"] {
+  max-height: none !important;     /* ensure no hidden max-height constraints */
+  height: auto !important;         /* grow to fit content */
+  overflow: visible !important;
+  margin-bottom: 48px;    /* don't clip the bottom content */
 }
 
 /* Override any legacy "flat right" radius for safety */
@@ -917,65 +946,94 @@ body.lock-scroll {
 /* SECONDARY CASE – Expanded in gallery */
 /* Gallery flex layout for non-main cards - exclude overlay cards */
 .projectCard.expanded:not([data-tier="main"]):not(.caseOverlay-card) .videoWrapper {
+  /* Keep flex layout for vertical centering */
   flex: 1 1 auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: clamp(
-    380px,
-    calc(var(--gallery-content-max-h, (100vh - 64px)) - 180px),
-    660px
-  );
-  width: 100%;
+  
+  /* Keep existing height constraints */
+  height: clamp(380px, calc(var(--gallery-content-max-h, (100vh - 64px)) - 180px), 660px);
+  
+  /* Add inset width and margins like asterisk */
+  width: calc(100% - 3 * clamp(16px, 2.5vw, 24px)) !important;
   margin: 0;
-  aspect-ratio: auto;
-  max-height: none;
-  border-radius: inherit; /* Respect parent card's border radius */
+  margin-bottom: clamp(28px, 4vw, 40px) !important;
+  
+  /* Add rounded corners like asterisk */
+  border-radius: var(--case-radius) !important;
   overflow: hidden;
   background: #000;
+  
+  /* Keep aspect-ratio auto for gallery's tall layout */
+  aspect-ratio: auto;
+  max-height: none;
 }
 /* NON-MAIN CASES – Overlay layout:
-   Canonical authority for non-main case video layout in #caseOverlay.
-   Targets elements with both .videoWrapper and .caseVideoWrap classes.
-   Ensures:
-   - Full-width, unclipped player (never cut off on right side)
-   - Equal thin margins top/left/right within overlay content area
-   - Slightly larger bottom margin for hashtags/copy to breathe
-   - Video respects aspect ratio, never stretched (object-fit: contain)
-   - Centered video with black letterboxing when needed */
-.caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .videoWrapper.caseVideoWrap {
-  flex: 0 0 auto !important;                /* Cancel gallery flex: 1 1 auto */
-  display: block !important;                /* Stop it from being a flex item */
-  width: auto !important;                   /* Crucial! Do not use 100%. Let it fill space minus margins */
-  height: auto !important;                  /* Cancel gallery height: clamp(...) */
-  min-width: unset !important;              /* Cancel any min-width from gallery */
-  margin: clamp(16px, 2.5vw, 24px) !important;        /* Equal margins for Top, Left, Right */
-  margin-bottom: clamp(28px, 4vw, 40px) !important;    /* Override bottom margin to be larger for hashtags */
-  border-radius: var(--case-radius) !important;        /* Match overlay card radius - force rounded corners */
-  overflow: hidden !important;              /* Clip video to rounded corners */
-  background: #000 !important;              /* Black background for letterboxing */
-  aspect-ratio: var(--video-ar, 16 / 9) !important;    /* Maintain aspect ratio - cancel gallery aspect-ratio: auto */
-  box-sizing: border-box;                   /* Include padding/border in width calculation */
-  align-items: unset !important;            /* Cancel gallery align-items: center */
-  justify-content: unset !important;        /* Cancel gallery justify-content: center */
-}
+   Keep video fully visible, with clearly visible rounded corners. */
+   .caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .videoWrapper.caseVideoWrap {
+    flex: 0 0 auto !important;
+    display: block !important;
+  
+    /* 1) Slightly inset from the panel edges so corners are visible */
+    width: 115% !important;
+    max-width: 100% !important;   /* <– key: do NOT go edge-to-edge */
+    margin-left: auto !important;
+    margin-right: auto !important;
+  
+    /* 2) Vertical sizing: natural height from aspect-ratio,
+          but never taller than the free overlay height */
+    height: auto !important;
+    max-height: calc(
+      100vh
+      - clamp(60px, 14vh, 140px)       /* outer overlay vertical clearance */
+      - 2 * clamp(6px, 2vw, 24px)      /* panel padding top + bottom */
+      - clamp(20px, 3vh, 40px)         /* extra breathing room */
+    ) !important;
+  
+    min-width: unset !important;
+  
+    /* Keep some vertical spacing around the video */
+    margin-top: 0 !important;
+    margin-bottom: clamp(28px, 4vw, 40px) !important;
+  
+    border-radius: var(--case-radius) !important;
+    overflow: hidden !important;
+    background: #000 !important;
+    aspect-ratio: var(--video-ar, 16 / 9) !important;
+    box-sizing: border-box;
+    align-items: unset !important;
+    justify-content: unset !important;
+  }
 
-/* NON-MAIN CASES – Overlay: Fallback for .videoWrapper without .caseVideoWrap class */
-.caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .videoWrapper {
-  flex: 0 0 auto !important;                /* Cancel gallery flex: 1 1 auto */
-  display: block !important;                /* Stop it from being a flex item */
-  width: auto !important;                   /* Crucial! Let it fill space minus margins */
-  height: auto !important;                  /* Cancel gallery height: clamp(...) */
-  min-width: unset !important;              /* Cancel any min-width from gallery */
-  margin: clamp(16px, 2.5vw, 24px) !important;
-  margin-bottom: clamp(28px, 4vw, 40px) !important;
-  border-radius: var(--case-radius) !important;        /* Force rounded corners */
-  overflow: hidden !important;
-  background: #000 !important;
-  aspect-ratio: var(--video-ar, 16 / 9) !important;    /* Cancel gallery aspect-ratio: auto */
-  align-items: unset !important;
-  justify-content: unset !important;
-}
+  .caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .videoWrapper {
+    flex: 0 0 auto !important;
+    display: block !important;
+  
+    width: 100% !important;
+    max-width: 92% !important;   /* same inset as the caseVideoWrap rule */
+    margin-left: auto !important;
+    margin-right: auto !important;
+  
+    height: auto !important;
+    max-height: calc(
+      100vh
+      - clamp(60px, 14vh, 140px)
+      - 2 * clamp(6px, 2vw, 24px)
+      - clamp(20px, 3vh, 40px)
+    ) !important;
+  
+    min-width: unset !important;
+    margin-top: clamp(16px, 2.5vw, 24px) !important;
+    margin-bottom: clamp(28px, 4vw, 40px) !important;
+  
+    border-radius: var(--case-radius) !important;
+    overflow: hidden !important;
+    background: #000 !important;
+    aspect-ratio: var(--video-ar, 16 / 9) !important;
+    align-items: unset !important;
+    justify-content: unset !important;
+  }
 
 /* Gallery non-main cases - keep existing behavior */
 /* Exclude overlay cards to prevent style leakage */
@@ -1052,6 +1110,31 @@ body.lock-scroll {
 
 /* Gallery hashtag blob - exclude overlay cards */
 .projectCard.expanded:not([data-tier="main"]):not(.caseOverlay-card) .hashtagBlob {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-family: "chivo-mono", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  color: #f5f5f5;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* NON-MAIN CASES – Overlay hashtags styling */
+.caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .cardHashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 clamp(8px, 2.5vw, 12px);
+  padding-top: 0px;
+}
+
+/* NON-MAIN CASES – Overlay hashtag blobs */
+.caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .hashtagBlob {
   display: inline-flex;
   align-items: center;
   padding: 6px 14px;
@@ -1256,7 +1339,7 @@ body.lock-scroll {
 /* Unified inner padding for case content (header, body, controls, etc.) */
 .caseInnerPadding {
   padding-left: clamp(24px, 3vw, 40px);
-  padding-right: clamp(24px, 3vw, 40px);
+  padding-right: clamp(12px, 3vw, 20px);
 }
 
 .projectCard.expanded .caseHeader {
