@@ -6,6 +6,13 @@
    - Click-to-expand cards
    - openSubpage(pageNumber) for 3D tile clicks
 */
+function clearExpandedMetrics(card) {
+  if (!card) return;
+  card.style.removeProperty("content-visibility");
+  card.style.removeProperty("containIntrinsicSize");
+}
+
+
 document
   .querySelectorAll('a[href="index.html"]')
   .forEach((link) => {
@@ -193,6 +200,19 @@ document
   const posCache = new Map();
 
   function measureExpandedHeight(card, width) {
+    if (!card) return 0;
+
+    const prev = {
+      width: card.style.width,
+      height: card.style.height,
+      visibility: card.style.visibility,
+      transform: card.style.transform,
+      contentVisibility: card.style.contentVisibility,
+      containIntrinsicSize: card.style.containIntrinsicSize,
+    };
+
+    card.style.visibility = "hidden";
+    card.style.transform = "none";
     card.style.width = width + "px";
     card.style.height = "auto";
     card.style.contentVisibility = "visible";
@@ -200,18 +220,30 @@ document
       card.style.containIntrinsicSize = "auto";
     }
 
-    // Use the live DOM height instead of a cloned proxy so we always capture
-    // late-loading media/text that expand after the initial render.
-    const measured = Math.max(0, Math.ceil(card.scrollHeight));
+    const measured = Math.ceil(card.getBoundingClientRect().height);
+    const isMainCard = card.dataset.tier === "main";
+const SAFETY_PAD = isMainCard ? 18 : 0; // adjust this value to taste
+const height = measured + SAFETY_PAD;
 
-    return measured;
+    // Restore styles so the live card doesn't flicker mid-frame
+    card.style.visibility = prev.visibility || "";
+    card.style.transform = prev.transform || "";
+    card.style.width = prev.width || "";
+    card.style.height = prev.height || "";
+    if (prev.contentVisibility) {
+      card.style.contentVisibility = prev.contentVisibility;
+    } else {
+      card.style.removeProperty("content-visibility");
+    }
+    if (prev.containIntrinsicSize) {
+      card.style.containIntrinsicSize = prev.containIntrinsicSize;
+    } else if ("containIntrinsicSize" in card.style) {
+      card.style.removeProperty("containIntrinsicSize");
+    }
+
+    return height;
   }
 
-  function clearExpandedMetrics(card) {
-    card.style.removeProperty("content-visibility");
-    card.style.removeProperty("containIntrinsicSize");
-  }
-  
 
   function layout() {
     // Enable masonry mode
@@ -314,6 +346,13 @@ document
       card.style.width = width + "px";
       card.style.height = height + "px";
       card.style.transform = `translate(${x}px, ${bestY}px)`;
+
+      if (isExpanded) {
+        card.style.contentVisibility = "visible";
+        if ("containIntrinsicSize" in card.style) {
+          card.style.containIntrinsicSize = "auto";
+        }
+      }
 
       posCache.set(card, { x, y: bestY });
 
@@ -552,6 +591,7 @@ document
         card.classList.add("expanded");
       } else {
         card.classList.remove("expanded");
+        clearExpandedMetrics(card);
       }
 
       // Let the DOM apply the expanded state before measuring/layout
