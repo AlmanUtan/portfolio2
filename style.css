@@ -865,6 +865,8 @@ body.lock-scroll {
     box-sizing: border-box;
   }
 
+  
+
 /* MAIN CASES – Overlay: fix left/right padding for blobs + description */
 .caseOverlay-card.projectCard.expanded[data-tier="main"]
   .cardDetails > .caseBody {
@@ -1443,6 +1445,8 @@ body.lock-scroll {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 24px;
   margin-bottom: 40px;
+  padding-left: clamp(16px, 3vw, 28px);
+  padding-right: clamp(16px, 3vw, 28px);
 }
 
 .detailVideoCard {
