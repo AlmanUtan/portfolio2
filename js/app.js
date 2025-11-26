@@ -953,9 +953,11 @@ export class App {
 
     if (isOpen) {
       this.galleryEl.style.pointerEvents = "auto";
+      this.galleryEl.classList.add("is-open");
       if (!wasOpen) this.pauseHeavy();
     } else {
       this.galleryEl.style.pointerEvents = "none";
+      this.galleryEl.classList.remove("is-open");
       if (wasOpen) this.resumeHeavy();
     }
 

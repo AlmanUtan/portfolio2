@@ -652,6 +652,47 @@ body.lock-scroll {
   background: #000;
   display: block;
 }
+/* MAIN CASES – Overlay, mobile: make hero video visually larger */
+@media (max-width: 768px) {
+  .caseOverlay-card.projectCard.expanded[data-tier="main"] .videoWrapper.caseVideoWrap {
+    /* Slight inset from panel edge, but mostly full width */
+    width: 150%;
+    max-width: 150%;
+    margin-left: 0;
+    margin-right: 0;
+
+    /* Reduce extra vertical spacing around the video */
+    margin-top: 0;
+    margin-bottom: clamp(16px, 3vh, 24px);
+
+    /* Slightly smaller radius than desktop so it feels slimmer */
+    border-radius: clamp(10px, 3vw, 16px);
+
+    /* Make the video area relatively tall on mobile */
+    aspect-ratio: var(--video-ar, 16 / 9);
+
+    /* Let it take as much vertical space as feels comfortable */
+    max-height: calc(100vh - 140px);
+  }
+
+  .caseOverlay-card.projectCard.expanded[data-tier="main"] .videoWrapper.caseVideoWrap video,
+  .caseOverlay-card.projectCard.expanded[data-tier="main"] .videoWrapper.caseVideoWrap iframe {
+    /* Ensure the image fills the wrapper strongly */
+    object-fit: cover;
+  }
+}
+
+@media (max-width: 768px) {
+  .caseOverlay-card.projectCard.expanded[data-tier="main"] .cardDetails > *:not(.videoWrapper):not(.cardCollapse) {
+    padding-top: 12px;
+    padding-bottom: 16px;
+  }
+
+  .caseOverlay-card.projectCard.expanded[data-tier="main"] .projectDescription--wide p {
+    font-size: 16px;
+    line-height: 1.35;
+  }
+}
 
 /* Ensure gallery-expanded styles do not fight overlay layout */
 .caseOverlay-card.projectCard.expanded .videoWrapper {
@@ -669,6 +710,7 @@ body.lock-scroll {
   border-radius: 0;                      /* wrapper handles clipping */
   display: block;
 }
+
 
 /* 
  * ====================================================================
@@ -708,24 +750,31 @@ body.lock-scroll {
  * - Overlay rule wins due to additional `.caseOverlay-card` class
  */
 
-@media (max-width: 768px) {
+ @media (max-width: 768px) {
   #caseOverlay {
-    padding: clamp(12px, 4vw, 24px);
+    padding: 0;
   }
 
   .caseOverlay-panel {
-    width: 100%;
-    max-height: 100vh;
-    border-radius: clamp(12px, 4vw, var(--case-radius));
-    padding: clamp(10px, 3vw, 18px);
+    width: calc(100% - 2 * clamp(16px, 2vw, 32px));
+    max-height: calc(100vh - 2 * clamp(12px, 4vw, 24px));
+    border-radius: var(--case-radius);
+    padding: 0;
   }
 
   .caseOverlay-content {
-    padding: clamp(24px, 6vw, 36px) clamp(14px, 5vw, 22px);
+    padding: clamp(6px, 4vw, 9px) clamp(5px, 4vw, 8px);
   }
+
+  /* MAIN CASES – Overlay: restore corner radius and margins at mobile */
+  .caseOverlay-card.projectCard.expanded[data-tier="main"] .cardDetails > .videoWrapper {
+    margin: clamp(4px, 1.5vw, 8px);
+    margin-bottom: 0;
+    width: calc(100% - 2 * clamp(4px, 1.5vw, 8px));
+    border-radius: var(--case-radius);
+  }
+
   
-  /* Keep this consistent by not re-adding conflicting right padding
-     to .projectDescription--wide, .detailVideosMuteControl, etc. */
 }
 
 /* ----------------------------------------------------------
@@ -884,6 +933,11 @@ body.lock-scroll {
 .projectCard.expanded[data-tier="main"]
   .cardDetails > *:not(.videoWrapper):not(.cardCollapse):last-child {
   padding-bottom: 32px;
+}
+
+/* Simple main cases (only video + description) - extra bottom padding */
+.projectCard.expanded[data-tier="main"] .cardDetails > .projectDescription--wide:last-child {
+  padding-bottom: 48px;
 }
 
 /* SECONDARY CASE – Expanded in gallery */
@@ -1106,8 +1160,8 @@ body.lock-scroll {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 0;
-  padding-top: 8px;
+  margin: clamp(4px, 2.5vw, 12px);
+  padding-top: 0px;
 }
 
 /* Gallery hashtag blob - exclude overlay cards */
@@ -1139,7 +1193,7 @@ body.lock-scroll {
 .caseOverlay-card.projectCard.expanded:not([data-tier="main"]) .hashtagBlob {
   display: inline-flex;
   align-items: center;
-  padding: 0px;
+  padding: 6px 14px;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   font-family: "chivo-mono", sans-serif;
@@ -1250,6 +1304,40 @@ body.lock-scroll {
 }
 
 .caseMuteBtn.muted {
+  background-image: url("public/img/speakeroff.png");
+}
+
+/* Container for the Übertön detail mute button */
+.caseDetailControls {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -72px;
+  padding-left: clamp(16px, 3vw, 28px);
+  padding-right: clamp(16px, 3vw, 28px);
+}
+
+/* Reuse basic caseMuteBtn look, but explicitly kill hover states for this variant */
+.caseMuteBtn.caseMuteBtn--details {
+  position: static;
+  width: 60px;
+  height: 60px;
+  background-image: url("public/img/speaker.png");
+  background-size: 60%;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: invert(1);
+  transition: none;
+}
+
+/* No hover effect for the Übertön detail mute button */
+.caseMuteBtn.caseMuteBtn--details:hover,
+.caseMuteBtn.caseMuteBtn--details:focus-visible {
+  transform: none;
+  opacity: 1;
+  background-color: transparent;
+}
+
+.caseMuteBtn.caseMuteBtn--details.muted {
   background-image: url("public/img/speakeroff.png");
 }
 
@@ -1648,6 +1736,8 @@ body.lock-scroll {
   grid-row: 2 / span 3;
 }
 
+
+
 /* ----------------------------------------------------------
    Responsive tweaks
 ---------------------------------------------------------- */
@@ -1956,6 +2046,13 @@ nav {
 }
 
 @media (max-width: 768px) and (orientation: portrait) {
+  /* Hide hamburger button when gallery overlay is open */
+  body:has(#galleryOverlay.is-open) .hamburger,
+  html:has(#galleryOverlay.is-open) .hamburger {
+    display: none !important;
+    pointer-events: none !important;
+  }
+
   .navigation {
     right: auto;
     left: 0;

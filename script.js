@@ -685,6 +685,9 @@ document
     root.querySelectorAll(".caseMuteBtn").forEach((btn) => {
       delete btn.dataset.wiredMute;
     });
+    root.querySelectorAll(".caseMuteBtn--details").forEach((btn) => {
+      delete btn.dataset.wiredDetailMute;
+    });
     root.querySelectorAll(".detailVideoInner").forEach((wrapper) => {
       delete wrapper.dataset.hoverBound;
     });
@@ -779,6 +782,7 @@ caseOverlayContent?.addEventListener("wheel", (evt) => {
     hydrateCaseVideos(overlayCard);
     wireCaseControls(overlayCard, { forceRebind: true });
     wireDetailVideoHovers(overlayCard, { forceRebind: true });
+    wireUbertoneDetailMute(overlayCard); // Wire global mute for Übertön detail videos in overlay
 
     const mainVideo = overlayCard.querySelector(".caseVideo");
     if (mainVideo) {
@@ -981,6 +985,12 @@ caseOverlayContent?.addEventListener("wheel", (evt) => {
       window.App.openGallery = function wrappedOpenGallery() {
         const r = originalOpenGallery.apply(this, arguments);
         if (isMobile()) {
+          // Hide hamburger on mobile when gallery opens
+          const hamburger = document.querySelector('.hamburger');
+          if (hamburger) {
+            hamburger.style.display = 'none';
+          }
+
           // In the gallery overlay, we WANT to allow vertical scrolling
           unlockBodyScroll();
 
@@ -1014,6 +1024,12 @@ caseOverlayContent?.addEventListener("wheel", (evt) => {
       window.App.closeGallery = function wrappedCloseGallery() {
         const r = originalCloseGallery.apply(this, arguments);
         if (isMobile()) {
+          // Show hamburger again when gallery closes
+          const hamburger = document.querySelector('.hamburger');
+          if (hamburger) {
+            hamburger.style.display = 'block';
+          }
+
           // Back in the 3D environment: disable page scroll
           lockBodyScroll();
         }
@@ -1155,6 +1171,7 @@ function wireDetailVideoHovers(scope = document, { forceRebind = false } = {}) {
 
 document.addEventListener("DOMContentLoaded", () => {
   wireDetailVideoHovers(document);
+  wireUbertoneDetailMute(); // Global mute for Übertön detail videos
 });
 
 // Close button functionality for case cards
@@ -1248,6 +1265,52 @@ function wireCaseControls(scope = document, { forceRebind = false } = {}) {
 }
 
 wireCaseControls(document);
+
+//-----------------------------
+// Global mute toggle for Übertön detail videos
+//-----------------------------
+function wireUbertoneDetailMute(scope = document) {
+  // Global mute button for all Übertön detail videos
+  const btn = scope.querySelector(
+    '.caseMuteBtn.caseMuteBtn--details[data-detail-mute="uberton"]'
+  );
+  if (!btn) return;
+
+  // Prevent duplicate event listeners
+  if (btn.dataset.wiredDetailMute === "1") return;
+
+  // All 4 hover videos inside the Übertön card (data-page="1")
+  // Search within the same scope as the button
+  const ubertoneCard = btn.closest('.projectCard[data-page="1"]');
+  if (!ubertoneCard) return;
+
+  const detailVideos = Array.from(
+    ubertoneCard.querySelectorAll('.caseDetailVideos .detailVideoHover')
+  );
+  if (!detailVideos.length) return;
+
+  // Initial state: all muted
+  let isMuted = true;
+  detailVideos.forEach((v) => {
+    v.muted = true;
+  });
+  btn.classList.add("muted");
+
+  const syncBtnState = () => {
+    btn.classList.toggle("muted", isMuted);
+  };
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    isMuted = !isMuted;
+    detailVideos.forEach((v) => {
+      v.muted = isMuted;
+    });
+    syncBtnState();
+  });
+
+  btn.dataset.wiredDetailMute = "1";
+}
 
 //-----------------------------
 // Hamburger button timer
