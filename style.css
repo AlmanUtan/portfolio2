@@ -1675,7 +1675,7 @@ body.lock-scroll {
 .caseDetail-imageWrap {
   width: 100%;
   max-width: 622px;
-  aspect-ratio: 622 / 864;
+  aspect-ratio: 550 / 1000;
   border-radius: 50px;
   overflow: hidden;
   background: #000;
